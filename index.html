@@ -3,487 +3,887 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionCare AI - Ultimate Smart ICU</title>
+    <title>VisionCare Enterprise OS | Central Command</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
     <style>
-        /* =========================================
-           1. THEME & RESET
-           ========================================= */
+        /* ==========================================================================
+           1. MEDI-UI DESIGN SYSTEM (CSS FRAMEWORK)
+           ========================================================================== */
+        
+        /* 1.1 Variables & Reset */
         :root {
-            --bg-deep: #020617;
-            --bg-panel: #0f172a;
-            --bg-card: #1e293b;
+            /* Palette: Slate & Indigo */
+            --c-bg-app: #0f172a;
+            --c-bg-panel: #1e293b;
+            --c-bg-card: #334155;
+            --c-border: #475569;
             
-            --primary: #6366f1; 
-            --accent: #06b6d4;
-            --success: #10b981; 
-            --danger: #ef4444; 
-            --warning: #f59e0b;
+            /* Brand Colors */
+            --c-primary: #6366f1; /* Indigo 500 */
+            --c-primary-dark: #4f46e5;
+            --c-primary-glow: rgba(99, 102, 241, 0.4);
             
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --c-accent: #06b6d4; /* Cyan 500 */
             
-            --radius: 16px;
-            --sidebar-w: 260px;
+            /* Semantics */
+            --c-success: #10b981;
+            --c-warning: #f59e0b;
+            --c-danger: #ef4444;
+            --c-info: #3b82f6;
+            
+            /* Typography */
+            --f-sans: 'Inter', system-ui, sans-serif;
+            --f-mono: 'JetBrains Mono', monospace;
+            --c-text-main: #f8fafc;
+            --c-text-muted: #94a3b8;
+            
+            /* Layout */
+            --sidebar-w: 280px;
+            --header-h: 70px;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; user-select: none; }
-        body { 
-            font-family: 'Space Grotesk', sans-serif; 
-            background: var(--bg-deep); 
-            color: var(--text-main); 
-            height: 100vh; 
-            overflow: hidden; 
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        
+        body {
+            font-family: var(--f-sans);
+            background-color: var(--c-bg-app);
+            color: var(--c-text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
             display: flex;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-deep); }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        /* 1.2 Scrollbars */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--c-bg-app); }
+        ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
-        /* =========================================
-           2. LOGIN SYSTEM
-           ========================================= */
-        #auth-layer {
-            position: fixed; inset: 0; z-index: 9999;
-            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+        /* 1.3 Utility Classes */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; } .gap-6 { gap: 1.5rem; }
+        .p-4 { padding: 1rem; } .p-6 { padding: 1.5rem; }
+        .m-0 { margin: 0; } .mt-2 { margin-top: 0.5rem; } .mt-4 { margin-top: 1rem; } .mb-4 { margin-bottom: 1rem; }
+        .w-full { width: 100%; } .h-full { height: 100%; }
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-mono { font-family: var(--f-mono); }
+        .font-bold { font-weight: 700; }
+        .uppercase { text-transform: uppercase; }
+        
+        /* Text Colors */
+        .text-primary { color: var(--c-primary); }
+        .text-accent { color: var(--c-accent); }
+        .text-danger { color: var(--c-danger); }
+        .text-success { color: var(--c-success); }
+        .text-muted { color: var(--c-text-muted); }
+
+        /* 1.4 Components: Buttons */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 20px; border-radius: var(--radius-md); font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent;
+            font-size: 0.9rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
+            color: white; border: none; box-shadow: var(--shadow-md);
+        }
+        .btn-primary:hover { box-shadow: var(--shadow-glow); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+        
+        .btn-outline {
+            background: transparent; border: 1px solid var(--c-border); color: var(--c-text-main);
+        }
+        .btn-outline:hover { background: var(--c-bg-card); border-color: var(--c-text-muted); }
+        
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--c-danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
+
+        /* 1.5 Components: Cards & Panels */
+        .card {
+            background: var(--c-bg-panel); border: 1px solid var(--c-border);
+            border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm);
+            position: relative; overflow: hidden;
+        }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--c-border);
+        }
+        .card-title { font-size: 1.1rem; font-weight: 600; color: var(--c-text-main); }
+
+        /* 1.6 Components: Inputs */
+        .input-group { margin-bottom: 1rem; text-align: left; }
+        .label { display: block; margin-bottom: 0.5rem; color: var(--c-text-muted); font-size: 0.85rem; }
+        .form-control {
+            width: 100%; padding: 12px 16px; background: var(--c-bg-app);
+            border: 1px solid var(--c-border); border-radius: var(--radius-md);
+            color: white; font-size: 1rem; transition: 0.2s;
+        }
+        .form-control:focus { border-color: var(--c-primary); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
+
+        /* 1.7 Components: Badges & Alerts */
+        .badge {
+            padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--c-success); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--c-danger); border: 1px solid rgba(239, 68, 68, 0.2); animation: pulse 1.5s infinite; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--c-warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        /* 1.8 Animations */
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ==========================================================================
+           2. SPECIFIC LAYOUT STYLES
+           ========================================================================== */
+        
+        /* 2.1 Auth Screen */
+        #auth-view {
+            position: fixed; inset: 0; z-index: 9000;
+            background: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
             display: flex; align-items: center; justify-content: center;
         }
-        .login-card {
-            width: 400px; padding: 40px; 
-            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; text-align: center;
-            box-shadow: 0 0 60px rgba(99, 102, 241, 0.2);
+        .auth-container {
+            width: 400px; padding: 40px; background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(12px); border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
-        .login-input {
-            width: 100%; padding: 14px; margin: 10px 0; background: #020617; 
-            border: 1px solid #334155; color: white; border-radius: 12px; 
-            font-size: 1rem; text-align: center; transition: 0.3s;
-        }
-        .login-input:focus { border-color: var(--primary); }
-        .btn-glow {
-            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); margin-top: 20px; transition: 0.3s;
-        }
-        .btn-glow:hover { transform: scale(1.02); }
+        .auth-logo { font-size: 3rem; color: var(--c-primary); margin-bottom: 20px; display: inline-block; }
 
-        /* =========================================
-           3. MAIN LAYOUT
-           ========================================= */
+        /* 2.2 Sidebar */
         aside {
-            width: var(--sidebar-w); background: var(--bg-panel); border-right: 1px solid #1e293b;
-            display: flex; flex-direction: column; padding: 25px; z-index: 50;
+            width: var(--sidebar-w); background: var(--c-bg-panel); border-right: 1px solid var(--c-border);
+            display: flex; flex-direction: column; padding: 24px; z-index: 50; transition: 0.3s;
         }
-        .logo { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
-        .nav-link {
-            padding: 14px 16px; margin-bottom: 8px; border-radius: 12px; color: var(--text-muted); 
-            cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: 0.2s;
+        .brand {
+            font-size: 1.25rem; font-weight: 800; color: var(--c-text-main);
+            display: flex; align-items: center; gap: 12px; margin-bottom: 40px;
         }
-        .nav-link:hover, .nav-link.active { background: rgba(99, 102, 241, 0.15); color: var(--primary); }
-        .nav-link.active { border-left: 4px solid var(--primary); }
-
-        main { flex: 1; display: flex; flex-direction: column; height: 100%; padding: 20px; gap: 20px; overflow-y: auto; }
-
-        /* =========================================
-           4. CAMERA & LEGEND
-           ========================================= */
-        .top-row { display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; height: 45%; }
+        .brand i { color: var(--c-primary); font-size: 1.5rem; }
         
-        .cam-frame {
-            background: black; border-radius: var(--radius); position: relative; border: 2px solid #334155; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+        .nav-item {
+            padding: 12px 16px; border-radius: var(--radius-md); color: var(--c-text-muted);
+            cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 12px;
+            transition: all 0.2s ease;
         }
-        video, canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--c-text-main); }
+        .nav-item.active { background: rgba(99, 102, 241, 0.15); color: var(--c-primary); border-left: 3px solid var(--c-primary); }
+        .nav-item i { width: 20px; text-align: center; }
+
+        /* 2.3 Main Content Area */
+        .app-content { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; }
         
-        /* OVERLAYS */
-        .cam-tools { position: absolute; bottom: 20px; z-index: 20; display: flex; gap: 15px; }
-        .pill-btn { 
-            padding: 8px 20px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.2); 
-            color: white; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.85rem; backdrop-filter: blur(5px); transition: 0.3s;
+        /* Header */
+        header {
+            height: var(--header-height); border-bottom: 1px solid var(--c-border);
+            padding: 0 32px; display: flex; align-items: center; justify-content: space-between;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
         }
-        .pill-btn:hover { background: var(--primary); border-color: var(--primary); }
+        .breadcrumb { font-size: 0.9rem; color: var(--c-text-muted); }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-        .debug-overlay { 
-            position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); 
-            color: #0f0; font-family: monospace; padding: 5px 10px; border-radius: 5px; z-index: 20; 
+        /* View Container */
+        .views { flex: 1; overflow-y: auto; padding: 24px; position: relative; }
+        .view-section { display: none; height: 100%; animation: fadeIn 0.4s ease; }
+        .view-section.active { display: block; }
+
+        /* 2.4 Dashboard Grid */
+        .dashboard-grid {
+            display: grid; grid-template-columns: 2.5fr 1fr; grid-template-rows: 55% 45%; gap: 24px; height: 100%;
         }
 
-        .voice-status {
-            position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); 
-            padding: 8px 15px; border-radius: 20px; color: var(--text-muted); font-size: 0.8rem; font-weight: bold;
-            display: flex; align-items: center; gap: 8px; z-index: 20; border: 1px solid #333;
+        /* Camera Widget */
+        .cam-widget {
+            grid-column: 1 / 2; grid-row: 1 / 2;
+            background: black; border-radius: var(--radius-lg); border: 2px solid var(--c-border);
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
-        .voice-dot { width: 8px; height: 8px; border-radius: 50%; background: #666; }
-        .voice-active .voice-dot { background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1s infinite; }
-
-        /* LEGEND */
-        .control-panel { background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 1px solid #334155; overflow-y: auto; }
-        .legend-row { display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 8px; border: 1px solid transparent; transition: 0.2s; }
-        .legend-row.active { border-color: var(--accent); background: rgba(6, 182, 212, 0.15); transform: scale(1.02); font-weight: bold; }
-        .l-icon { font-size: 1.5rem; width: 30px; text-align: center; }
-
-        /* =========================================
-           5. PATIENT CARDS & ECG
-           ========================================= */
-        .patient-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 50%; }
+        video { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+        canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); z-index: 10; }
         
+        /* HUD & Overlays */
+        .ai-hud {
+            position: absolute; top: 20px; left: 20px; z-index: 20;
+            background: rgba(0,0,0,0.8); border: 1px solid var(--c-border);
+            padding: 12px; border-radius: 8px; font-family: var(--f-mono); font-size: 0.8rem;
+            color: var(--c-success); min-width: 180px; pointer-events: none;
+        }
+        .hud-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .hud-label { color: var(--c-text-muted); }
+        
+        .mic-status {
+            position: absolute; top: 20px; right: 20px; z-index: 20;
+            background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 20px;
+            display: flex; align-items: center; gap: 8px; border: 1px solid var(--c-border);
+            font-weight: 600; font-size: 0.85rem;
+        }
+        .mic-dot { width: 8px; height: 8px; border-radius: 50%; background: #64748b; transition: 0.3s; }
+        .mic-active .mic-dot { background: var(--c-success); box-shadow: 0 0 10px var(--c-success); }
+
+        .cam-controls {
+            position: absolute; bottom: 20px; z-index: 30; display: flex; gap: 12px;
+            background: rgba(15, 23, 42, 0.9); padding: 8px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Info/Legend Panel */
+        .info-panel {
+            grid-column: 2 / 3; grid-row: 1 / 2;
+            display: flex; flex-direction: column; gap: 16px;
+        }
+        .gesture-list { overflow-y: auto; flex: 1; padding-right: 5px; }
+        .g-item {
+            display: flex; align-items: center; gap: 16px; padding: 12px;
+            background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 8px;
+            border: 1px solid transparent; transition: 0.2s;
+        }
+        .g-item.active { border-color: var(--c-accent); background: rgba(6, 182, 212, 0.1); transform: scale(1.02); }
+        .g-icon { font-size: 1.8rem; width: 40px; text-align: center; }
+
+        /* Patient Section */
+        .patient-row {
+            grid-column: 1 / 3; grid-row: 2 / 3;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+        }
         .p-card {
-            background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 1px solid #334155;
-            display: flex; flex-direction: column; position: relative; transition: 0.3s;
+            display: flex; flex-direction: column; height: 100%;
+            transition: 0.3s;
         }
-        .p-card.risk { border-color: var(--danger); box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
-
-        .p-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .p-info { display: flex; gap: 15px; align-items: center; }
-        .p-img { width: 65px; height: 65px; border-radius: 16px; background: #334155; object-fit: cover; border: 2px solid #475569; }
+        .p-card.critical { border-color: var(--c-danger); box-shadow: 0 0 30px rgba(239, 68, 68, 0.25); }
         
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; background: rgba(16, 185, 129, 0.2); color: var(--success); }
-        .status-badge.alert { background: rgba(239, 68, 68, 0.2); color: var(--danger); animation: pulse 1s infinite; }
-
-        /* ECG */
-        .ecg-box {
-            flex: 1; background: #000; border-radius: 12px; position: relative; overflow: hidden; border: 1px solid #334155;
-            display: flex; flex-direction: column; margin-bottom: 15px;
+        .p-grid-inner { display: grid; grid-template-columns: 100px 1fr 150px; gap: 20px; align-items: center; height: 100%; }
+        .p-avatar { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; background: #334155; border: 2px solid var(--c-border); }
+        
+        /* Vitals & ECG */
+        .vitals-area { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .ecg-wrapper {
+            height: 60px; background: black; border-radius: 8px; overflow: hidden; position: relative; border: 1px solid var(--c-border);
         }
         .ecg-canvas { width: 100%; height: 100%; }
-        .bpm-tag { position: absolute; top: 10px; right: 10px; font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--success); }
+        .bpm-display { position: absolute; top: 5px; right: 5px; color: var(--c-success); font-family: var(--f-mono); font-weight: bold; }
 
-        /* CONTROLS */
-        .status-row { display: flex; gap: 15px; align-items: center; margin-top: auto; }
-        .saline-wrapper { flex: 1; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; }
-        .saline-track { flex: 1; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
-        .saline-fill { height: 100%; width: 80%; background: var(--accent); transition: 1s; }
-        
-        .room-ctrl { display: flex; gap: 8px; }
-        .ctrl-btn { 
-            width: 40px; height: 40px; border-radius: 10px; background: #334155; color: #64748b; 
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s;
+        /* Environmental Controls */
+        .env-controls {
+            display: flex; flex-direction: column; gap: 10px; border-left: 1px solid var(--c-border); padding-left: 20px;
         }
-        .ctrl-btn.active { background: var(--warning); color: #000; box-shadow: 0 0 15px var(--warning); }
-        .ctrl-btn.spin { background: var(--accent); color: #fff; animation: spin 1s linear infinite; }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        /* TOAST */
-        .toast { 
-            position: fixed; top: 20px; right: 20px; background: white; color: #0f172a; 
-            padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
-            z-index: 10000; display: flex; align-items: center; gap: 15px; 
-            transform: translateX(200%); transition: 0.4s; border-left: 5px solid var(--primary); width: 320px;
+        .env-btn {
+            width: 100%; padding: 8px; background: var(--c-bg-app); border: 1px solid var(--c-border);
+            border-radius: 8px; color: var(--c-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s;
         }
-        .toast.show { transform: translateX(0); }
-        .toast.danger { border-left-color: var(--danger); background: #fef2f2; }
+        .env-btn.active { background: var(--c-warning); color: #000; border-color: var(--c-warning); }
+        .env-btn.fan-spin i { animation: spin 1s linear infinite; }
+
+        /* Liquid Level */
+        .saline-container {
+            display: flex; align-items: center; gap: 10px; margin-top: 5px;
+        }
+        .saline-bar-bg { flex: 1; height: 6px; background: var(--c-bg-app); border-radius: 3px; overflow: hidden; }
+        .saline-bar-fill { height: 100%; background: var(--c-accent); transition: width 0.5s; width: 80%; }
+
+        /* 2.5 Toast Notifications */
+        .toast-container {
+            position: fixed; top: 24px; right: 24px; z-index: 10000;
+            display: flex; flex-direction: column; gap: 12px; pointer-events: none;
+        }
+        .toast {
+            width: 350px; padding: 16px; background: white; color: var(--c-bg-app);
+            border-radius: 12px; box-shadow: var(--shadow-lg); display: flex; align-items: flex-start; gap: 16px;
+            border-left: 5px solid var(--c-primary); animation: slideInRight 0.4s ease; pointer-events: auto;
+        }
+        .toast.alert { border-left-color: var(--c-danger); background: #fef2f2; color: #991b1b; }
+        .toast-icon { font-size: 1.5rem; }
+        .toast-content h4 { font-weight: 700; margin-bottom: 2px; }
+        .toast-content p { font-size: 0.9rem; opacity: 0.8; }
+
+        /* Chat View Styles */
+        .chat-layout { display: flex; height: 100%; gap: 20px; }
+        .chat-list { width: 250px; background: var(--c-bg-app); border-radius: var(--radius-md); border: 1px solid var(--c-border); overflow-y: auto; }
+        .chat-user { padding: 15px; border-bottom: 1px solid var(--c-border); cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .chat-user:hover { background: rgba(255,255,255,0.05); }
+        .chat-window { flex: 1; background: var(--c-bg-app); border-radius: var(--radius-md); border: 1px solid var(--c-border); display: flex; flex-direction: column; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 70%; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; }
+        .msg.in { background: var(--c-bg-card); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.out { background: var(--c-primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--c-border); display: flex; gap: 10px; }
+
     </style>
 </head>
 <body>
 
-    <div id="auth-layer">
-        <div class="login-card">
-            <h2 style="color:var(--primary); margin-bottom:10px;">VisionCare AI</h2>
-            <p style="color:#94a3b8; margin-bottom:30px;">Smart ICU Login</p>
-            <input type="text" value="admin" class="login-input" readonly>
-            <input type="password" value="admin123" class="login-input" readonly>
-            <button class="btn-glow" onclick="initSystem()">INITIALIZE SYSTEM</button>
+    <div id="auth-view">
+        <div class="auth-container">
+            <div class="auth-logo"><i class="fas fa-heart-pulse"></i></div>
+            <h2 class="mb-4">VisionCare Enterprise</h2>
+            <div class="input-group">
+                <input type="text" id="auth-user" class="form-control text-center" placeholder="ID (admin)" value="admin">
+            </div>
+            <div class="input-group">
+                <input type="password" id="auth-pass" class="form-control text-center" placeholder="PIN (admin123)" value="admin123">
+            </div>
+            <button class="btn btn-primary w-full mt-4" onclick="App.login()">
+                <i class="fas fa-fingerprint"></i> Authenticate
+            </button>
+            <p class="text-muted mt-4 text-sm">v2.0.4 | Secure ICU System</p>
         </div>
     </div>
 
-    <aside>
-        <div class="logo"><i class="fas fa-eye" style="color:var(--primary)"></i> VisionCare</div>
-        <div class="nav-link active"><i class="fas fa-desktop"></i> Live Monitor</div>
-        <div class="nav-link"><i class="fas fa-chart-line"></i> Analytics</div>
-        <div class="nav-link"><i class="fas fa-cog"></i> Settings</div>
-        <div style="margin-top:auto">
-            <div class="nav-link" style="color:var(--danger)" onclick="location.reload()"><i class="fas fa-power-off"></i> Logout</div>
-        </div>
-    </aside>
-
-    <main>
-        <div class="top-row">
-            <div class="cam-frame">
-                <video id="vid" playsinline muted></video>
-                <canvas id="can"></canvas>
-                <div class="debug-overlay" id="debug-txt">AI Offline</div>
-                
-                <div class="voice-status" id="mic-ui"><div class="voice-dot"></div> VOICE: OFF</div>
-
-                <div class="cam-tools">
-                    <button class="pill-btn" onclick="regFace(1)">📸 Bed 1</button>
-                    <button class="pill-btn" style="background:var(--primary); border:none;" onclick="startAI()">▶ START AI</button>
-                    <button class="pill-btn" onclick="toggleVoice()">🎙️ Voice</button>
-                    <button class="pill-btn" onclick="regFace(2)">📸 Bed 2</button>
-                </div>
-            </div>
-
-            <div class="control-panel">
-                <h4 style="color:var(--text-muted); margin-bottom:15px; font-size:0.8rem;">GESTURES</h4>
-                <div class="legend-row" id="g-pain"><span class="l-icon">✊</span><div><strong>Emergency</strong><br><small style="color:var(--text-muted)">Fist Clench</small></div></div>
-                <div class="legend-row" id="g-meds"><span class="l-icon">☝️</span><div><strong>Medicine</strong><br><small style="color:var(--text-muted)">1 Finger</small></div></div>
-                <div class="legend-row" id="g-water"><span class="l-icon">✌️</span><div><strong>Water</strong><br><small style="color:var(--text-muted)">2 Fingers</small></div></div>
-                <div class="legend-row" id="g-light"><span class="l-icon">✋</span><div><strong>Lights On</strong><br><small style="color:var(--text-muted)">Open Hand</small></div></div>
-                <div class="legend-row" id="g-fan"><span class="l-icon">👌</span><div><strong>Fan On</strong><br><small style="color:var(--text-muted)">Pinch</small></div></div>
-            </div>
-        </div>
-
-        <div class="patient-deck">
-            <div class="p-card" id="card-p1">
-                <div class="p-head">
-                    <div class="p-info">
-                        <img id="img-p1" src="https://via.placeholder.com/80/334155/FFFFFF?text=Bed1" class="p-img">
-                        <div><h3>Alex Smith</h3><small style="color:#94a3b8">Bed 1 • Cardiac</small></div>
-                    </div>
-                    <div class="status-badge" id="badge-p1">Active</div>
-                </div>
-                
-                <div class="ecg-box"><canvas id="ecg-p1"></canvas><div class="bpm-tag" id="bpm-p1">72 BPM</div></div>
-                <div style="margin-bottom:10px; font-weight:bold; font-size:1.2rem;" id="req-p1">--</div>
-
-                <div class="status-row">
-                    <div class="saline-wrapper">
-                        <i class="fas fa-tint" style="color:var(--accent)"></i>
-                        <div class="saline-track"><div class="saline-fill" id="sal-p1"></div></div>
-                        <div style="font-size:0.8rem; font-weight:bold;">80%</div>
-                    </div>
-                    <div class="room-ctrl">
-                        <div class="ctrl-btn" id="btn-light-p1"><i class="fas fa-lightbulb"></i></div>
-                        <div class="ctrl-btn" id="btn-fan-p1"><i class="fas fa-fan"></i></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-card" id="card-p2">
-                <div class="p-head">
-                    <div class="p-info">
-                        <img id="img-p2" src="https://via.placeholder.com/80/334155/FFFFFF?text=Bed2" class="p-img">
-                        <div><h3>Sarah Doe</h3><small style="color:#94a3b8">Bed 2 • Ortho</small></div>
-                    </div>
-                    <div class="status-badge" id="badge-p2">Active</div>
-                </div>
-                
-                <div class="ecg-box"><canvas id="ecg-p2"></canvas><div class="bpm-tag" id="bpm-p2">68 BPM</div></div>
-                <div style="margin-bottom:10px; font-weight:bold; font-size:1.2rem;" id="req-p2">--</div>
-
-                <div class="status-row">
-                    <div class="saline-wrapper">
-                        <i class="fas fa-tint" style="color:var(--accent)"></i>
-                        <div class="saline-track"><div class="saline-fill" id="sal-p2" style="width:50%; background:var(--warning)"></div></div>
-                        <div style="font-size:0.8rem; font-weight:bold;">50%</div>
-                    </div>
-                    <div class="room-ctrl">
-                        <div class="ctrl-btn" id="btn-light-p2"><i class="fas fa-lightbulb"></i></div>
-                        <div class="ctrl-btn" id="btn-fan-p2"><i class="fas fa-fan"></i></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="toast" class="toast">
-        <div style="font-size:1.5rem">🔔</div>
-        <div>
-            <div style="font-weight:bold;" id="t-title">Alert</div>
-            <div style="font-size:0.85rem;" id="t-msg">Msg</div>
-        </div>
-    </div>
-
-<script>
-    // --- INIT ---
-    const video = document.getElementById('vid');
-    const canvas = document.getElementById('can');
-    const ctx = canvas.getContext('2d');
-    let lastAction = "";
-    
-    // Voice Rec
-    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const rec = new Recognition();
-    rec.continuous = false; rec.lang = 'en-US';
-    let isListening = false;
-
-    function initSystem() {
-        document.getElementById('auth-layer').style.display = 'none';
-        document.getElementById('main-ui').style.display = 'flex';
-        startECG(1); startECG(2);
-        speak("System Online");
-    }
-
-    // --- 1. CAMERA & AI ---
-    async function startAI() {
-        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
-        hands.setOptions({maxNumHands: 2, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5});
-        hands.onResults(onResults);
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
-            video.srcObject = stream;
-            video.onloadedmetadata = () => {
-                video.play();
-                const cam = new Camera(video, {
-                    onFrame: async () => { await hands.send({image: video}); },
-                    width: 1280, height: 720
-                });
-                cam.start();
-            };
-        } catch(e) { alert("Check Camera Permissions"); }
-    }
-
-    // --- 2. GESTURE LOGIC (FIXED) ---
-    function onResults(results) {
-        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+    <div id="app-view" class="hidden h-full w-full">
         
-        ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.lineWidth=2;
-        ctx.beginPath(); ctx.moveTo(canvas.width/2,0); ctx.lineTo(canvas.width/2,canvas.height); ctx.stroke();
+        <aside>
+            <div class="brand">
+                <i class="fas fa-eye"></i> <span>VisionCare</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="Router.nav('dashboard')"><i class="fas fa-desktop"></i> Monitoring</li>
+                <li class="nav-item" onclick="Router.nav('patients')"><i class="fas fa-procedures"></i> Patients</li>
+                <li class="nav-item" onclick="Router.nav('chat')"><i class="fas fa-comments"></i> Staff Chat</li>
+                <li class="nav-item" onclick="Router.nav('logs')"><i class="fas fa-clipboard-list"></i> Event Logs</li>
+                <li class="nav-item" onclick="Router.nav('settings')"><i class="fas fa-sliders-h"></i> System</li>
+            </ul>
+            <div class="mt-auto">
+                <li class="nav-item text-danger" onclick="App.logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
+            </div>
+        </aside>
 
-        if (results.multiHandLandmarks) {
-            for (const landmarks of results.multiHandLandmarks) {
-                drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {color: '#3b82f6', lineWidth: 3});
-                drawLandmarks(ctx, landmarks, {color: '#ef4444', lineWidth: 1});
+        <div class="app-content">
+            <header>
+                <div class="breadcrumb">Hospital Ward A / <strong>ICU 104</strong></div>
+                <div class="user-profile">
+                    <span class="badge badge-success">● ONLINE</span>
+                    <span id="doc-name" class="font-bold">Dr. Admin</span>
+                    <div class="avatar">DA</div>
+                </div>
+            </header>
+
+            <div class="views">
                 
-                const bedId = landmarks[0].x < 0.5 ? 1 : 2;
-                detectGesture(landmarks, bedId);
+                <div id="view-dashboard" class="view-section active">
+                    <div class="dashboard-grid">
+                        
+                        <div class="cam-widget">
+                            <video id="vid_input" playsinline muted></video>
+                            <canvas id="cv_output"></canvas>
+                            
+                            <div class="ai-hud">
+                                <div class="hud-row"><span class="hud-label">FPS:</span> <span id="debug-fps" class="text-accent">30</span></div>
+                                <div class="hud-row"><span class="hud-label">AI Model:</span> <span class="text-success">Active</span></div>
+                                <div class="hud-row"><span class="hud-label">Fingers:</span> <span id="debug-fingers" class="text-warning">0</span></div>
+                                <div class="hud-row border-t border-gray-700 mt-1 pt-1"><span class="hud-label">Action:</span> <span id="debug-action">IDLE</span></div>
+                            </div>
+
+                            <div class="mic-status" id="mic-badge">
+                                <div class="mic-dot"></div> <span id="mic-text">VOICE OFF</span>
+                            </div>
+
+                            <div class="cam-controls">
+                                <button class="btn btn-outline btn-icon" onclick="PatientMgr.snap(1)"><i class="fas fa-camera"></i> 1</button>
+                                <button class="btn btn-primary" onclick="VisionEngine.start()">
+                                    <i class="fas fa-play"></i> START AI
+                                </button>
+                                <button class="btn btn-outline" onclick="VoiceEngine.toggle()">
+                                    <i class="fas fa-microphone"></i> Voice
+                                </button>
+                                <button class="btn btn-outline btn-icon" onclick="PatientMgr.snap(2)">2 <i class="fas fa-camera"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="info-panel card">
+                            <div class="card-header">
+                                <span class="card-title">Gesture Library</span>
+                                <span class="badge badge-warning">V2.0</span>
+                            </div>
+                            <div class="gesture-list">
+                                <div class="g-item" id="leg-pain">
+                                    <span class="g-icon">✊</span>
+                                    <div><strong>Fist Clench</strong><br><span class="text-muted text-xs">Emergency / Pain</span></div>
+                                </div>
+                                <div class="g-item" id="leg-meds">
+                                    <span class="g-icon">☝️</span>
+                                    <div><strong>Index Point</strong><br><span class="text-muted text-xs">Request Medicine</span></div>
+                                </div>
+                                <div class="g-item" id="leg-water">
+                                    <span class="g-icon">✌️</span>
+                                    <div><strong>V-Sign</strong><br><span class="text-muted text-xs">Request Water</span></div>
+                                </div>
+                                <div class="g-item" id="leg-light">
+                                    <span class="g-icon">✋</span>
+                                    <div><strong>Open Palm</strong><br><span class="text-muted text-xs">Toggle Lights</span></div>
+                                </div>
+                                <div class="g-item" id="leg-fan">
+                                    <span class="g-icon">👌</span>
+                                    <div><strong>OK Pinch</strong><br><span class="text-muted text-xs">Toggle Fan</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="patient-row">
+                            <div class="card p-card" id="p1-card">
+                                <div class="p-grid-inner">
+                                    <img id="p1-img" src="https://via.placeholder.com/100/1e293b/475569?text=No+Img" class="p-avatar">
+                                    <div class="vitals-area">
+                                        <div>
+                                            <h4 class="font-bold text-lg">Alex Smith</h4>
+                                            <span class="text-muted text-xs">Bed 1 • Cardiac Unit</span>
+                                        </div>
+                                        <div class="ecg-wrapper">
+                                            <canvas id="p1-ecg" class="ecg-canvas"></canvas>
+                                            <span id="p1-bpm" class="bpm-display">--</span>
+                                        </div>
+                                        <div class="saline-container">
+                                            <i class="fas fa-tint text-accent"></i>
+                                            <div class="saline-bar-bg"><div id="p1-saline" class="saline-bar-fill"></div></div>
+                                            <span class="text-xs font-mono">80%</span>
+                                        </div>
+                                        <div class="mt-2 font-bold text-primary" id="p1-status">Monitoring...</div>
+                                    </div>
+                                    <div class="env-controls">
+                                        <div class="env-btn" id="p1-light"><i class="fas fa-lightbulb"></i> Light</div>
+                                        <div class="env-btn" id="p1-fan"><i class="fas fa-fan"></i> Fan</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card p-card" id="p2-card">
+                                <div class="p-grid-inner">
+                                    <img id="p2-img" src="https://via.placeholder.com/100/1e293b/475569?text=No+Img" class="p-avatar">
+                                    <div class="vitals-area">
+                                        <div>
+                                            <h4 class="font-bold text-lg">Sarah Doe</h4>
+                                            <span class="text-muted text-xs">Bed 2 • Ortho Unit</span>
+                                        </div>
+                                        <div class="ecg-wrapper">
+                                            <canvas id="p2-ecg" class="ecg-canvas"></canvas>
+                                            <span id="p2-bpm" class="bpm-display">--</span>
+                                        </div>
+                                        <div class="saline-container">
+                                            <i class="fas fa-tint text-warning"></i>
+                                            <div class="saline-bar-bg"><div id="p2-saline" class="saline-bar-fill" style="width:45%; background:var(--c-warning)"></div></div>
+                                            <span class="text-xs font-mono">45%</span>
+                                        </div>
+                                        <div class="mt-2 font-bold text-primary" id="p2-status">Monitoring...</div>
+                                    </div>
+                                    <div class="env-controls">
+                                        <div class="env-btn" id="p2-light"><i class="fas fa-lightbulb"></i> Light</div>
+                                        <div class="env-btn" id="p2-fan"><i class="fas fa-fan"></i> Fan</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="view-chat" class="view-section">
+                    <div class="chat-layout">
+                        <div class="chat-list">
+                            <div class="p-4 border-b border-gray-700 font-bold">Active Staff</div>
+                            <div class="chat-user"><div class="avatar bg-blue-500 text-xs">NS</div> <div>Nurse Station</div></div>
+                            <div class="chat-user"><div class="avatar bg-green-500 text-xs">LB</div> <div>Lab Technician</div></div>
+                            <div class="chat-user"><div class="avatar bg-purple-500 text-xs">PH</div> <div>Pharmacy</div></div>
+                        </div>
+                        <div class="chat-window">
+                            <div class="chat-messages">
+                                <div class="msg in">Dr. Admin, Bed 1 saline is low.</div>
+                                <div class="msg out">Copy that. AI is monitoring.</div>
+                                <div class="msg in">Vitals stable for Bed 2?</div>
+                            </div>
+                            <div class="chat-input-area">
+                                <input type="text" class="form-control" placeholder="Type message...">
+                                <button class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-settings" class="view-section">
+                    <div class="card" style="max-width: 600px;">
+                        <div class="card-header"><span class="card-title">System Configuration</span></div>
+                        <div class="p-4">
+                            <div class="mb-4">
+                                <label class="label">Voice Feedback Volume</label>
+                                <input type="range" class="w-full" min="0" max="100" value="80">
+                            </div>
+                            <div class="mb-4">
+                                <label class="label">Camera Resolution</label>
+                                <select class="form-control">
+                                    <option>HD (1280x720)</option>
+                                    <option>FHD (1920x1080)</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="label">Theme Accent</label>
+                                <div class="flex gap-2">
+                                    <div style="width:30px; height:30px; background:#6366f1; border-radius:50%; cursor:pointer;"></div>
+                                    <div style="width:30px; height:30px; background:#10b981; border-radius:50%; cursor:pointer;"></div>
+                                    <div style="width:30px; height:30px; background:#ef4444; border-radius:50%; cursor:pointer;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-logs" class="view-section">
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">System Event Log</span> <button class="btn btn-outline text-xs">Export CSV</button></div>
+                        <table style="width:100%; border-collapse: collapse;">
+                            <thead style="border-bottom:1px solid #334155; text-align:left;">
+                                <tr><th class="p-4 text-muted">Time</th><th class="p-4 text-muted">Source</th><th class="p-4 text-muted">Event</th><th class="p-4 text-muted">Status</th></tr>
+                            </thead>
+                            <tbody id="log-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-area" class="toast-container"></div>
+
+    <script>
+        /**
+         * =========================================
+         * 1. APP CORE & STATE
+         * =========================================
+         */
+        const App = {
+            state: { user: null, logs: [] },
+            
+            init: () => {
+                // Initialize Mock DB if empty
+                if(!localStorage.getItem('vc_logs')) localStorage.setItem('vc_logs', JSON.stringify([]));
+            },
+
+            login: () => {
+                const u = document.getElementById('auth-user').value;
+                const p = document.getElementById('auth-pass').value;
+                if(u === 'admin' && p === 'admin123') {
+                    document.getElementById('auth-view').style.display = 'none';
+                    document.getElementById('app-view').classList.remove('hidden');
+                    document.getElementById('app-view').classList.add('flex');
+                    App.notify('Welcome Back', 'System initialized successfully', false);
+                    ECG.init(1); ECG.init(2);
+                    App.loadLogs();
+                } else {
+                    alert('Invalid Credentials');
+                }
+            },
+
+            logout: () => location.reload(),
+
+            logEvent: (source, msg, type) => {
+                const entry = { time: new Date().toLocaleTimeString(), src: source, msg: msg, type: type };
+                const logs = JSON.parse(localStorage.getItem('vc_logs'));
+                logs.unshift(entry);
+                if(logs.length > 50) logs.pop();
+                localStorage.setItem('vc_logs', JSON.stringify(logs));
+                App.loadLogs();
+            },
+
+            loadLogs: () => {
+                const logs = JSON.parse(localStorage.getItem('vc_logs'));
+                const html = logs.map(l => `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                        <td class="p-4 font-mono text-primary">${l.time}</td>
+                        <td class="p-4 font-bold">${l.src}</td>
+                        <td class="p-4">${l.msg}</td>
+                        <td class="p-4"><span class="badge ${l.type === 'AL' ? 'badge-danger' : 'badge-success'}">${l.type}</span></td>
+                    </tr>
+                `).join('');
+                document.getElementById('log-table-body').innerHTML = html;
+            },
+
+            notify: (title, msg, isAlert) => {
+                const area = document.getElementById('toast-area');
+                const el = document.createElement('div');
+                el.className = `toast ${isAlert ? 'alert' : ''}`;
+                el.innerHTML = `
+                    <div class="toast-icon">${isAlert ? '🚨' : '🔔'}</div>
+                    <div class="toast-content"><h4>${title}</h4><p>${msg}</p></div>
+                `;
+                area.appendChild(el);
+                
+                // Speak
+                VoiceEngine.speak(msg);
+
+                setTimeout(() => el.remove(), 5000);
             }
-        }
-    }
+        };
 
-    function detectGesture(lm, bedId) {
-        let fingers = 0;
-        // Count extended fingers
-        if (lm[8].y < lm[6].y) fingers++; // Index
-        if (lm[12].y < lm[10].y) fingers++; // Middle
-        if (lm[16].y < lm[14].y) fingers++; // Ring
-        if (lm[20].y < lm[18].y) fingers++; // Pinky
-        if (Math.abs(lm[4].x - lm[5].x) > 0.05) fingers++; // Thumb
+        const Router = {
+            nav: (view) => {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                document.getElementById(`view-${view}`).classList.add('active');
+                
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+            }
+        };
 
-        const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
+        /**
+         * =========================================
+         * 2. VISION ENGINE (MediaPipe)
+         * =========================================
+         */
+        const VisionEngine = {
+            video: document.getElementById('vid_input'),
+            canvas: document.getElementById('cv_output'),
+            ctx: document.getElementById('cv_output').getContext('2d'),
+            lastAction: "",
 
-        // DEBUG
-        document.getElementById('debug-txt').innerText = `Bed ${bedId} Fingers: ${fingers}`;
+            start: async () => {
+                const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+                hands.setOptions({maxNumHands: 2, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5});
+                hands.onResults(VisionEngine.process);
 
-        let msg = "";
-        if (isPinch) msg = "FAN ON";
-        else if (fingers === 0) msg = "PAIN";
-        else if (fingers === 5) msg = "LIGHT ON";
-        else if (fingers === 2) msg = "WATER";
-        else if (fingers === 1) msg = "MEDICINE";
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+                    VisionEngine.video.srcObject = stream;
+                    VisionEngine.video.onloadedmetadata = () => {
+                        VisionEngine.video.play();
+                        const cam = new Camera(VisionEngine.video, {
+                            onFrame: async () => { await hands.send({image: VisionEngine.video}); },
+                            width: 1280, height: 720
+                        });
+                        cam.start();
+                    };
+                } catch(e) { alert("Camera Access Denied. Check Permissions or use Localhost."); }
+            },
 
-        if (msg && msg !== lastAction) {
-            lastAction = msg;
-            triggerAction(bedId, msg);
-            setTimeout(() => lastAction = "", 2500); // Debounce
-        }
-    }
+            process: (results) => {
+                const ctx = VisionEngine.ctx;
+                const w = VisionEngine.canvas.width = VisionEngine.video.videoWidth;
+                const h = VisionEngine.canvas.height = VisionEngine.video.videoHeight;
 
-    // --- 3. ACTIONS & ALERTS ---
-    function triggerAction(bedId, msg) {
-        document.getElementById(`req-p${bedId}`).innerText = msg;
-        document.querySelectorAll('.legend-row').forEach(e => e.classList.remove('active'));
-        
-        if (msg === "FAN ON") {
-            document.getElementById(`g-fan`).classList.add('active');
-            document.getElementById(`btn-fan-p${bedId}`).classList.add('spin');
-            speak(`Turning on Fan for Bed ${bedId}`);
-            showToast(`Bed ${bedId}`, "Fan Activated", false);
-        }
-        else if (msg === "LIGHT ON") {
-            document.getElementById(`g-light`).classList.add('active');
-            document.getElementById(`btn-light-p${bedId}`).classList.add('active');
-            speak(`Turning on Lights for Bed ${bedId}`);
-            showToast(`Bed ${bedId}`, "Lights Activated", false);
-        }
-        else if (msg === "PAIN") {
-            document.getElementById(`g-pain`).classList.add('active');
-            document.getElementById(`card-p${bedId}`).classList.add('risk');
-            document.getElementById(`badge-p${bedId}`).className = "status-badge alert";
-            document.getElementById(`badge-p${bedId}`).innerText = "CRITICAL";
-            speak(`Emergency! Bed ${bedId} Pain Alert!`);
-            showToast(`🚨 BED ${bedId}`, "EMERGENCY ALERT", true);
-        }
-        else if (msg === "WATER") {
-            document.getElementById(`g-water`).classList.add('active');
-            speak(`Bed ${bedId} needs Water`);
-            showToast(`Bed ${bedId}`, "Water Request", false);
-        }
-        else if (msg === "MEDICINE") {
-            document.getElementById(`g-meds`).classList.add('active');
-            speak(`Bed ${bedId} needs Medicine`);
-            showToast(`Bed ${bedId}`, "Meds Request", false);
-        }
-    }
+                ctx.clearRect(0, 0, w, h);
+                ctx.drawImage(results.image, 0, 0, w, h);
+                
+                // Draw Divider
+                ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); ctx.stroke();
 
-    // --- 4. VOICE & UTILS ---
-    function toggleVoice() {
-        if(!isListening) {
-            rec.start();
-            isListening = true;
-            document.getElementById('mic-ui').classList.add('voice-active');
-            document.getElementById('mic-ui').innerHTML = `<div class="voice-dot"></div> LISTENING...`;
-        } else {
-            rec.stop();
-            isListening = false;
-            document.getElementById('mic-ui').classList.remove('voice-active');
-            document.getElementById('mic-ui').innerHTML = `<div class="voice-dot"></div> VOICE: OFF`;
-        }
-    }
+                if (results.multiHandLandmarks) {
+                    for (const landmarks of results.multiHandLandmarks) {
+                        drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
+                        drawLandmarks(ctx, landmarks, {color: '#06b6d4', lineWidth: 1});
+                        
+                        // Detect Bed (Left/Right)
+                        const bedId = landmarks[0].x < 0.5 ? 1 : 2;
+                        VisionEngine.logic(landmarks, bedId);
+                    }
+                }
+            },
 
-    rec.onresult = (e) => {
-        const cmd = e.results[0][0].transcript.toLowerCase();
-        
-        if(cmd.includes("fan")) triggerAction(1, "FAN ON");
-        if(cmd.includes("light")) triggerAction(1, "LIGHT ON");
-        if(cmd.includes("emergency")) triggerAction(1, "PAIN");
-        
-        toggleVoice(); // Auto stop
-    };
+            logic: (lm, bedId) => {
+                let fingers = 0;
+                // Count Fingers Logic
+                if (lm[8].y < lm[6].y) fingers++;
+                if (lm[12].y < lm[10].y) fingers++;
+                if (lm[16].y < lm[14].y) fingers++;
+                if (lm[20].y < lm[18].y) fingers++;
+                if (Math.abs(lm[4].x - lm[5].x) > 0.05) fingers++;
 
-    function speak(txt) {
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt));
-    }
+                const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
 
-    function showToast(title, msg, isAlert) {
-        const t = document.getElementById('toast');
-        document.getElementById('t-title').innerText = title;
-        document.getElementById('t-msg').innerText = msg;
-        t.className = isAlert ? "toast show danger" : "toast show";
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
+                // Update HUD
+                document.getElementById('debug-fingers').innerText = fingers;
 
-    function regFace(id) {
-        const c = document.createElement('canvas');
-        c.width = video.videoWidth; c.height = video.videoHeight;
-        c.getContext('2d').drawImage(video, 0, 0);
-        document.getElementById(`img-p${id}`).src = c.toDataURL('image/png');
-        speak(`Bed ${id} Registered`);
-    }
+                let msg = "";
+                if (isPinch) msg = "FAN ON";
+                else if (fingers === 0) msg = "PAIN";
+                else if (fingers === 5) msg = "LIGHT ON";
+                else if (fingers === 2) msg = "WATER";
+                else if (fingers === 1) msg = "MEDS";
 
-    // --- 5. ECG ---
-    function startECG(id) {
-        const c = document.getElementById(`ecg-p${id}`);
-        const cx = c.getContext('2d');
-        c.width = c.offsetWidth; c.height = c.offsetHeight;
-        let x = 0; cx.strokeStyle = '#10b981'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, c.height/2);
+                document.getElementById('debug-action').innerText = msg || "IDLE";
 
-        function loop() {
-            x += 2;
-            if(x > c.width) { x = 0; cx.clearRect(0,0,c.width,c.height); cx.beginPath(); cx.moveTo(0, c.height/2); }
-            let y = c.height/2;
-            if(Math.random() < 0.05) y -= 30; // Spike
-            cx.lineTo(x, y); cx.stroke();
-            requestAnimationFrame(loop);
-        }
-        loop();
-    }
-</script>
+                if (msg && msg !== VisionEngine.lastAction) {
+                    VisionEngine.lastAction = msg;
+                    PatientMgr.handleRequest(bedId, msg);
+                    setTimeout(() => VisionEngine.lastAction = "", 2500); // Debounce
+                }
+            }
+        };
+
+        /**
+         * =========================================
+         * 3. PATIENT & ROOM MANAGER
+         * =========================================
+         */
+        const PatientMgr = {
+            snap: (id) => {
+                if(VisionEngine.video.readyState !== 4) return alert("Start AI First");
+                const c = document.createElement('canvas');
+                c.width = 1280; c.height = 720;
+                c.getContext('2d').drawImage(VisionEngine.video, 0, 0);
+                document.getElementById(`p${id}-img`).src = c.toDataURL('image/png');
+                App.notify('System', `Bed ${id} Registered`, false);
+            },
+
+            handleRequest: (id, msg) => {
+                // UI Highlight Logic
+                document.querySelectorAll('.g-item').forEach(e => e.classList.remove('active'));
+                
+                if (msg === "FAN ON") {
+                    document.getElementById('leg-fan').classList.add('active');
+                    document.getElementById(`p${id}-fan`).classList.add('active', 'fan-spin');
+                    App.logEvent(`Bed ${id}`, 'Fan Activated', 'OK');
+                    App.notify(`Bed ${id}`, "Turning on Fan", false);
+                }
+                else if (msg === "LIGHT ON") {
+                    document.getElementById('leg-light').classList.add('active');
+                    document.getElementById(`p${id}-light`).classList.add('active');
+                    App.logEvent(`Bed ${id}`, 'Lights Activated', 'OK');
+                    App.notify(`Bed ${id}`, "Turning on Lights", false);
+                }
+                else if (msg === "PAIN") {
+                    document.getElementById('leg-pain').classList.add('active');
+                    document.getElementById(`p${id}-card`).classList.add('critical');
+                    document.getElementById(`p${id}-status`).innerText = "CRITICAL PAIN";
+                    document.getElementById(`p${id}-status`).className = "mt-2 font-bold text-danger";
+                    ECG.spike(id);
+                    App.logEvent(`Bed ${id}`, 'PAIN EMERGENCY', 'AL');
+                    App.notify('EMERGENCY', `Bed ${id} reporting Chest Pain`, true);
+                }
+                else {
+                    // Water/Meds
+                    const map = { "WATER": "leg-water", "MEDS": "leg-meds" };
+                    if(map[msg]) document.getElementById(map[msg]).classList.add('active');
+                    document.getElementById(`p${id}-status`).innerText = `Requesting: ${msg}`;
+                    App.logEvent(`Bed ${id}`, `Request: ${msg}`, 'OK');
+                    App.notify(`Bed ${id}`, `Patient needs ${msg}`, false);
+                }
+            }
+        };
+
+        /**
+         * =========================================
+         * 4. VOICE ENGINE
+         * =========================================
+         */
+        const VoiceEngine = {
+            rec: null,
+            isListening: false,
+
+            init: () => {
+                const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                VoiceEngine.rec = new Recognition();
+                VoiceEngine.rec.lang = 'en-US';
+                VoiceEngine.rec.continuous = false;
+                
+                VoiceEngine.rec.onresult = (e) => {
+                    const cmd = e.results[0][0].transcript.toLowerCase();
+                    VoiceEngine.process(cmd);
+                    VoiceEngine.toggle(); // Turn off after cmd
+                };
+            },
+
+            toggle: () => {
+                if(!VoiceEngine.rec) VoiceEngine.init();
+                const ui = document.getElementById('mic-badge');
+                
+                if(!VoiceEngine.isListening) {
+                    VoiceEngine.rec.start();
+                    VoiceEngine.isListening = true;
+                    ui.classList.add('mic-active');
+                    document.getElementById('mic-text').innerText = "LISTENING...";
+                } else {
+                    VoiceEngine.rec.stop();
+                    VoiceEngine.isListening = false;
+                    ui.classList.remove('mic-active');
+                    document.getElementById('mic-text').innerText = "VOICE OFF";
+                }
+            },
+
+            process: (cmd) => {
+                if(cmd.includes('fan')) PatientMgr.handleRequest(1, "FAN ON");
+                else if(cmd.includes('light')) PatientMgr.handleRequest(1, "LIGHT ON");
+                else if(cmd.includes('pain') || cmd.includes('help')) PatientMgr.handleRequest(1, "PAIN");
+                else App.notify("Voice", "Command not recognized", false);
+            },
+
+            speak: (txt) => {
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt));
+            }
+        };
+
+        /**
+         * =========================================
+         * 5. ECG SIMULATOR
+         * =========================================
+         */
+        const ECG = {
+            init: (id) => {
+                const c = document.getElementById(`p${id}-ecg`);
+                const ctx = c.getContext('2d');
+                c.width = c.offsetWidth; c.height = c.offsetHeight;
+                
+                let x = 0;
+                ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, c.height/2);
+
+                function draw() {
+                    x += 2;
+                    if(x > c.width) { x = 0; ctx.clearRect(0,0,c.width,c.height); ctx.beginPath(); ctx.moveTo(0, c.height/2); }
+                    
+                    let y = c.height/2;
+                    if(Math.random() < 0.03) y -= 30; // QRS Complex
+                    
+                    ctx.lineTo(x, y); ctx.stroke();
+                    requestAnimationFrame(draw);
+                }
+                draw();
+                
+                // Store for spiking
+                ECG[`bed${id}`] = { ctx, c };
+            },
+            spike: (id) => {
+                const {ctx} = ECG[`bed${id}`];
+                ctx.strokeStyle = '#ef4444'; // Red Line
+                document.getElementById(`p${id}-bpm`).innerText = "140";
+                document.getElementById(`p${id}-bpm`).classList.add('text-danger');
+            }
+        };
+
+        // STARTUP
+        App.init();
+    </script>
 </body>
 </html>
