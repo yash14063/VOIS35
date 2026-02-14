@@ -15,26 +15,21 @@
 
     <style>
         /* =========================================
-           1. CORE THEME (Medical Dark Mode)
+           1. CORE THEME
            ========================================= */
         :root {
             --bg-deep: #050b14;
             --bg-panel: #0f172a;
             --bg-card: #1e293b;
-            
             --primary: #3b82f6; 
-            --primary-glow: rgba(59, 130, 246, 0.4);
-            
             --accent: #06b6d4;
             --success: #10b981; 
             --danger: #ef4444; 
             --warning: #f59e0b;
-            
             --text-main: #f1f5f9;
             --text-muted: #64748b;
-            
             --radius: 16px;
-            --sidebar-w: 280px;
+            --sidebar-w: 260px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; user-select: none; }
@@ -47,11 +42,6 @@
             display: flex;
         }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-deep); }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-
         /* =========================================
            2. LOGIN SYSTEM
            ========================================= */
@@ -62,22 +52,20 @@
         }
         .login-card {
             width: 400px; padding: 40px; 
-            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px);
+            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; text-align: center;
             box-shadow: 0 0 60px rgba(59, 130, 246, 0.15);
         }
         .login-input {
             width: 100%; padding: 14px; margin: 10px 0; background: #020617; 
             border: 1px solid #334155; color: white; border-radius: 12px; 
-            font-size: 1rem; text-align: center; transition: 0.3s;
+            font-size: 1rem; text-align: center;
         }
-        .login-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
         .btn-glow {
             width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
-            box-shadow: 0 4px 15px var(--primary-glow);
+            color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); margin-top: 10px;
         }
-        .btn-glow:hover { transform: scale(1.02); }
 
         /* =========================================
            3. MAIN LAYOUT
@@ -87,21 +75,18 @@
             display: flex; flex-direction: column; padding: 25px; z-index: 50;
         }
         .logo { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
-        .logo i { color: var(--primary); }
-        
         .nav-link {
             padding: 14px 16px; margin-bottom: 8px; border-radius: 12px; color: var(--text-muted); 
             cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: 0.2s;
         }
-        .nav-link:hover, .nav-link.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
-        .nav-link.active { border-left: 4px solid var(--primary); }
+        .nav-link.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-left: 4px solid var(--primary); }
 
         main { flex: 1; display: flex; flex-direction: column; height: 100%; padding: 20px; gap: 20px; overflow-y: auto; }
 
         /* =========================================
-           4. CAMERA & AI WIDGET
+           4. CAMERA & LEGEND
            ========================================= */
-        .top-deck { display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; height: 45%; }
+        .top-row { display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; height: 45%; }
         
         .cam-frame {
             background: black; border-radius: var(--radius); position: relative; border: 2px solid #334155; overflow: hidden;
@@ -112,28 +97,32 @@
         /* OVERLAYS */
         .cam-tools { position: absolute; bottom: 20px; z-index: 20; display: flex; gap: 15px; }
         .pill-btn { 
-            padding: 8px 18px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.2); 
-            color: white; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.8rem; backdrop-filter: blur(5px); transition: 0.3s;
+            padding: 8px 20px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.2); 
+            color: white; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.85rem; backdrop-filter: blur(5px);
         }
-        .pill-btn:hover { border-color: var(--primary); color: var(--primary); }
-        .pill-btn.active { background: var(--primary); border-color: var(--primary); }
+        .pill-btn:hover { background: var(--primary); border-color: var(--primary); }
+
+        .debug-overlay { 
+            position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); 
+            color: #0f0; font-family: monospace; padding: 5px 10px; border-radius: 5px; z-index: 20; 
+        }
 
         .voice-status {
             position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); 
-            padding: 8px 15px; border-radius: 20px; color: var(--text-muted); font-size: 0.8rem; font-weight: bold; border: 1px solid #333;
-            display: flex; align-items: center; gap: 8px; z-index: 20;
+            padding: 8px 15px; border-radius: 20px; color: var(--text-muted); font-size: 0.8rem; font-weight: bold;
+            display: flex; align-items: center; gap: 8px; z-index: 20; border: 1px solid #333;
         }
         .voice-dot { width: 8px; height: 8px; border-radius: 50%; background: #666; }
         .voice-active .voice-dot { background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1s infinite; }
 
-        /* GESTURE LEGEND */
+        /* LEGEND */
         .control-panel { background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 1px solid #334155; overflow-y: auto; }
         .legend-row { display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 8px; border: 1px solid transparent; transition: 0.2s; }
-        .legend-row.active { border-color: var(--accent); background: rgba(6, 182, 212, 0.15); transform: scale(1.02); }
-        .l-icon { font-size: 1.4rem; width: 30px; text-align: center; }
+        .legend-row.active { border-color: var(--accent); background: rgba(6, 182, 212, 0.15); transform: scale(1.02); font-weight: bold; }
+        .l-icon { font-size: 1.5rem; width: 30px; text-align: center; }
 
         /* =========================================
-           5. PATIENT CARDS & ECG
+           5. PATIENT CARDS
            ========================================= */
         .patient-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 50%; }
         
@@ -141,146 +130,122 @@
             background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 1px solid #334155;
             display: flex; flex-direction: column; position: relative; transition: 0.3s;
         }
-        .p-card.risk { border-color: var(--danger); box-shadow: 0 0 30px rgba(239, 68, 68, 0.2); }
+        .p-card.risk { border-color: var(--danger); box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
 
         .p-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .p-info { display: flex; gap: 15px; align-items: center; }
         .p-img { width: 65px; height: 65px; border-radius: 16px; background: #334155; object-fit: cover; border: 2px solid #475569; }
         
-        /* ECG BOX */
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-badge.alert { background: rgba(239, 68, 68, 0.2); color: var(--danger); animation: pulse 1s infinite; }
+
+        /* ECG */
         .ecg-box {
             flex: 1; background: #000; border-radius: 12px; position: relative; overflow: hidden; border: 1px solid #334155;
             display: flex; flex-direction: column; margin-bottom: 15px;
         }
         .ecg-canvas { width: 100%; height: 100%; }
-        .bpm-tag { position: absolute; top: 10px; right: 10px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--success); }
+        .bpm-tag { position: absolute; top: 10px; right: 10px; font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--success); }
 
-        /* SALINE & CONTROLS */
-        .status-row { display: flex; gap: 15px; align-items: center; }
-        
-        /* Saline Bar */
+        /* CONTROLS */
+        .status-row { display: flex; gap: 15px; align-items: center; margin-top: auto; }
         .saline-wrapper { flex: 1; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; }
         .saline-track { flex: 1; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
         .saline-fill { height: 100%; width: 80%; background: var(--accent); transition: 1s; }
-        .saline-val { font-size: 0.8rem; color: var(--accent); font-weight: bold; width: 40px; text-align: right; }
-
-        /* Room Controls */
+        
         .room-ctrl { display: flex; gap: 8px; }
         .ctrl-btn { 
-            width: 35px; height: 35px; border-radius: 8px; background: #334155; color: #94a3b8; 
-            border: 1px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
+            width: 40px; height: 40px; border-radius: 10px; background: #334155; color: #64748b; 
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s;
         }
-        .ctrl-btn.active { background: var(--warning); color: black; box-shadow: 0 0 10px var(--warning); }
-        .ctrl-btn.fan-active { background: var(--accent); color: white; animation: spin 2s linear infinite; }
+        .ctrl-btn.active { background: var(--warning); color: #000; box-shadow: 0 0 15px var(--warning); }
+        .ctrl-btn.spin { background: var(--accent); color: #fff; animation: spin 1s linear infinite; }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* =========================================
-           6. NOTIFICATIONS
-           ========================================= */
+        /* TOAST */
         .toast { 
             position: fixed; top: 20px; right: 20px; background: white; color: #0f172a; 
-            padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
             z-index: 10000; display: flex; align-items: center; gap: 15px; 
-            transform: translateX(200%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            border-left: 5px solid var(--primary); width: 360px;
+            transform: translateX(200%); transition: 0.4s; border-left: 5px solid var(--primary);
         }
         .toast.show { transform: translateX(0); }
-        .toast.alert { border-left-color: var(--danger); background: #fef2f2; }
     </style>
 </head>
 <body>
 
     <div id="auth-layer">
         <div class="login-card">
-            <i class="fas fa-user-md" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2 style="margin-bottom: 10px;">VisionCare Pro</h2>
-            <p style="color: var(--text-muted); margin-bottom: 30px;">Voice-Activated ICU Command</p>
-            
-            <input type="text" id="user" class="login-input" placeholder="Doctor ID (admin)">
-            <input type="password" id="pass" class="login-input" placeholder="Access PIN (admin123)">
-            <button class="btn-glow" onclick="Auth.login()">Initialize System</button>
+            <i class="fas fa-hospital-user" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="margin-bottom: 10px;">VisionCare AI</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Smart ICU Login</p>
+            <input type="text" value="admin" class="login-input" readonly>
+            <input type="password" value="admin123" class="login-input" readonly>
+            <button class="btn-glow" onclick="initSystem()">INITIALIZE SYSTEM</button>
         </div>
     </div>
 
     <aside>
-        <div class="logo"><i class="fas fa-hospital"></i> VisionCare</div>
-        <div class="nav-link active"><i class="fas fa-desktop"></i> Central Monitor</div>
-        <div class="nav-link"><i class="fas fa-heartbeat"></i> Vitals History</div>
-        <div class="nav-link"><i class="fas fa-users"></i> Staff Shift</div>
+        <div class="logo"><i class="fas fa-eye"></i> VisionCare</div>
+        <div class="nav-link active"><i class="fas fa-desktop"></i> Live Monitor</div>
+        <div class="nav-link"><i class="fas fa-chart-line"></i> Analytics</div>
+        <div class="nav-link"><i class="fas fa-cog"></i> Settings</div>
         <div style="margin-top:auto">
-            <div class="nav-link" style="color:var(--danger)" onclick="location.reload()"><i class="fas fa-power-off"></i> Shut Down</div>
+            <div class="nav-link" style="color:var(--danger)" onclick="location.reload()"><i class="fas fa-power-off"></i> Logout</div>
         </div>
     </aside>
 
     <main>
         <div class="top-deck">
             <div class="cam-frame">
-                <video id="video_feed" playsinline muted></video>
-                <canvas id="ai_layer"></canvas>
+                <video id="vid" playsinline muted></video>
+                <canvas id="can"></canvas>
+                <div class="debug-overlay" id="debug-txt">AI Offline</div>
                 
-                <div class="voice-status" id="mic-status">
-                    <div class="voice-dot"></div> <span>VOICE COMMAND: OFF</span>
-                </div>
+                <div class="voice-status" id="mic-ui"><div class="voice-dot"></div> VOICE: OFF</div>
 
                 <div class="cam-tools">
-                    <button class="pill-btn" onclick="PatientSys.snap(1)">📸 Bed 1</button>
-                    <button class="pill-btn active" onclick="VisionSys.init()">▶ START AI</button>
-                    <button class="pill-btn" onclick="VoiceSys.toggle()">🎙️ Voice Control</button>
-                    <button class="pill-btn" onclick="PatientSys.snap(2)">📸 Bed 2</button>
+                    <button class="pill-btn" onclick="regFace(1)">📸 Bed 1</button>
+                    <button class="pill-btn" style="background:var(--primary); border-color:var(--primary)" onclick="startAI()">▶ START AI</button>
+                    <button class="pill-btn" onclick="toggleVoice()">🎙️ Voice Cmd</button>
+                    <button class="pill-btn" onclick="regFace(2)">📸 Bed 2</button>
                 </div>
             </div>
 
             <div class="control-panel">
-                <h4 style="color:var(--text-muted); margin-bottom:15px; font-size:0.8rem; letter-spacing:1px;">GESTURE CONTROL</h4>
-                
-                <div class="legend-row" id="g-light">
-                    <span class="l-icon">✋</span> 
-                    <div><strong>Light On</strong><br><small style="color:var(--text-muted)">Open Hand</small></div>
-                </div>
-                <div class="legend-row" id="g-fan">
-                    <span class="l-icon">👌</span> 
-                    <div><strong>Fan On</strong><br><small style="color:var(--text-muted)">OK Sign</small></div>
-                </div>
-                <div class="legend-row" id="g-water">
-                    <span class="l-icon">✌️</span> 
-                    <div><strong>Water</strong><br><small style="color:var(--text-muted)">Victory Sign</small></div>
-                </div>
-                <div class="legend-row" id="g-pain">
-                    <span class="l-icon">✊</span> 
-                    <div><strong>Emergency</strong><br><small style="color:var(--text-muted)">Fist Clench</small></div>
-                </div>
+                <h4 style="color:var(--text-muted); margin-bottom:15px; font-size:0.8rem;">GESTURE COMMANDS</h4>
+                <div class="legend-row" id="g-pain"><span class="l-icon">✊</span><div><strong>Emergency</strong><br><small style="color:var(--text-muted)">Fist Clench</small></div></div>
+                <div class="legend-row" id="g-meds"><span class="l-icon">☝️</span><div><strong>Medicine</strong><br><small style="color:var(--text-muted)">1 Finger</small></div></div>
+                <div class="legend-row" id="g-water"><span class="l-icon">✌️</span><div><strong>Water</strong><br><small style="color:var(--text-muted)">2 Fingers</small></div></div>
+                <div class="legend-row" id="g-light"><span class="l-icon">✋</span><div><strong>Lights On</strong><br><small style="color:var(--text-muted)">Open Hand</small></div></div>
+                <div class="legend-row" id="g-fan"><span class="l-icon">👌</span><div><strong>Fan On</strong><br><small style="color:var(--text-muted)">Pinch</small></div></div>
             </div>
         </div>
 
         <div class="patient-deck">
-            
             <div class="p-card" id="card-p1">
                 <div class="p-head">
                     <div class="p-info">
                         <img id="img-p1" src="https://via.placeholder.com/80/334155/FFFFFF?text=Bed1" class="p-img">
-                        <div>
-                            <h3>Alex Smith</h3>
-                            <small style="color:var(--text-muted)" id="status-p1">Monitoring Active</small>
-                        </div>
+                        <div><h3>Alex Smith</h3><small style="color:#94a3b8">Bed 1 • Cardiac</small></div>
                     </div>
-                    <div class="room-ctrl">
-                        <div class="ctrl-btn" id="light-p1"><i class="fas fa-lightbulb"></i></div>
-                        <div class="ctrl-btn" id="fan-p1"><i class="fas fa-fan"></i></div>
-                    </div>
+                    <div class="status-badge" id="badge-p1">Stable</div>
                 </div>
-
-                <div class="ecg-box">
-                    <canvas id="ecg-p1" class="ecg-canvas"></canvas>
-                    <div class="bpm-tag" id="bpm-p1">72 BPM</div>
-                </div>
+                
+                <div class="ecg-box"><canvas id="ecg-p1"></canvas><div class="bpm-tag" id="bpm-p1">72 BPM</div></div>
+                <div style="margin-bottom:10px; font-weight:bold; font-size:1.2rem;" id="req-p1">--</div>
 
                 <div class="status-row">
                     <div class="saline-wrapper">
                         <i class="fas fa-tint" style="color:var(--accent)"></i>
-                        <div class="saline-track"><div class="saline-fill" id="saline-p1"></div></div>
-                        <div class="saline-val" id="saline-txt-p1">80%</div>
+                        <div class="saline-track"><div class="saline-fill" id="sal-p1"></div></div>
+                        <div style="font-size:0.8rem; font-weight:bold;">80%</div>
+                    </div>
+                    <div class="room-ctrl">
+                        <div class="ctrl-btn" id="btn-light-p1"><i class="fas fa-lightbulb"></i></div>
+                        <div class="ctrl-btn" id="btn-fan-p1"><i class="fas fa-fan"></i></div>
                     </div>
                 </div>
             </div>
@@ -289,293 +254,241 @@
                 <div class="p-head">
                     <div class="p-info">
                         <img id="img-p2" src="https://via.placeholder.com/80/334155/FFFFFF?text=Bed2" class="p-img">
-                        <div>
-                            <h3>Sarah Doe</h3>
-                            <small style="color:var(--text-muted)" id="status-p2">Monitoring Active</small>
-                        </div>
+                        <div><h3>Sarah Doe</h3><small style="color:#94a3b8">Bed 2 • Ortho</small></div>
                     </div>
-                    <div class="room-ctrl">
-                        <div class="ctrl-btn" id="light-p2"><i class="fas fa-lightbulb"></i></div>
-                        <div class="ctrl-btn" id="fan-p2"><i class="fas fa-fan"></i></div>
-                    </div>
+                    <div class="status-badge" id="badge-p2">Stable</div>
                 </div>
-
-                <div class="ecg-box">
-                    <canvas id="ecg-p2" class="ecg-canvas"></canvas>
-                    <div class="bpm-tag" id="bpm-p2">68 BPM</div>
-                </div>
+                
+                <div class="ecg-box"><canvas id="ecg-p2"></canvas><div class="bpm-tag" id="bpm-p2">68 BPM</div></div>
+                <div style="margin-bottom:10px; font-weight:bold; font-size:1.2rem;" id="req-p2">--</div>
 
                 <div class="status-row">
                     <div class="saline-wrapper">
                         <i class="fas fa-tint" style="color:var(--accent)"></i>
-                        <div class="saline-track"><div class="saline-fill" id="saline-p2"></div></div>
-                        <div class="saline-val" id="saline-txt-p2">60%</div>
+                        <div class="saline-track"><div class="saline-fill" id="sal-p2" style="width:50%; background:var(--warning)"></div></div>
+                        <div style="font-size:0.8rem; font-weight:bold;">50%</div>
+                    </div>
+                    <div class="room-ctrl">
+                        <div class="ctrl-btn" id="btn-light-p2"><i class="fas fa-lightbulb"></i></div>
+                        <div class="ctrl-btn" id="btn-fan-p2"><i class="fas fa-fan"></i></div>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
     <div id="toast" class="toast">
-        <div style="font-size:2rem;">🔔</div>
+        <div style="font-size:1.5rem">🔔</div>
         <div>
-            <div style="font-weight:800;" id="t-title">Alert</div>
-            <div style="font-size:0.9rem; color:#64748b;" id="t-msg">Message</div>
+            <div style="font-weight:bold;" id="t-title">Alert</div>
+            <div style="font-size:0.85rem;" id="t-msg">Msg</div>
         </div>
     </div>
 
-    <script>
-        /**
-         * 1. SYSTEM AUTH
-         */
-        const Auth = {
-            login: () => {
-                const u = document.getElementById('user').value;
-                const p = document.getElementById('pass').value;
-                if(u === 'admin' && p === 'admin123') {
-                    document.getElementById('auth-layer').style.display = 'none';
-                    ECG.init(1); ECG.init(2);
-                    Saline.init();
-                } else alert("Invalid ID/PIN");
+<script>
+    // --- INIT ---
+    const video = document.getElementById('vid');
+    const canvas = document.getElementById('can');
+    const ctx = canvas.getContext('2d');
+    let lastAction = "";
+    
+    // Voice Rec
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const rec = new Recognition();
+    rec.continuous = false; rec.lang = 'en-US';
+    let isListening = false;
+
+    function initSystem() {
+        document.getElementById('auth-layer').style.display = 'none';
+        document.getElementById('main-ui').style.display = 'flex';
+        startECG(1); startECG(2);
+        speak("System Online");
+    }
+
+    // --- 1. CAMERA & AI ---
+    async function startAI() {
+        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+        hands.setOptions({maxNumHands: 2, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5});
+        hands.onResults(onResults);
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+                video.play();
+                const cam = new Camera(video, {
+                    onFrame: async () => { await hands.send({image: video}); },
+                    width: 1280, height: 720
+                });
+                cam.start();
+            };
+        } catch(e) { alert("Check Camera Permissions"); }
+    }
+
+    // --- 2. GESTURE ENGINE (SIMPLIFIED & ROBUST) ---
+    function onResults(results) {
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+        
+        ctx.beginPath(); ctx.moveTo(canvas.width/2,0); ctx.lineTo(canvas.width/2,canvas.height); 
+        ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.lineWidth=2; ctx.stroke();
+
+        if (results.multiHandLandmarks) {
+            for (const landmarks of results.multiHandLandmarks) {
+                drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {color: '#3b82f6', lineWidth: 3});
+                drawLandmarks(ctx, landmarks, {color: '#ef4444', lineWidth: 1});
+                
+                const bedId = landmarks[0].x < 0.5 ? 1 : 2;
+                detectGesture(landmarks, bedId);
             }
-        };
+        }
+    }
 
-        /**
-         * 2. VISION AI ENGINE (Robust Hand Logic)
-         */
-        const VisionSys = {
-            video: document.getElementById('video_feed'),
-            canvas: document.getElementById('ai_layer'),
-            ctx: document.getElementById('ai_layer').getContext('2d'),
-            lastAction: "",
+    function detectGesture(lm, bedId) {
+        // Count Extended Fingers (Tip Y < PIP Y)
+        let fingers = 0;
+        // Index (8 vs 6), Middle (12 vs 10), Ring (16 vs 14), Pinky (20 vs 18)
+        [8, 12, 16, 20].forEach(tip => { if (lm[tip].y < lm[tip-2].y) fingers++; });
+        
+        // Thumb (Check X distance vs Index Base)
+        if (Math.abs(lm[4].x - lm[5].x) > 0.05) fingers++;
 
-            init: async () => {
-                const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
-                hands.setOptions({maxNumHands: 2, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6});
-                hands.onResults(VisionSys.process);
+        // Pinch (Thumb Tip close to Index Tip)
+        const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
 
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
-                    VisionSys.video.srcObject = stream;
-                    VisionSys.video.onloadedmetadata = () => {
-                        VisionSys.video.play();
-                        const cam = new Camera(VisionSys.video, {
-                            onFrame: async () => { await hands.send({image: VisionSys.video}); },
-                            width: 1280, height: 720
-                        });
-                        cam.start();
-                    };
-                } catch(e) { alert("Camera Error"); }
-            },
+        // DEBUG OVERLAY
+        document.getElementById('debug-txt').innerText = `Bed ${bedId} | Fingers: ${fingers} | Pinch: ${isPinch}`;
 
-            process: (results) => {
-                const ctx = VisionSys.ctx;
-                const w = VisionSys.canvas.width = VisionSys.video.videoWidth;
-                const h = VisionSys.canvas.height = VisionSys.video.videoHeight;
+        let msg = "";
+        
+        if (isPinch) msg = "FAN ON";
+        else if (fingers === 0) msg = "PAIN";          // Fist
+        else if (fingers === 5) msg = "LIGHT ON";      // Open Hand
+        else if (fingers === 2) msg = "WATER";         // Victory
+        else if (fingers === 1) msg = "MEDICINE";      // Point
 
-                ctx.clearRect(0, 0, w, h);
-                ctx.drawImage(results.image, 0, 0, w, h);
-                
-                // Divider
-                ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h);
-                ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.lineWidth = 2; ctx.stroke();
+        if (msg && msg !== lastAction) {
+            lastAction = msg;
+            triggerAction(bedId, msg);
+            setTimeout(() => lastAction = "", 2500); // Debounce
+        }
+    }
 
-                if (results.multiHandLandmarks) {
-                    for (const landmarks of results.multiHandLandmarks) {
-                        drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {color: '#3b82f6', lineWidth: 3});
-                        drawLandmarks(ctx, landmarks, {color: '#ef4444', lineWidth: 1});
-                        
-                        const bedId = landmarks[0].x < 0.5 ? 1 : 2;
-                        VisionSys.recognize(landmarks, bedId);
-                    }
-                }
-            },
+    // --- 3. ACTIONS & ALERTS ---
+    function triggerAction(bedId, msg) {
+        // UI Text
+        document.getElementById(`req-p${bedId}`).innerText = msg;
+        
+        // Highlight Legend
+        document.querySelectorAll('.legend-row').forEach(e => e.classList.remove('active'));
+        
+        // Logic Switch
+        if (msg === "FAN ON") {
+            document.getElementById('g-fan').classList.add('active');
+            document.getElementById(`btn-fan-p${bedId}`).classList.add('spin');
+            speak(`Turning on Fan for Bed ${bedId}`);
+            showToast(`Bed ${bedId}`, "Fan Activated", false);
+        }
+        else if (msg === "LIGHT ON") {
+            document.getElementById('g-light').classList.add('active');
+            document.getElementById(`btn-light-p${bedId}`).classList.add('active');
+            speak(`Lights on for Bed ${bedId}`);
+            showToast(`Bed ${bedId}`, "Lights Activated", false);
+        }
+        else if (msg === "PAIN") {
+            document.getElementById('g-pain').classList.add('active');
+            document.getElementById(`card-p${bedId}`).classList.add('risk');
+            document.getElementById(`badge-p${bedId}`).className = "status-badge alert";
+            document.getElementById(`badge-p${bedId}`).innerText = "CRITICAL";
+            document.getElementById(`bpm-p${bedId}`).style.color = "#ef4444";
+            document.getElementById(`bpm-p${bedId}`).innerText = "135 BPM"; // Spike ECG text
+            speak(`Emergency! Bed ${bedId} reporting pain!`);
+            showToast("EMERGENCY", `Bed ${bedId} Pain Alert`, true);
+        }
+        else if (msg === "WATER") {
+            document.getElementById('g-water').classList.add('active');
+            speak(`Bed ${bedId} needs Water`);
+            showToast(`Request`, `Bed ${bedId}: Water`, false);
+        }
+        else if (msg === "MEDICINE") {
+            document.getElementById('g-meds').classList.add('active');
+            speak(`Bed ${bedId} needs Medicine`);
+            showToast(`Request`, `Bed ${bedId}: Meds`, false);
+        }
+    }
 
-            recognize: (lm, bedId) => {
-                let fingers = [];
-                // 4 Fingers (Tip < PIP)
-                [8, 12, 16, 20].forEach(t => fingers.push(lm[t].y < lm[t-2].y ? 1 : 0));
-                
-                // Thumb (Dist from pinky base)
-                const thumbOpen = Math.hypot(lm[4].x - lm[17].x, lm[4].y - lm[17].y) > 0.15;
-                fingers.unshift(thumbOpen ? 1 : 0);
+    // --- 4. VOICE COMMANDS ---
+    function toggleVoice() {
+        if(!isListening) {
+            rec.start();
+            isListening = true;
+            document.getElementById('mic-ui').classList.add('voice-active');
+            document.getElementById('mic-ui').innerHTML = `<div class="voice-dot"></div> LISTENING...`;
+        } else {
+            rec.stop();
+            isListening = false;
+            document.getElementById('mic-ui').classList.remove('voice-active');
+            document.getElementById('mic-ui').innerHTML = `<div class="voice-dot"></div> VOICE: OFF`;
+        }
+    }
 
-                const fStr = fingers.join("");
-                
-                // OK Sign Check (Thumb tip close to Index tip)
-                const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
+    rec.onresult = (event) => {
+        const cmd = event.results[0][0].transcript.toLowerCase();
+        showToast("Voice Cmd", cmd, false);
+        
+        if(cmd.includes("fan")) triggerAction(1, "FAN ON");
+        if(cmd.includes("light")) triggerAction(1, "LIGHT ON");
+        if(cmd.includes("water")) triggerAction(1, "WATER");
+        if(cmd.includes("emergency")) triggerAction(1, "PAIN");
+        
+        toggleVoice(); // Auto stop after command
+    };
 
-                let msg = "";
+    // --- 5. UTILS ---
+    function speak(txt) {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt));
+    }
 
-                if (fStr === "00000") msg = "PAIN";          // Fist
-                else if (fStr === "11111") msg = "LIGHT ON"; // Open Hand
-                else if (isPinch) msg = "FAN ON";            // OK Sign
-                else if (fStr === "01100") msg = "WATER";    // Victory
-                else if (fStr === "01000") msg = "MEDS";     // Pointing
+    function showToast(title, msg, isAlert) {
+        const t = document.getElementById('toast');
+        document.getElementById('t-title').innerText = title;
+        document.getElementById('t-msg').innerText = msg;
+        t.style.borderLeftColor = isAlert ? "#ef4444" : "#3b82f6";
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 4000);
+    }
 
-                if (msg && msg !== VisionSys.lastAction) {
-                    VisionSys.lastAction = msg;
-                    UI.trigger(bedId, msg);
-                    setTimeout(() => VisionSys.lastAction = "", 2500); // 2.5s Debounce
-                }
-            }
-        };
+    function regFace(id) {
+        const c = document.createElement('canvas');
+        c.width = video.videoWidth; c.height = video.videoHeight;
+        c.getContext('2d').drawImage(video, 0, 0);
+        document.getElementById(`img-p${id}`).src = c.toDataURL('image/png');
+        speak(`Bed ${id} Registered`);
+    }
 
-        /**
-         * 3. VOICE COMMAND SYSTEM (Web Speech API)
-         */
-        const VoiceSys = {
-            recognition: null,
-            isActive: false,
+    // --- 6. ECG ANIMATION ---
+    function startECG(id) {
+        const c = document.getElementById(`ecg-p${id}`);
+        const cx = c.getContext('2d');
+        c.width = c.offsetWidth; c.height = c.offsetHeight;
+        let x = 0;
+        cx.strokeStyle = '#10b981'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, c.height/2);
 
-            toggle: () => {
-                if (!VoiceSys.recognition) VoiceSys.setup();
-                
-                VoiceSys.isActive = !VoiceSys.isActive;
-                const micUI = document.getElementById('mic-status');
-                
-                if (VoiceSys.isActive) {
-                    VoiceSys.recognition.start();
-                    micUI.classList.add('voice-active');
-                    micUI.innerHTML = `<div class="voice-dot"></div> LISTENING...`;
-                } else {
-                    VoiceSys.recognition.stop();
-                    micUI.classList.remove('voice-active');
-                    micUI.innerHTML = `<div class="voice-dot"></div> VOICE OFF`;
-                }
-            },
-
-            setup: () => {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRecognition) return alert("Browser does not support Voice.");
-                
-                VoiceSys.recognition = new SpeechRecognition();
-                VoiceSys.recognition.continuous = true;
-                VoiceSys.recognition.lang = 'en-US';
-
-                VoiceSys.recognition.onresult = (event) => {
-                    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                    console.log("Voice:", transcript);
-                    
-                    if (transcript.includes("fan")) UI.toggleEnv(1, 'fan', true);
-                    if (transcript.includes("light")) UI.toggleEnv(1, 'light', true);
-                    if (transcript.includes("water")) UI.trigger(1, "WATER");
-                    if (transcript.includes("status")) UI.speak("All systems stable");
-                };
-            }
-        };
-
-        /**
-         * 4. SALINE & ECG SIMULATOR
-         */
-        const Saline = {
-            levels: { 1: 80, 2: 60 },
-            init: () => {
-                setInterval(() => {
-                    [1, 2].forEach(id => {
-                        if(Saline.levels[id] > 0) Saline.levels[id] -= 1;
-                        const pct = Saline.levels[id];
-                        document.getElementById(`saline-p${id}`).style.width = pct + "%";
-                        document.getElementById(`saline-txt-p${id}`).innerText = pct + "%";
-                        
-                        // Alert logic
-                        if(pct === 10) UI.notify("Low Saline", `Bed ${id} needs refill`, true);
-                    });
-                }, 5000); // Reduce every 5 sec
-            }
-        };
-
-        const ECG = {
-            init: (id) => {
-                const cvs = document.getElementById(`ecg-p${id}`);
-                const ctx = cvs.getContext('2d');
-                cvs.width = cvs.offsetWidth; cvs.height = cvs.offsetHeight;
-                
-                let x = 0;
-                let data = { stress: 0 };
-                ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, cvs.height/2);
-
-                const draw = () => {
-                    x += 2;
-                    if(x > cvs.width) { x = 0; ctx.clearRect(0,0,cvs.width,cvs.height); ctx.beginPath(); ctx.moveTo(0, cvs.height/2); }
-                    
-                    let y = cvs.height/2;
-                    if(Math.random() < 0.05) y -= 30; // Spike
-                    
-                    ctx.lineTo(x, y); ctx.stroke();
-                    requestAnimationFrame(draw);
-                };
-                draw();
-                
-                // Store ref to spike it later
-                ECG['bed'+id] = { ctx, data };
-            },
-            spike: (id) => {
-                const ctx = ECG['bed'+id].ctx;
-                ctx.strokeStyle = '#ef4444'; // Red line
-                document.getElementById(`bpm-p${id}`).innerText = "140 BPM";
-                document.getElementById(`bpm-p${id}`).style.color = "#ef4444";
-            }
-        };
-
-        /**
-         * 5. UI CONTROLLER
-         */
-        const UI = {
-            trigger: (bedId, msg) => {
-                // Legend Highlight
-                document.querySelectorAll('.legend-row').forEach(e => e.classList.remove('active'));
-                
-                if (msg === "FAN ON") return UI.toggleEnv(bedId, 'fan', true);
-                if (msg === "LIGHT ON") return UI.toggleEnv(bedId, 'light', true);
-
-                // Normal Request
-                const statusEl = document.getElementById(`status-p${bedId}`);
-                statusEl.innerText = `Request: ${msg}`;
-                
-                if(msg === "PAIN") {
-                    document.getElementById(`card-p${bedId}`).classList.add('risk');
-                    UI.notify("EMERGENCY", `Bed ${bedId} has Chest Pain`, true);
-                    ECG.spike(bedId);
-                } else {
-                    UI.notify("Request", `Bed ${bedId}: ${msg}`, false);
-                }
-            },
-
-            toggleEnv: (bedId, type, state) => {
-                const btn = document.getElementById(`${type}-p${bedId}`);
-                if (state) btn.classList.add(type === 'fan' ? 'fan-active' : 'active');
-                UI.speak(`${type} turned on for Bed ${bedId}`);
-            },
-
-            notify: (title, msg, isAlert) => {
-                const t = document.getElementById('toast');
-                document.getElementById('t-title').innerText = title;
-                document.getElementById('t-msg').innerText = msg;
-                t.className = isAlert ? "toast show alert" : "toast show";
-                
-                UI.speak(msg);
-                setTimeout(() => t.classList.remove('show'), 4000);
-            },
-
-            speak: (txt) => window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt))
-        };
-
-        /**
-         * 6. PATIENT REGISTRATION
-         */
-        const PatientSys = {
-            snap: (id) => {
-                if(VisionSys.video.readyState !== 4) return alert("Start Camera First");
-                const c = document.createElement('canvas');
-                c.width = 1280; c.height = 720;
-                c.getContext('2d').drawImage(VisionSys.video, 0, 0);
-                document.getElementById(`img-p${id}`).src = c.toDataURL('image/png');
-                UI.notify("System", `Bed ${id} Registered`, false);
-            }
-        };
-
-    </script>
+        function loop() {
+            x += 2;
+            if(x > c.width) { x = 0; cx.clearRect(0,0,c.width,c.height); cx.beginPath(); cx.moveTo(0, c.height/2); }
+            
+            let y = c.height/2;
+            // Random spike probability
+            if(Math.random() < 0.02) y -= 30; // QRS
+            
+            cx.lineTo(x, y); cx.stroke();
+            requestAnimationFrame(loop);
+        }
+        loop();
+    }
+</script>
 </body>
 </html>
