@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionCare - ICU Command Center</title>
+    <title>VisionCare AI - Smart ICU</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
@@ -15,26 +15,45 @@
 
     <style>
         /* =========================================
-           THEME ENGINE
+           1. CORE THEME (Medical Dark Mode)
            ========================================= */
         :root {
-            --bg-app: #0b1121; --bg-panel: #151e32; --bg-card: #1e293b;
-            --primary: #3b82f6; --primary-glow: rgba(59, 130, 246, 0.5);
-            --accent: #06b6d4;
-            --success: #10b981; --success-glow: rgba(16, 185, 129, 0.3);
-            --danger: #ef4444; --danger-glow: rgba(239, 68, 68, 0.4);
-            --text-main: #f8fafc; --text-muted: #94a3b8;
-            --ecg-line: #10b981;
+            --bg-deep: #050b14;
+            --bg-panel: #0f172a;
+            --bg-card: #1e293b;
             
-            --sidebar-w: 280px;
+            --primary: #3b82f6; 
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            
+            --accent: #06b6d4;
+            --success: #10b981; 
+            --danger: #ef4444; 
+            --warning: #f59e0b;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #64748b;
+            
             --radius: 16px;
+            --sidebar-w: 280px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-app); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; user-select: none; }
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background: var(--bg-deep); 
+            color: var(--text-main); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
         /* =========================================
-           LOGIN SCREEN
+           2. LOGIN SYSTEM
            ========================================= */
         #auth-layer {
             position: fixed; inset: 0; z-index: 9999;
@@ -42,213 +61,257 @@
             display: flex; align-items: center; justify-content: center;
         }
         .login-card {
-            width: 420px; padding: 40px; background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px);
+            width: 400px; padding: 40px; 
+            background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; text-align: center;
-            box-shadow: 0 0 50px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 60px rgba(59, 130, 246, 0.15);
         }
-        .form-input {
-            width: 100%; padding: 14px; margin: 10px 0; background: #0f172a; 
-            border: 1px solid #334155; color: white; border-radius: 12px; font-size: 1rem; text-align: center; transition: 0.3s;
+        .login-input {
+            width: 100%; padding: 14px; margin: 10px 0; background: #020617; 
+            border: 1px solid #334155; color: white; border-radius: 12px; 
+            font-size: 1rem; text-align: center; transition: 0.3s;
         }
-        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
-        .btn-primary {
+        .login-input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+        .btn-glow {
             width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--accent));
             color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 15px var(--primary-glow);
         }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--primary-glow); }
+        .btn-glow:hover { transform: scale(1.02); }
 
         /* =========================================
-           DASHBOARD LAYOUT
+           3. MAIN LAYOUT
            ========================================= */
         aside {
-            width: var(--sidebar-w); background: var(--bg-panel); border-right: 1px solid #334155;
+            width: var(--sidebar-w); background: var(--bg-panel); border-right: 1px solid #1e293b;
             display: flex; flex-direction: column; padding: 25px; z-index: 50;
         }
-        .brand { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 40px; display: flex; align-items: center; gap: 12px; }
-        .brand i { color: var(--primary); }
+        .logo { font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .logo i { color: var(--primary); }
         
-        .nav-item {
+        .nav-link {
             padding: 14px 16px; margin-bottom: 8px; border-radius: 12px; color: var(--text-muted); 
             cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: 0.2s;
         }
-        .nav-item:hover, .nav-item.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
-        .nav-item.active { border-left: 4px solid var(--primary); }
+        .nav-link:hover, .nav-link.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
+        .nav-link.active { border-left: 4px solid var(--primary); }
 
         main { flex: 1; display: flex; flex-direction: column; height: 100%; padding: 20px; gap: 20px; overflow-y: auto; }
 
         /* =========================================
-           CAMERA SECTION
+           4. CAMERA & AI WIDGET
            ========================================= */
-        .top-row { display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; height: 45%; }
+        .top-deck { display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px; height: 45%; }
         
-        .cam-widget {
+        .cam-frame {
             background: black; border-radius: var(--radius); position: relative; border: 2px solid #334155; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
         }
         video, canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
         
-        .cam-overlay { position: absolute; bottom: 20px; z-index: 20; display: flex; gap: 15px; }
-        .btn-cam { padding: 10px 20px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: 0.3s; }
-        .btn-cam:hover { background: var(--primary); border-color: var(--primary); }
+        /* OVERLAYS */
+        .cam-tools { position: absolute; bottom: 20px; z-index: 20; display: flex; gap: 15px; }
+        .pill-btn { 
+            padding: 8px 18px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.2); 
+            color: white; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.8rem; backdrop-filter: blur(5px); transition: 0.3s;
+        }
+        .pill-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .pill-btn.active { background: var(--primary); border-color: var(--primary); }
 
-        /* Legend */
-        .info-panel { background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 1px solid #334155; overflow-y: auto; }
-        .gesture-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 8px; border: 1px solid transparent; transition: 0.3s; }
-        .gesture-item.active { border-color: var(--primary); background: rgba(59, 130, 246, 0.1); transform: scale(1.02); }
-        .g-icon { font-size: 1.5rem; width: 30px; text-align: center; }
+        .voice-status {
+            position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); 
+            padding: 8px 15px; border-radius: 20px; color: var(--text-muted); font-size: 0.8rem; font-weight: bold; border: 1px solid #333;
+            display: flex; align-items: center; gap: 8px; z-index: 20;
+        }
+        .voice-dot { width: 8px; height: 8px; border-radius: 50%; background: #666; }
+        .voice-active .voice-dot { background: var(--success); box-shadow: 0 0 10px var(--success); animation: pulse 1s infinite; }
+
+        /* GESTURE LEGEND */
+        .control-panel { background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 1px solid #334155; overflow-y: auto; }
+        .legend-row { display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 8px; border: 1px solid transparent; transition: 0.2s; }
+        .legend-row.active { border-color: var(--accent); background: rgba(6, 182, 212, 0.15); transform: scale(1.02); }
+        .l-icon { font-size: 1.4rem; width: 30px; text-align: center; }
 
         /* =========================================
-           PATIENT & ECG SECTION
+           5. PATIENT CARDS & ECG
            ========================================= */
-        .patient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 50%; }
+        .patient-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 50%; }
         
-        .patient-card {
+        .p-card {
             background: var(--bg-card); border-radius: var(--radius); padding: 20px; border: 1px solid #334155;
             display: flex; flex-direction: column; position: relative; transition: 0.3s;
         }
-        .patient-card.emergency { border-color: var(--danger); box-shadow: 0 0 30px var(--danger-glow); }
+        .p-card.risk { border-color: var(--danger); box-shadow: 0 0 30px rgba(239, 68, 68, 0.2); }
 
-        .card-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; }
-        .p-profile { display: flex; gap: 15px; align-items: center; }
-        .p-photo { width: 70px; height: 70px; border-radius: 18px; background: #334155; object-fit: cover; border: 2px solid #475569; }
+        .p-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .p-info { display: flex; gap: 15px; align-items: center; }
+        .p-img { width: 65px; height: 65px; border-radius: 16px; background: #334155; object-fit: cover; border: 2px solid #475569; }
         
-        .ecg-container {
+        /* ECG BOX */
+        .ecg-box {
             flex: 1; background: #000; border-radius: 12px; position: relative; overflow: hidden; border: 1px solid #334155;
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; margin-bottom: 15px;
         }
         .ecg-canvas { width: 100%; height: 100%; }
-        .ecg-overlay { position: absolute; top: 10px; right: 10px; text-align: right; }
-        .bpm-display { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 700; color: var(--success); }
-        .bpm-label { font-size: 0.7rem; color: #64748b; letter-spacing: 1px; }
+        .bpm-tag { position: absolute; top: 10px; right: 10px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--success); }
 
-        .risk-bar { margin-top: 15px; }
-        .risk-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
-        .progress-track { height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 20%; background: var(--success); transition: 0.5s; }
+        /* SALINE & CONTROLS */
+        .status-row { display: flex; gap: 15px; align-items: center; }
+        
+        /* Saline Bar */
+        .saline-wrapper { flex: 1; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; }
+        .saline-track { flex: 1; height: 8px; background: #334155; border-radius: 4px; overflow: hidden; }
+        .saline-fill { height: 100%; width: 80%; background: var(--accent); transition: 1s; }
+        .saline-val { font-size: 0.8rem; color: var(--accent); font-weight: bold; width: 40px; text-align: right; }
 
-        /* STATUS BADGES */
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .badge-safe { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); animation: pulse 1s infinite; }
+        /* Room Controls */
+        .room-ctrl { display: flex; gap: 8px; }
+        .ctrl-btn { 
+            width: 35px; height: 35px; border-radius: 8px; background: #334155; color: #94a3b8; 
+            border: 1px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
+        }
+        .ctrl-btn.active { background: var(--warning); color: black; box-shadow: 0 0 10px var(--warning); }
+        .ctrl-btn.fan-active { background: var(--accent); color: white; animation: spin 2s linear infinite; }
 
-        /* TOAST */
-        .toast { position: fixed; top: 20px; right: 20px; background: white; color: #0f172a; padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; gap: 15px; transform: translateX(200%); transition: 0.4s; border-left: 5px solid var(--primary); width: 350px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* =========================================
+           6. NOTIFICATIONS
+           ========================================= */
+        .toast { 
+            position: fixed; top: 20px; right: 20px; background: white; color: #0f172a; 
+            padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            z-index: 10000; display: flex; align-items: center; gap: 15px; 
+            transform: translateX(200%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            border-left: 5px solid var(--primary); width: 360px;
+        }
         .toast.show { transform: translateX(0); }
-        .toast.danger { border-left-color: var(--danger); background: #fef2f2; }
-
+        .toast.alert { border-left-color: var(--danger); background: #fef2f2; }
     </style>
 </head>
 <body>
 
     <div id="auth-layer">
         <div class="login-card">
-            <i class="fas fa-heart-pulse" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2 style="margin-bottom: 10px;">VisionCare Enterprise</h2>
-            <p style="color: var(--text-muted); margin-bottom: 30px;">ICU Command & ECG Monitor</p>
+            <i class="fas fa-user-md" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="margin-bottom: 10px;">VisionCare Pro</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Voice-Activated ICU Command</p>
             
-            <input type="text" id="login-user" class="form-input" placeholder="Doctor ID (admin)">
-            <input type="password" id="login-pass" class="form-input" placeholder="Access Code (admin123)">
-            <button class="btn-primary" onclick="Auth.login()">Launch Dashboard</button>
+            <input type="text" id="user" class="login-input" placeholder="Doctor ID (admin)">
+            <input type="password" id="pass" class="login-input" placeholder="Access PIN (admin123)">
+            <button class="btn-glow" onclick="Auth.login()">Initialize System</button>
         </div>
     </div>
 
     <aside>
-        <div class="brand"><i class="fas fa-hospital-user"></i> VisionCare</div>
-        <div class="nav-item active"><i class="fas fa-procedures"></i> ICU Ward Monitor</div>
-        <div class="nav-item"><i class="fas fa-chart-line"></i> Vitals Analytics</div>
-        <div class="nav-item"><i class="fas fa-user-injured"></i> Patient Records</div>
-        <div class="nav-item" style="margin-top:auto; color:var(--danger);" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Logout System</div>
+        <div class="logo"><i class="fas fa-hospital"></i> VisionCare</div>
+        <div class="nav-link active"><i class="fas fa-desktop"></i> Central Monitor</div>
+        <div class="nav-link"><i class="fas fa-heartbeat"></i> Vitals History</div>
+        <div class="nav-link"><i class="fas fa-users"></i> Staff Shift</div>
+        <div style="margin-top:auto">
+            <div class="nav-link" style="color:var(--danger)" onclick="location.reload()"><i class="fas fa-power-off"></i> Shut Down</div>
+        </div>
     </aside>
 
     <main>
-        <div class="top-row">
-            <div class="cam-widget">
+        <div class="top-deck">
+            <div class="cam-frame">
                 <video id="video_feed" playsinline muted></video>
-                <canvas id="ai_overlay"></canvas>
-                <div class="cam-overlay">
-                    <button class="btn-cam" onclick="PatientSys.register(1)">📸 Reg Bed 1</button>
-                    <button class="btn-cam" style="background:var(--primary); border:none;" onclick="VisionSys.start()">▶ START AI ENGINE</button>
-                    <button class="btn-cam" onclick="PatientSys.register(2)">📸 Reg Bed 2</button>
+                <canvas id="ai_layer"></canvas>
+                
+                <div class="voice-status" id="mic-status">
+                    <div class="voice-dot"></div> <span>VOICE COMMAND: OFF</span>
+                </div>
+
+                <div class="cam-tools">
+                    <button class="pill-btn" onclick="PatientSys.snap(1)">📸 Bed 1</button>
+                    <button class="pill-btn active" onclick="VisionSys.init()">▶ START AI</button>
+                    <button class="pill-btn" onclick="VoiceSys.toggle()">🎙️ Voice Control</button>
+                    <button class="pill-btn" onclick="PatientSys.snap(2)">📸 Bed 2</button>
                 </div>
             </div>
 
-            <div class="info-panel">
-                <h4 style="color:var(--text-muted); margin-bottom:15px; font-size:0.85rem; text-transform:uppercase;">Gesture Library</h4>
-                <div class="gesture-item" id="leg-pain">
-                    <div class="g-icon">✊</div>
-                    <div><strong>Fist Clench</strong><br><small style="color:var(--text-muted)">Chest Pain / SOS</small></div>
+            <div class="control-panel">
+                <h4 style="color:var(--text-muted); margin-bottom:15px; font-size:0.8rem; letter-spacing:1px;">GESTURE CONTROL</h4>
+                
+                <div class="legend-row" id="g-light">
+                    <span class="l-icon">✋</span> 
+                    <div><strong>Light On</strong><br><small style="color:var(--text-muted)">Open Hand</small></div>
                 </div>
-                <div class="gesture-item" id="leg-help">
-                    <div class="g-icon">✋</div>
-                    <div><strong>Open Palm</strong><br><small style="color:var(--text-muted)">Nurse Help</small></div>
+                <div class="legend-row" id="g-fan">
+                    <span class="l-icon">👌</span> 
+                    <div><strong>Fan On</strong><br><small style="color:var(--text-muted)">OK Sign</small></div>
                 </div>
-                <div class="gesture-item" id="leg-water">
-                    <div class="g-icon">✌️</div>
-                    <div><strong>V-Sign</strong><br><small style="color:var(--text-muted)">Water</small></div>
+                <div class="legend-row" id="g-water">
+                    <span class="l-icon">✌️</span> 
+                    <div><strong>Water</strong><br><small style="color:var(--text-muted)">Victory Sign</small></div>
                 </div>
-                <div class="gesture-item" id="leg-meds">
-                    <div class="g-icon">☝️</div>
-                    <div><strong>One Finger</strong><br><small style="color:var(--text-muted)">Medicine</small></div>
+                <div class="legend-row" id="g-pain">
+                    <span class="l-icon">✊</span> 
+                    <div><strong>Emergency</strong><br><small style="color:var(--text-muted)">Fist Clench</small></div>
                 </div>
             </div>
         </div>
 
-        <div class="patient-grid">
+        <div class="patient-deck">
             
-            <div class="patient-card" id="card-p1">
-                <div class="card-header">
-                    <div class="p-profile">
-                        <img id="img-p1" src="https://via.placeholder.com/80/334155/FFFFFF?text=Bed1" class="p-photo">
+            <div class="p-card" id="card-p1">
+                <div class="p-head">
+                    <div class="p-info">
+                        <img id="img-p1" src="https://via.placeholder.com/80/334155/FFFFFF?text=Bed1" class="p-img">
                         <div>
                             <h3>Alex Smith</h3>
-                            <small style="color:var(--text-muted)">Bed 1 • Cardiac Unit</small>
+                            <small style="color:var(--text-muted)" id="status-p1">Monitoring Active</small>
                         </div>
                     </div>
-                    <div class="status-badge badge-safe" id="badge-p1">Stable</div>
-                </div>
-
-                <div class="ecg-container">
-                    <canvas id="ecg-p1" class="ecg-canvas"></canvas>
-                    <div class="ecg-overlay">
-                        <div class="bpm-display" id="bpm-p1">72</div>
-                        <div class="bpm-label">BPM</div>
+                    <div class="room-ctrl">
+                        <div class="ctrl-btn" id="light-p1"><i class="fas fa-lightbulb"></i></div>
+                        <div class="ctrl-btn" id="fan-p1"><i class="fas fa-fan"></i></div>
                     </div>
                 </div>
 
-                <div class="risk-bar">
-                    <div class="risk-label"><span>Heart Attack Risk</span><span id="risk-txt-p1">2%</span></div>
-                    <div class="progress-track"><div class="progress-fill" id="risk-bar-p1" style="width:2%"></div></div>
+                <div class="ecg-box">
+                    <canvas id="ecg-p1" class="ecg-canvas"></canvas>
+                    <div class="bpm-tag" id="bpm-p1">72 BPM</div>
                 </div>
-                
-                <div style="margin-top:10px; font-weight:600; font-size:1.1rem; color:var(--text-main); text-align:center;" id="req-p1">Monitoring...</div>
+
+                <div class="status-row">
+                    <div class="saline-wrapper">
+                        <i class="fas fa-tint" style="color:var(--accent)"></i>
+                        <div class="saline-track"><div class="saline-fill" id="saline-p1"></div></div>
+                        <div class="saline-val" id="saline-txt-p1">80%</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="patient-card" id="card-p2">
-                <div class="card-header">
-                    <div class="p-profile">
-                        <img id="img-p2" src="https://via.placeholder.com/80/334155/FFFFFF?text=Bed2" class="p-photo">
+            <div class="p-card" id="card-p2">
+                <div class="p-head">
+                    <div class="p-info">
+                        <img id="img-p2" src="https://via.placeholder.com/80/334155/FFFFFF?text=Bed2" class="p-img">
                         <div>
                             <h3>Sarah Doe</h3>
-                            <small style="color:var(--text-muted)">Bed 2 • Observation</small>
+                            <small style="color:var(--text-muted)" id="status-p2">Monitoring Active</small>
                         </div>
                     </div>
-                    <div class="status-badge badge-safe" id="badge-p2">Stable</div>
-                </div>
-
-                <div class="ecg-container">
-                    <canvas id="ecg-p2" class="ecg-canvas"></canvas>
-                    <div class="ecg-overlay">
-                        <div class="bpm-display" id="bpm-p2">68</div>
-                        <div class="bpm-label">BPM</div>
+                    <div class="room-ctrl">
+                        <div class="ctrl-btn" id="light-p2"><i class="fas fa-lightbulb"></i></div>
+                        <div class="ctrl-btn" id="fan-p2"><i class="fas fa-fan"></i></div>
                     </div>
                 </div>
 
-                <div class="risk-bar">
-                    <div class="risk-label"><span>Heart Attack Risk</span><span id="risk-txt-p2">5%</span></div>
-                    <div class="progress-track"><div class="progress-fill" id="risk-bar-p2" style="width:5%"></div></div>
+                <div class="ecg-box">
+                    <canvas id="ecg-p2" class="ecg-canvas"></canvas>
+                    <div class="bpm-tag" id="bpm-p2">68 BPM</div>
                 </div>
 
-                <div style="margin-top:10px; font-weight:600; font-size:1.1rem; color:var(--text-main); text-align:center;" id="req-p2">Monitoring...</div>
+                <div class="status-row">
+                    <div class="saline-wrapper">
+                        <i class="fas fa-tint" style="color:var(--accent)"></i>
+                        <div class="saline-track"><div class="saline-fill" id="saline-p2"></div></div>
+                        <div class="saline-val" id="saline-txt-p2">60%</div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -257,142 +320,56 @@
     <div id="toast" class="toast">
         <div style="font-size:2rem;">🔔</div>
         <div>
-            <div style="font-weight:700; margin-bottom:2px;" id="toast-title">Alert</div>
-            <div style="font-size:0.9rem; color:#64748b;" id="toast-msg">Message</div>
+            <div style="font-weight:800;" id="t-title">Alert</div>
+            <div style="font-size:0.9rem; color:#64748b;" id="t-msg">Message</div>
         </div>
     </div>
 
     <script>
         /**
-         * --------------------------------------------------------
-         * 1. AUTHENTICATION MODULE
-         * --------------------------------------------------------
+         * 1. SYSTEM AUTH
          */
         const Auth = {
             login: () => {
-                const u = document.getElementById('login-user').value;
-                const p = document.getElementById('login-pass').value;
+                const u = document.getElementById('user').value;
+                const p = document.getElementById('pass').value;
                 if(u === 'admin' && p === 'admin123') {
                     document.getElementById('auth-layer').style.display = 'none';
-                    if ("Notification" in window) Notification.requestPermission();
-                    ECG.start(1);
-                    ECG.start(2);
-                } else {
-                    alert("Invalid Credentials");
-                }
+                    ECG.init(1); ECG.init(2);
+                    Saline.init();
+                } else alert("Invalid ID/PIN");
             }
         };
 
         /**
-         * --------------------------------------------------------
-         * 2. ECG SIMULATOR ENGINE (The "Wow" Factor)
-         * --------------------------------------------------------
-         */
-        const ECG = {
-            patients: { 1: { bpm: 72, stress: 0, ctx: null, x: 0 }, 2: { bpm: 68, stress: 0, ctx: null, x: 0 } },
-            
-            start: (id) => {
-                const canvas = document.getElementById(`ecg-p${id}`);
-                const ctx = canvas.getContext('2d');
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-                
-                ECG.patients[id].ctx = ctx;
-                ECG.patients[id].h = canvas.height;
-                ECG.patients[id].w = canvas.width;
-                
-                ctx.strokeStyle = '#10b981';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(0, canvas.height / 2);
-
-                ECG.animate(id);
-            },
-
-            animate: (id) => {
-                const p = ECG.patients[id];
-                const ctx = p.ctx;
-                
-                // Simulate Heartbeat logic
-                const speed = 2 + (p.stress * 0.1); 
-                p.x += speed;
-                
-                // Reset scanline
-                if (p.x > p.w) {
-                    p.x = 0;
-                    ctx.clearRect(0, 0, p.w, p.h);
-                    ctx.beginPath();
-                    ctx.moveTo(0, p.h / 2);
-                }
-
-                // Waveform Generation (Normal vs Heart Attack)
-                let y = p.h / 2;
-                
-                // Random jitter
-                y += (Math.random() - 0.5) * (5 + p.stress);
-
-                // QRS Complex (The "Beep")
-                if (Math.random() < 0.02 + (p.stress * 0.001)) {
-                    y -= (40 + p.stress); // Spike
-                }
-
-                ctx.lineTo(p.x, y);
-                ctx.stroke();
-
-                // Dynamic Color Change on Stress
-                ctx.strokeStyle = p.stress > 50 ? '#ef4444' : '#10b981';
-
-                // BPM Update
-                const currentBPM = p.bpm + Math.floor(Math.random() * 3) + (p.stress > 0 ? 40 : 0);
-                document.getElementById(`bpm-p${id}`).innerText = currentBPM;
-                document.getElementById(`bpm-p${id}`).style.color = p.stress > 50 ? '#ef4444' : '#10b981';
-
-                requestAnimationFrame(() => ECG.animate(id));
-            },
-
-            setStress: (id, level) => {
-                // Level 0 = Normal, 100 = Heart Attack
-                ECG.patients[id].stress = level;
-                
-                // Update UI Risk Meter
-                const risk = 2 + (level > 0 ? 80 : 0) + Math.floor(Math.random() * 10);
-                document.getElementById(`risk-txt-p${id}`).innerText = risk + "%";
-                document.getElementById(`risk-bar-p${id}`).style.width = risk + "%";
-                document.getElementById(`risk-bar-p${id}`).style.background = level > 0 ? '#ef4444' : '#10b981';
-            }
-        };
-
-        /**
-         * --------------------------------------------------------
-         * 3. COMPUTER VISION ENGINE (MediaPipe)
-         * --------------------------------------------------------
+         * 2. VISION AI ENGINE (Robust Hand Logic)
          */
         const VisionSys = {
             video: document.getElementById('video_feed'),
-            canvas: document.getElementById('ai_overlay'),
-            ctx: document.getElementById('ai_overlay').getContext('2d'),
+            canvas: document.getElementById('ai_layer'),
+            ctx: document.getElementById('ai_layer').getContext('2d'),
             lastAction: "",
 
-            start: async () => {
+            init: async () => {
                 const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
                 hands.setOptions({maxNumHands: 2, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6});
-                hands.onResults(VisionSys.onResults);
+                hands.onResults(VisionSys.process);
 
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
                     VisionSys.video.srcObject = stream;
                     VisionSys.video.onloadedmetadata = () => {
                         VisionSys.video.play();
-                        const camera = new Camera(VisionSys.video, {
+                        const cam = new Camera(VisionSys.video, {
                             onFrame: async () => { await hands.send({image: VisionSys.video}); },
                             width: 1280, height: 720
                         });
-                        camera.start();
+                        cam.start();
                     };
-                } catch(e) { alert("Camera Permission Denied"); }
+                } catch(e) { alert("Camera Error"); }
             },
 
-            onResults: (results) => {
+            process: (results) => {
                 const ctx = VisionSys.ctx;
                 const w = VisionSys.canvas.width = VisionSys.video.videoWidth;
                 const h = VisionSys.canvas.height = VisionSys.video.videoHeight;
@@ -402,7 +379,7 @@
                 
                 // Divider
                 ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h);
-                ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.lineWidth = 2; ctx.stroke();
+                ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.lineWidth = 2; ctx.stroke();
 
                 if (results.multiHandLandmarks) {
                     for (const landmarks of results.multiHandLandmarks) {
@@ -410,113 +387,195 @@
                         drawLandmarks(ctx, landmarks, {color: '#ef4444', lineWidth: 1});
                         
                         const bedId = landmarks[0].x < 0.5 ? 1 : 2;
-                        VisionSys.detect(landmarks, bedId);
+                        VisionSys.recognize(landmarks, bedId);
                     }
                 }
             },
 
-            detect: (lm, bedId) => {
+            recognize: (lm, bedId) => {
                 let fingers = [];
-                [8, 12, 16, 20].forEach(t => fingers.push(lm[t].y < lm[t-2].y ? 1 : 0)); // Fingers
-                fingers.unshift(Math.abs(lm[4].x - lm[17].x) > 0.15 ? 1 : 0); // Thumb
+                // 4 Fingers (Tip < PIP)
+                [8, 12, 16, 20].forEach(t => fingers.push(lm[t].y < lm[t-2].y ? 1 : 0));
+                
+                // Thumb (Dist from pinky base)
+                const thumbOpen = Math.hypot(lm[4].x - lm[17].x, lm[4].y - lm[17].y) > 0.15;
+                fingers.unshift(thumbOpen ? 1 : 0);
 
                 const fStr = fingers.join("");
+                
+                // OK Sign Check (Thumb tip close to Index tip)
+                const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
+
                 let msg = "";
 
-                // === EMERGENCY LOGIC ===
-                // Fist (00000) = PAIN / HEART ATTACK
-                if (fStr === "00000") msg = "CHEST PAIN";
-                // Open Palm (11111) = HELP
-                else if (fStr === "11111") msg = "NURSE HELP";
-                // Victory (01100) = WATER
-                else if (fStr === "01100") msg = "WATER";
-                // Point (01000) = MEDS
-                else if (fStr === "01000") msg = "MEDS";
+                if (fStr === "00000") msg = "PAIN";          // Fist
+                else if (fStr === "11111") msg = "LIGHT ON"; // Open Hand
+                else if (isPinch) msg = "FAN ON";            // OK Sign
+                else if (fStr === "01100") msg = "WATER";    // Victory
+                else if (fStr === "01000") msg = "MEDS";     // Pointing
 
                 if (msg && msg !== VisionSys.lastAction) {
                     VisionSys.lastAction = msg;
-                    PatientSys.updateStatus(bedId, msg);
-                    setTimeout(() => VisionSys.lastAction = "", 2000); // Debounce
+                    UI.trigger(bedId, msg);
+                    setTimeout(() => VisionSys.lastAction = "", 2500); // 2.5s Debounce
                 }
             }
         };
 
         /**
-         * --------------------------------------------------------
-         * 4. PATIENT MANAGEMENT SYSTEM
-         * --------------------------------------------------------
+         * 3. VOICE COMMAND SYSTEM (Web Speech API)
          */
-        const PatientSys = {
-            register: (id) => {
-                if(VisionSys.video.readyState !== 4) return alert("Start AI First!");
-                const tCanvas = document.createElement('canvas');
-                tCanvas.width = 1280; tCanvas.height = 720;
-                const tCtx = tCanvas.getContext('2d');
-                tCtx.translate(1280, 0); tCtx.scale(-1, 1);
-                tCtx.drawImage(VisionSys.video, 0, 0);
-                document.getElementById(`img-p${id}`).src = tCanvas.toDataURL('image/png');
-                alert(`Bed ${id} Registered!`);
+        const VoiceSys = {
+            recognition: null,
+            isActive: false,
+
+            toggle: () => {
+                if (!VoiceSys.recognition) VoiceSys.setup();
+                
+                VoiceSys.isActive = !VoiceSys.isActive;
+                const micUI = document.getElementById('mic-status');
+                
+                if (VoiceSys.isActive) {
+                    VoiceSys.recognition.start();
+                    micUI.classList.add('voice-active');
+                    micUI.innerHTML = `<div class="voice-dot"></div> LISTENING...`;
+                } else {
+                    VoiceSys.recognition.stop();
+                    micUI.classList.remove('voice-active');
+                    micUI.innerHTML = `<div class="voice-dot"></div> VOICE OFF`;
+                }
             },
 
-            updateStatus: (id, msg) => {
-                const reqTxt = document.getElementById(`req-p${id}`);
-                const badge = document.getElementById(`badge-p${id}`);
-                const card = document.getElementById(`card-p${id}`);
+            setup: () => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) return alert("Browser does not support Voice.");
+                
+                VoiceSys.recognition = new SpeechRecognition();
+                VoiceSys.recognition.continuous = true;
+                VoiceSys.recognition.lang = 'en-US';
 
-                reqTxt.innerText = msg;
-
-                // Highlight Legend
-                document.querySelectorAll('.gesture-item').forEach(e=>e.classList.remove('active'));
-                if(msg==="WATER") document.getElementById('leg-water').classList.add('active');
-                if(msg==="CHEST PAIN") document.getElementById('leg-pain').classList.add('active');
-                if(msg==="NURSE HELP") document.getElementById('leg-help').classList.add('active');
-
-                // EMERGENCY LOGIC
-                if(msg === "CHEST PAIN") {
-                    // Spike ECG
-                    ECG.setStress(id, 100);
+                VoiceSys.recognition.onresult = (event) => {
+                    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+                    console.log("Voice:", transcript);
                     
-                    // UI Alerts
-                    badge.className = "status-badge badge-danger";
-                    badge.innerText = "HEART ATTACK RISK";
-                    card.className = "patient-card emergency";
-                    
-                    // Notification
-                    UI.notify("CRITICAL ALERT", `Bed ${id}: Heart Attack Risk Detected!`, true);
-                } else if (msg === "NURSE HELP") {
-                    badge.className = "status-badge badge-danger";
-                    badge.innerText = "EMERGENCY";
-                    card.className = "patient-card";
-                    ECG.setStress(id, 0); // Normal ECG
-                    UI.notify("Nurse Call", `Bed ${id} needs assistance`, false);
-                } else {
-                    // Normal Requests
-                    badge.className = "status-badge badge-safe";
-                    badge.innerText = "REQUESTING";
-                    card.className = "patient-card";
-                    ECG.setStress(id, 0); // Normal ECG
-                    UI.notify("Patient Request", `Bed ${id}: ${msg}`, false);
-                }
+                    if (transcript.includes("fan")) UI.toggleEnv(1, 'fan', true);
+                    if (transcript.includes("light")) UI.toggleEnv(1, 'light', true);
+                    if (transcript.includes("water")) UI.trigger(1, "WATER");
+                    if (transcript.includes("status")) UI.speak("All systems stable");
+                };
             }
         };
 
+        /**
+         * 4. SALINE & ECG SIMULATOR
+         */
+        const Saline = {
+            levels: { 1: 80, 2: 60 },
+            init: () => {
+                setInterval(() => {
+                    [1, 2].forEach(id => {
+                        if(Saline.levels[id] > 0) Saline.levels[id] -= 1;
+                        const pct = Saline.levels[id];
+                        document.getElementById(`saline-p${id}`).style.width = pct + "%";
+                        document.getElementById(`saline-txt-p${id}`).innerText = pct + "%";
+                        
+                        // Alert logic
+                        if(pct === 10) UI.notify("Low Saline", `Bed ${id} needs refill`, true);
+                    });
+                }, 5000); // Reduce every 5 sec
+            }
+        };
+
+        const ECG = {
+            init: (id) => {
+                const cvs = document.getElementById(`ecg-p${id}`);
+                const ctx = cvs.getContext('2d');
+                cvs.width = cvs.offsetWidth; cvs.height = cvs.offsetHeight;
+                
+                let x = 0;
+                let data = { stress: 0 };
+                ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, cvs.height/2);
+
+                const draw = () => {
+                    x += 2;
+                    if(x > cvs.width) { x = 0; ctx.clearRect(0,0,cvs.width,cvs.height); ctx.beginPath(); ctx.moveTo(0, cvs.height/2); }
+                    
+                    let y = cvs.height/2;
+                    if(Math.random() < 0.05) y -= 30; // Spike
+                    
+                    ctx.lineTo(x, y); ctx.stroke();
+                    requestAnimationFrame(draw);
+                };
+                draw();
+                
+                // Store ref to spike it later
+                ECG['bed'+id] = { ctx, data };
+            },
+            spike: (id) => {
+                const ctx = ECG['bed'+id].ctx;
+                ctx.strokeStyle = '#ef4444'; // Red line
+                document.getElementById(`bpm-p${id}`).innerText = "140 BPM";
+                document.getElementById(`bpm-p${id}`).style.color = "#ef4444";
+            }
+        };
+
+        /**
+         * 5. UI CONTROLLER
+         */
         const UI = {
-            notify: (title, msg, isCritical) => {
-                const toast = document.getElementById('toast');
-                const tTitle = document.getElementById('toast-title');
-                const tMsg = document.getElementById('toast-msg');
-
-                tTitle.innerText = title;
-                tMsg.innerText = msg;
+            trigger: (bedId, msg) => {
+                // Legend Highlight
+                document.querySelectorAll('.legend-row').forEach(e => e.classList.remove('active'));
                 
-                toast.className = isCritical ? "toast show danger" : "toast show";
-                
-                // Speak
-                window.speechSynthesis.speak(new SpeechSynthesisUtterance(msg));
+                if (msg === "FAN ON") return UI.toggleEnv(bedId, 'fan', true);
+                if (msg === "LIGHT ON") return UI.toggleEnv(bedId, 'light', true);
 
-                setTimeout(() => toast.classList.remove('show'), 5000);
+                // Normal Request
+                const statusEl = document.getElementById(`status-p${bedId}`);
+                statusEl.innerText = `Request: ${msg}`;
+                
+                if(msg === "PAIN") {
+                    document.getElementById(`card-p${bedId}`).classList.add('risk');
+                    UI.notify("EMERGENCY", `Bed ${bedId} has Chest Pain`, true);
+                    ECG.spike(bedId);
+                } else {
+                    UI.notify("Request", `Bed ${bedId}: ${msg}`, false);
+                }
+            },
+
+            toggleEnv: (bedId, type, state) => {
+                const btn = document.getElementById(`${type}-p${bedId}`);
+                if (state) btn.classList.add(type === 'fan' ? 'fan-active' : 'active');
+                UI.speak(`${type} turned on for Bed ${bedId}`);
+            },
+
+            notify: (title, msg, isAlert) => {
+                const t = document.getElementById('toast');
+                document.getElementById('t-title').innerText = title;
+                document.getElementById('t-msg').innerText = msg;
+                t.className = isAlert ? "toast show alert" : "toast show";
+                
+                UI.speak(msg);
+                setTimeout(() => t.classList.remove('show'), 4000);
+            },
+
+            speak: (txt) => window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt))
+        };
+
+        /**
+         * 6. PATIENT REGISTRATION
+         */
+        const PatientSys = {
+            snap: (id) => {
+                if(VisionSys.video.readyState !== 4) return alert("Start Camera First");
+                const c = document.createElement('canvas');
+                c.width = 1280; c.height = 720;
+                c.getContext('2d').drawImage(VisionSys.video, 0, 0);
+                document.getElementById(`img-p${id}`).src = c.toDataURL('image/png');
+                UI.notify("System", `Bed ${id} Registered`, false);
             }
         };
+
     </script>
 </body>
 </html>
