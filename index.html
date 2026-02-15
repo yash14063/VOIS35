@@ -3,531 +3,928 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionCare OS | Singularity</title>
+    <title>VisionCare Enterprise | Titan OS</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
-        /* =======================================================================
-           1.0 MEDI-UI PRO FRAMEWORK
-           ======================================================================= */
+        /* ==========================================================================
+           MODULE 1: MEDI-UI PRO FRAMEWORK (CSS)
+           ========================================================================== 
+        */
+
+        /* 1.1 CSS VARIABLES & THEME ENGINE */
         :root {
-            /* Palette */
-            --bg-root: #050b14;
-            --bg-panel: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #334155;
+            /* Color Palette: Deep Space */
+            --c-bg-app: #020617;
+            --c-bg-sidebar: #0f172a;
+            --c-bg-panel: #1e293b;
+            --c-bg-card: #334155;
+            --c-bg-input: #1e293b;
             
-            /* Accents */
-            --primary: #6366f1;
-            --primary-dim: rgba(99, 102, 241, 0.2);
-            --accent: #06b6d4;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
+            /* Brand Colors */
+            --c-primary: #6366f1;
+            --c-primary-hover: #4f46e5;
+            --c-primary-alpha: rgba(99, 102, 241, 0.15);
             
-            /* Typography */
-            --font-sans: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --font-tech: 'Share Tech Mono', monospace;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            /* Semantics */
+            --c-accent: #06b6d4;
+            --c-success: #10b981;
+            --c-warning: #f59e0b;
+            --c-danger: #ef4444;
+            --c-info: #3b82f6;
             
-            /* Measurements */
+            /* Text */
+            --c-text-main: #f8fafc;
+            --c-text-muted: #94a3b8;
+            --c-text-invert: #000000;
+            
+            /* Borders & Effects */
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-width: 1px;
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-neon: 0 0 15px var(--c-primary);
+            
+            /* Layout */
             --sidebar-w: 280px;
-            --header-h: 64px;
-            --radius: 12px;
-            --border: 1px solid rgba(255,255,255,0.08);
+            --header-h: 70px;
             
-            /* Accessibility Defaults */
+            /* Gaze System */
             --cursor-x: 50%;
             --cursor-y: 50%;
         }
 
-        /* THEMES */
-        body.theme-high-contrast { --bg-root:#000; --bg-panel:#000; --primary:#ff0; --accent:#0ff; --border: 2px solid #fff; }
-        body.theme-dyslexic { font-family: sans-serif !important; letter-spacing: 1px; }
-        body.filter-protanopia { filter: url('#protanopia'); }
-
-        /* RESET */
-        * { box-sizing: border-box; outline: none; user-select: none; }
-        body { margin: 0; background: var(--bg-root); color: var(--text-main); font-family: var(--font-sans); height: 100vh; display: flex; overflow: hidden; }
-
-        /* SCROLLBARS */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-root); }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-
-        /* =======================================================================
-           2.0 COMPONENT LIBRARY
-           ======================================================================= */
-        
-        /* Buttons */
-        .btn { padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; font-size: 0.85rem; }
-        .btn:hover { transform: translateY(-1px); }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); }
-        .btn-outline { background: transparent; border-color: rgba(255,255,255,0.2); color: var(--text-main); }
-        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
-        .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: var(--danger); }
-        .btn-icon { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 50%; }
-
-        /* Cards */
-        .card { background: var(--bg-panel); border: var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
-        .card-header { padding: 12px 16px; background: rgba(0,0,0,0.2); border-bottom: var(--border); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-        .card-body { padding: 16px; flex: 1; overflow-y: auto; }
-        
-        /* Badges */
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-        .badge-ok { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .badge-warn { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-        .badge-crit { background: rgba(239, 68, 68, 0.15); color: var(--danger); animation: pulse 1s infinite; }
-
-        /* Inputs */
-        .inp { width: 100%; padding: 10px; background: var(--bg-input); border: var(--border); border-radius: 8px; color: white; margin-bottom: 10px; }
-        .inp:focus { border-color: var(--primary); }
-
-        /* Animations */
-        @keyframes pulse { 0%{opacity:1;} 50%{opacity:0.5;} 100%{opacity:1;} }
-        @keyframes scan { 0%{top:0;} 100%{top:100%;} }
-        @keyframes flashRed { 0%{box-shadow:inset 0 0 0 0 transparent;} 50%{box-shadow:inset 0 0 50px var(--danger);} 100%{box-shadow:inset 0 0 0 0 transparent;} }
-
-        /* =======================================================================
-           3.0 LAYOUT & MODULES
-           ======================================================================= */
-        
-        /* 3.1 BIOS BOOT SCREEN */
-        #boot-screen {
-            position: fixed; inset: 0; background: #000; z-index: 99999; color: var(--success);
-            font-family: var(--font-tech); padding: 40px; display: flex; flex-direction: column;
+        /* 1.2 HIGH CONTRAST MODE (ACCESSIBILITY) */
+        body.hc-mode {
+            --c-bg-app: #000000;
+            --c-bg-sidebar: #000000;
+            --c-bg-panel: #000000;
+            --c-bg-card: #111111;
+            --c-bg-input: #222222;
+            --c-primary: #FFFF00;
+            --c-primary-hover: #FFD700;
+            --c-accent: #00FFFF;
+            --c-success: #00FF00;
+            --c-danger: #FF0000;
+            --c-text-main: #FFFFFF;
+            --c-text-muted: #E0E0E0;
+            --border-color: #FFFFFF;
+            --border-width: 2px;
         }
-        .boot-line { margin-bottom: 5px; opacity: 0; animation: fadeIn 0.1s forwards; }
 
-        /* 3.2 AUTH SCREEN */
-        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 50000; display: none; align-items: center; justify-content: center; }
-        .auth-card { width: 400px; padding: 40px; background: var(--bg-panel); border: 1px solid var(--primary); border-radius: 20px; text-align: center; box-shadow: 0 0 100px rgba(99,102,241,0.2); }
-        .face-scan { width: 100px; height: 100px; border: 2px dashed var(--accent); margin: 0 auto 20px; border-radius: 50%; position: relative; overflow: hidden; }
-        .scan-line { position: absolute; width: 100%; height: 2px; background: var(--accent); animation: scan 2s infinite; }
-
-        /* 3.3 APP SHELL */
-        #app-shell { display: none; width: 100%; height: 100%; }
+        /* 1.3 GLOBAL RESET */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; width: 100%; font-family: 'Inter', sans-serif; font-size: 14px; background: var(--c-bg-app); color: var(--c-text-main); overflow: hidden; }
         
-        /* Sidebar */
-        aside { width: var(--sidebar-w); background: var(--bg-panel); border-right: var(--border); display: flex; flex-direction: column; z-index: 50; }
-        .brand { padding: 20px; font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 10px; color: var(--text-main); border-bottom: var(--border); }
-        .nav-scroller { flex: 1; overflow-y: auto; padding: 10px; }
-        .nav-group { margin-bottom: 20px; }
-        .nav-label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; padding: 0 10px; margin-bottom: 5px; text-transform: uppercase; }
-        .nav-item { padding: 10px 12px; border-radius: 8px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; font-size: 0.9rem; margin-bottom: 2px; }
-        .nav-item:hover, .nav-item.active { background: var(--primary-dim); color: var(--primary); }
-        .nav-item.active { border-left: 3px solid var(--primary); }
-
-        /* Main Content */
-        .content { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        /* 1.4 UTILITY CLASSES */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; } .gap-6 { gap: 1.5rem; }
+        .w-full { width: 100%; } .h-full { height: 100%; }
+        .text-center { text-align: center; } .text-right { text-align: right; }
+        .font-bold { font-weight: 700; } .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .text-sm { font-size: 0.85rem; } .text-xs { font-size: 0.75rem; } .text-lg { font-size: 1.25rem; } .text-xl { font-size: 1.5rem; }
+        .text-primary { color: var(--c-primary); } .text-accent { color: var(--c-accent); } 
+        .text-success { color: var(--c-success); } .text-danger { color: var(--c-danger); } .text-warning { color: var(--c-warning); }
+        .text-muted { color: var(--c-text-muted); }
+        .relative { position: relative; } .absolute { position: absolute; }
+        .hidden { display: none !important; }
         
-        /* Top Bar */
-        .topbar { height: var(--header-h); background: rgba(15,23,42,0.95); border-bottom: var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
-        .sys-stats { display: flex; gap: 15px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
+        /* 1.5 COMPONENTS: BUTTONS */
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; user-select: none; }
+        .btn:active { transform: scale(0.98); }
         
-        /* Views */
-        .viewport { flex: 1; padding: 20px; overflow-y: auto; position: relative; }
-        .view-section { display: none; height: 100%; animation: slideUp 0.3s ease; }
-        .view-section.active { display: block; }
-        @keyframes slideUp { from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:translateY(0);} }
-
-        /* =======================================================================
-           4.0 WIDGETS & MODULES
-           ======================================================================= */
+        .btn-primary { background: linear-gradient(135deg, var(--c-primary), var(--c-primary-hover)); color: white; border: none; box-shadow: var(--shadow-md); }
+        .btn-primary:hover { box-shadow: var(--shadow-neon); transform: translateY(-1px); }
         
-        /* Camera Grid */
-        .grid-dash { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 20px; height: 60%; margin-bottom: 20px; }
+        .btn-outline { background: transparent; border-color: var(--border-color); color: var(--c-text-main); }
+        .btn-outline:hover { background: var(--c-bg-card); border-color: var(--c-text-muted); }
         
-        .cam-feed { background: #000; border-radius: var(--radius); border: var(--border); position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-        video, canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
-        .hud { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--success); pointer-events: none; z-index: 20; min-width: 180px; }
-        .cam-dock { position: absolute; bottom: 15px; display: flex; gap: 10px; z-index: 30; }
-
-        /* Twin & Info */
-        .twin-feed { background: #000; border-radius: var(--radius); border: 1px solid var(--accent); position: relative; overflow: hidden; }
-        .aac-panel { background: var(--bg-card); border-radius: var(--radius); border: var(--border); display: flex; flex-direction: column; overflow: hidden; }
-        .aac-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; flex: 1; overflow-y: auto; }
-        .aac-btn { background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .aac-btn:hover, .aac-btn.hover-gaze { background: var(--primary); border-color: white; transform: scale(1.05); }
-
-        /* Patient Grid */
-        .patient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 35%; }
-        .p-card { background: var(--bg-card); border-radius: var(--radius); border: var(--border); padding: 15px; display: flex; flex-direction: column; position: relative; transition: 0.3s; }
-        .p-card.alert { border-color: var(--danger); box-shadow: 0 0 30px rgba(239,68,68,0.3); animation: flashRed 1s infinite; }
-        .ecg-zone { flex: 1; background: #000; border-radius: 6px; margin: 10px 0; position: relative; overflow: hidden; display: flex; flex-direction: column; border:1px solid #333; }
-        .ecg-line { width: 100%; height: 60%; }
-        .resp-line { width: 100%; height: 20%; border-top: 1px solid #333; }
-        .spo2-line { width: 100%; height: 20%; border-top: 1px solid #333; }
-
-        /* Whiteboard */
-        #wb-canvas { background: white; cursor: crosshair; width: 100%; height: 100%; }
+        .btn-ghost { background: transparent; color: var(--c-text-muted); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--c-text-main); }
         
-        /* Toast */
-        .toast-area { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { width: 320px; padding: 15px; background: white; color: #000; border-radius: 12px; border-left: 5px solid var(--primary); transform: translateX(120%); transition: 0.4s; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--c-danger); border-color: rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 50%; }
+        
+        /* 1.6 COMPONENTS: CARDS & CONTAINERS */
+        .card { background: var(--c-bg-panel); border: var(--border-width) solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { border-color: rgba(255,255,255,0.2); }
+        .card-header { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
+        .card-body { padding: 16px; flex: 1; overflow-y: auto; }
+        .card-footer { padding: 12px 16px; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.2); }
+
+        /* 1.7 COMPONENTS: FORMS */
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; color: var(--c-text-muted); font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 12px; background: var(--c-bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: white; transition: 0.2s; }
+        .form-control:focus { border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-primary-alpha); }
+        .form-range { width: 100%; accent-color: var(--c-primary); height: 4px; border-radius: 2px; }
+
+        /* 1.8 COMPONENTS: BADGES & PILLS */
+        .badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: var(--radius-full); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid transparent; }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--c-success); border-color: rgba(16, 185, 129, 0.2); }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--c-danger); border-color: rgba(239, 68, 68, 0.2); animation: pulse 1.5s infinite; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--c-warning); border-color: rgba(245, 158, 11, 0.2); }
+        .badge-accent { background: rgba(6, 182, 212, 0.15); color: var(--c-accent); border-color: rgba(6, 182, 212, 0.2); }
+
+        /* 1.9 SCROLLBAR CUSTOMIZATION */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* 1.10 ANIMATIONS */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* 1.11 SPECIAL: GAZE CURSOR */
+        #gaze-cursor {
+            position: fixed; top: var(--cursor-y); left: var(--cursor-x);
+            width: 24px; height: 24px; border-radius: 50%;
+            background: rgba(239, 68, 68, 0.6); border: 2px solid white;
+            z-index: 10000; pointer-events: none; transform: translate(-50%, -50%);
+            display: none; box-shadow: 0 0 15px var(--c-danger); transition: top 0.1s linear, left 0.1s linear, transform 0.2s ease;
+        }
+        #gaze-cursor.clicking { background: var(--c-success); transform: translate(-50%, -50%) scale(0.8); }
+
+        /* ==========================================================================
+           MODULE 2: LAYOUT & NAVIGATION
+           ========================================================================== 
+        */
+        
+        /* 2.1 AUTHENTICATION SCREEN */
+        #auth-layer {
+            position: fixed; inset: 0; z-index: 9999;
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-box { width: 400px; padding: 40px; background: rgba(30,41,59,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .login-logo { font-size: 3.5rem; color: var(--c-primary); margin-bottom: 20px; display: inline-block; animation: pulse 3s infinite; }
+
+        /* 2.2 APP SHELL */
+        #app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; opacity: 0; transition: opacity 0.5s ease; }
+        #app-shell.visible { opacity: 1; }
+
+        /* 2.3 SIDEBAR */
+        aside {
+            width: var(--sidebar-w); background: var(--c-bg-sidebar); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; padding: 24px; z-index: 50; flex-shrink: 0;
+        }
+        .app-brand { font-size: 1.4rem; font-weight: 800; color: var(--c-text-main); margin-bottom: 40px; display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
+        .app-brand i { color: var(--c-primary); }
+        
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .nav-link {
+            padding: 12px 16px; border-radius: var(--radius-md); color: var(--c-text-muted); font-weight: 500;
+            cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.05); color: var(--c-text-main); }
+        .nav-link.active { background: var(--c-primary-alpha); color: var(--c-primary); border-left: 3px solid var(--c-primary); }
+        .nav-link i { width: 20px; text-align: center; }
+
+        .sidebar-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .footer-label { font-size: 0.7rem; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+        /* 2.4 MAIN CONTENT */
+        .main-content { flex: 1; display: flex; flex-direction: column; height: 100%; position: relative; overflow: hidden; }
+        
+        .top-bar {
+            height: var(--header-h); border-bottom: 1px solid var(--border-color); padding: 0 32px;
+            display: flex; align-items: center; justify-content: space-between; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(10px); z-index: 40;
+        }
+        .user-status { display: flex; align-items: center; gap: 15px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; border: 2px solid rgba(255,255,255,0.2); }
+
+        /* 2.5 VIEWPORT */
+        .viewport { flex: 1; padding: 24px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+        .page-view { display: none; height: 100%; animation: fadeIn 0.4s ease; flex-direction: column; gap: 24px; }
+        .page-view.active { display: flex; }
+
+        /* ==========================================================================
+           MODULE 3: DASHBOARD COMPONENTS
+           ========================================================================== 
+        */
+        
+        /* 3.1 GRID LAYOUT */
+        .dash-grid { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 55% 45%; gap: 24px; height: 100%; }
+        @media (max-width: 1200px) { .dash-grid { grid-template-columns: 1fr; grid-template-rows: auto; display: flex; flex-direction: column; } }
+
+        /* 3.2 CAMERA WIDGET */
+        .cam-widget {
+            grid-column: 1 / 2; grid-row: 1 / 2;
+            background: #000; border-radius: var(--radius-lg); border: 2px solid var(--border-color);
+            position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+        video { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+        canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); z-index: 10; }
+        
+        /* HUD */
+        .hud-overlay {
+            position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.85);
+            padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); z-index: 20;
+            font-family: var(--font-mono); font-size: 0.8rem; color: var(--c-success); min-width: 180px; pointer-events: none;
+        }
+        .hud-item { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        
+        .mic-indicator {
+            position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.85);
+            padding: 8px 12px; border-radius: 20px; border: 1px solid var(--border-color); z-index: 20;
+            display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.8rem;
+        }
+        .mic-status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c-text-muted); }
+        .mic-indicator.listening .mic-status-dot { background: var(--c-danger); animation: pulse 1s infinite; }
+
+        .cam-dock {
+            position: absolute; bottom: 15px; z-index: 30; display: flex; gap: 10px;
+            background: rgba(15, 23, 42, 0.95); padding: 8px 12px; border-radius: 40px; border: 1px solid var(--border-color);
+        }
+
+        /* 3.3 SIDE PANEL (Twin + Legend) */
+        .side-panel { grid-column: 2 / 3; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 20px; }
+        
+        .twin-widget {
+            flex: 1; background: #000; border-radius: var(--radius-lg); border: 1px solid var(--c-accent);
+            position: relative; overflow: hidden;
+        }
+        .twin-label { position: absolute; top: 10px; left: 10px; font-weight: bold; color: var(--c-accent); background: rgba(0,0,0,0.8); padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; }
+        .twin-vitals { position: absolute; top: 10px; right: 10px; text-align: right; }
+        .tv-row { font-family: 'JetBrains Mono', monospace; font-weight: bold; font-size: 0.9rem; text-shadow: 0 1px 2px #000; margin-bottom: 2px; }
+
+        .legend-widget { flex: 1; }
+        .gesture-row {
+            display: flex; align-items: center; gap: 15px; padding: 12px;
+            background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 8px;
+            border: 1px solid transparent; transition: 0.2s;
+        }
+        .gesture-row.active { border-color: var(--c-accent); background: rgba(6, 182, 212, 0.15); transform: translateX(5px); }
+        .g-icon { font-size: 1.6rem; width: 32px; text-align: center; }
+
+        /* 3.4 AAC BOARD (Speech) */
+        .aac-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+        .aac-tile {
+            background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; border: 1px solid transparent; transition: 0.2s; aspect-ratio: 1.3;
+        }
+        .aac-tile:hover, .aac-tile.gaze-hover { background: var(--c-primary); color: white; transform: scale(1.05); border-color: white; }
+        .aac-tile i { font-size: 1.5rem; }
+        .aac-tile span { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+
+        /* 3.5 PATIENT CARDS */
+        .patients-wrapper { grid-column: 1 / 2; grid-row: 2 / 3; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .patient-card {
+            background: var(--c-bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color);
+            padding: 20px; display: flex; flex-direction: column; position: relative; transition: 0.3s;
+        }
+        .patient-card.emergency { border-color: var(--c-danger); box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
+        
+        .pc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .pc-profile { display: flex; gap: 12px; align-items: center; }
+        .pc-img { width: 56px; height: 56px; border-radius: 14px; background: #334155; object-fit: cover; border: 2px solid var(--border-color); }
+        
+        .ecg-container {
+            flex: 1; background: #000; border-radius: 8px; border: 1px solid var(--border-color);
+            position: relative; overflow: hidden; margin-bottom: 12px; display: flex; flex-direction: column;
+        }
+        .ecg-canvas { width: 100%; height: 70%; }
+        .spo2-canvas { width: 100%; height: 30%; border-top: 1px solid #333; }
+        
+        .pc-controls { display: flex; gap: 10px; align-items: center; }
+        .ctrl-btn {
+            width: 40px; height: 40px; border-radius: 10px; background: var(--c-bg-sidebar); border: 1px solid var(--border-color);
+            color: var(--c-text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
+        }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.1); }
+        .ctrl-btn.active { background: var(--c-warning); color: black; border-color: var(--c-warning); }
+        .ctrl-btn.spin i { animation: spin 1s linear infinite; }
+
+        /* 3.6 CHAT INTERFACE */
+        .chat-layout { display: flex; height: 100%; gap: 24px; }
+        .chat-sidebar { width: 260px; background: var(--c-bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); overflow-y: auto; }
+        .chat-body { flex: 1; background: var(--c-bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        
+        .chat-contact { padding: 16px; border-bottom: 1px solid var(--border-color); cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .chat-contact:hover { background: rgba(255,255,255,0.05); }
+        .chat-contact.active { background: rgba(99, 102, 241, 0.1); border-left: 3px solid var(--c-primary); }
+        
+        .msg-list { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px 16px; border-radius: 12px; max-width: 70%; font-size: 0.95rem; line-height: 1.4; position: relative; }
+        .msg.in { background: var(--c-bg-input); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.out { background: var(--c-primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        
+        .chat-input-area { padding: 16px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; }
+
+        /* 3.7 TOAST NOTIFICATIONS */
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 11000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast {
+            width: 320px; padding: 16px; background: white; color: #000; border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); pointer-events: auto; display: flex; align-items: flex-start; gap: 12px;
+            transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 5px solid var(--c-primary);
+        }
         .toast.show { transform: translateX(0); }
-        .toast.danger { border-color: var(--danger); background: #fee2e2; }
+        .toast.danger { border-left-color: var(--c-danger); background: #fee2e2; color: #991b1b; }
 
-        /* Gaze Cursor */
-        #gaze-cursor { position: fixed; top: 50%; left: 50%; width: 20px; height: 20px; border-radius: 50%; background: rgba(239,68,68,0.7); border: 2px solid white; z-index: 99999; pointer-events: none; display: none; transition: 0.1s linear; }
+        /* 3.8 ANALYTICS */
+        .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; height: 100%; }
+        .chart-wrap { background: var(--c-bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 20px; display: flex; flex-direction: column; }
+
+        /* 3.9 QR MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 12000;
+            display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        }
+        .modal-card { background: white; padding: 40px; border-radius: 24px; text-align: center; color: black; max-width: 400px; width: 90%; }
     </style>
 </head>
 <body>
 
     <div id="gaze-cursor"></div>
 
-    <div id="boot-screen"></div>
-
-    <div id="auth-screen">
-        <div class="auth-card">
-            <div class="face-scan">
-                <div class="scan-line"></div>
-                <i class="fas fa-user-circle" style="font-size: 80px; color:#333; line-height: 100px;"></i>
+    <div id="auth-layer">
+        <div class="login-box">
+            <i class="fas fa-hospital-user" style="font-size: 4rem; color: var(--c-primary); margin-bottom: 20px;"></i>
+            <h2 style="margin-bottom: 8px; color:white;">VisionCare Titan OS</h2>
+            <p style="color:var(--c-text-muted); margin-bottom: 30px;">Enterprise Medical Command</p>
+            
+            <div class="form-group">
+                <input type="text" id="login-user" class="form-control text-center" placeholder="ID (admin)" value="admin">
             </div>
-            <h2 style="color:white; margin-bottom:5px;">System Locked</h2>
-            <p style="color:gray; margin-bottom:20px;">Biometric Scan Active</p>
-            <input type="text" id="login-u" value="admin" class="inp" placeholder="User ID">
-            <input type="password" id="login-p" value="admin123" class="inp" placeholder="Passkey">
-            <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="Sys.login()">AUTHENTICATE</button>
+            <div class="form-group">
+                <input type="password" id="login-pass" class="form-control text-center" placeholder="PIN (admin123)" value="admin123">
+            </div>
+            <button class="btn btn-primary w-full" onclick="Core.login()">
+                <i class="fas fa-fingerprint"></i> INITIALIZE SYSTEM
+            </button>
+            <p class="text-xs text-muted mt-4">v7.0.4 | Secure HIPAA Compliant</p>
         </div>
     </div>
 
-    <div id="app-shell" style="display:none;">
+    <div id="qr-modal" class="modal-overlay" onclick="this.style.display='none'">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <h2 style="margin-bottom:10px;">Family Access</h2>
+            <p style="color:#666; margin-bottom:20px;">Scan to view vitals remotely</p>
+            <div id="qr-target" style="display:flex; justify-content:center; margin-bottom:20px;"></div>
+            <button class="btn btn-outline" style="color:black; border-color:#ccc;" onclick="document.getElementById('qr-modal').style.display='none'">Close</button>
+        </div>
+    </div>
+
+    <div id="app-shell" class="hidden">
         
         <aside>
-            <div class="brand"><i class="fas fa-dna text-primary"></i> VisionCare OS</div>
-            <div class="nav-scroller">
-                <div class="nav-group">
-                    <div class="nav-label">Main</div>
-                    <div class="nav-item active" onclick="Router.go('dash')"><i class="fas fa-desktop"></i> Central Monitor</div>
-                    <div class="nav-item" onclick="Router.go('patients')"><i class="fas fa-procedures"></i> Patient Roster</div>
-                    <div class="nav-item" onclick="Router.go('analytics')"><i class="fas fa-chart-pie"></i> Intelligence</div>
-                </div>
-                <div class="nav-group">
-                    <div class="nav-label">Collaboration</div>
-                    <div class="nav-item" onclick="Router.go('whiteboard')"><i class="fas fa-pen-to-square"></i> Whiteboard</div>
-                    <div class="nav-item" onclick="Router.go('chat')"><i class="fas fa-comments"></i> Staff Chat</div>
-                    <div class="nav-item" onclick="Router.go('handover')"><i class="fas fa-clipboard-check"></i> Shift Handover</div>
-                </div>
-                <div class="nav-group">
-                    <div class="nav-label">System</div>
-                    <div class="nav-item" onclick="Router.go('logs')"><i class="fas fa-file-code"></i> Audit Logs</div>
-                    <div class="nav-item" onclick="Router.go('settings')"><i class="fas fa-cogs"></i> Settings</div>
-                </div>
+            <div class="app-brand">
+                <i class="fas fa-eye"></i> VisionCare
             </div>
-            <div style="padding:20px; border-top:var(--border);">
-                <button class="btn btn-danger" style="width:100%; justify-content:center;" onclick="location.reload()">SHUTDOWN</button>
+            <ul class="nav-menu">
+                <li class="nav-link active" onclick="Router.nav('dashboard')"><i class="fas fa-desktop"></i> Monitor</li>
+                <li class="nav-link" onclick="Router.nav('patients')"><i class="fas fa-procedures"></i> Patients</li>
+                <li class="nav-link" onclick="Router.nav('analytics')"><i class="fas fa-chart-line"></i> Analytics</li>
+                <li class="nav-link" onclick="Router.nav('chat')"><i class="fas fa-comments"></i> Staff Chat</li>
+                <li class="nav-link" onclick="Router.nav('logs')"><i class="fas fa-clipboard-list"></i> Logs</li>
+                <li class="nav-link" onclick="Router.nav('settings')"><i class="fas fa-sliders-h"></i> Settings</li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="footer-label">ACCESSIBILITY</div>
+                <li class="nav-link" onclick="document.body.classList.toggle('hc-mode')"><i class="fas fa-adjust"></i> Contrast</li>
+                <li class="nav-link" onclick="Core.broadcast()"><i class="fas fa-bullhorn text-danger"></i> Broadcast</li>
+                <li class="nav-link text-danger" onclick="location.reload()" style="margin-top:10px;"><i class="fas fa-power-off"></i> Logout</li>
             </div>
         </aside>
 
-        <div class="content">
-            <div class="topbar">
-                <div class="sys-stats">
-                    <span>CPU: <span class="text-success">12%</span></span>
-                    <span>MEM: <span class="text-warning">4.2GB</span></span>
-                    <span>NET: <span class="text-success">1Gbps</span></span>
-                    <span id="clock">00:00:00</span>
+        <div class="main-content">
+            <div class="top-bar">
+                <div>
+                    <h2 class="font-bold text-lg">ICU Ward 104 - Cardiac</h2>
+                    <div class="text-sm text-muted" id="clock">00:00:00 AM</div>
                 </div>
-                <div style="display:flex; gap:15px; align-items:center;">
-                    <button class="btn btn-outline" onclick="Sys.toggleTheme()"><i class="fas fa-eye"></i> Contrast</button>
-                    <button class="btn btn-outline" onclick="Sys.broadcast()"><i class="fas fa-bullhorn"></i> Alert All</button>
-                    <div style="text-align:right; font-size:0.8rem;">
-                        <div style="font-weight:bold;">Dr. Administrator</div>
-                        <div style="color:var(--text-muted);">Chief of Medicine</div>
+                <div class="user-status">
+                    <span class="badge badge-success">● ONLINE</span>
+                    <div class="text-right">
+                        <div class="font-bold">Dr. Admin</div>
+                        <div class="text-xs text-muted">Chief Medical Officer</div>
                     </div>
-                    <div style="width:35px; height:35px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">DA</div>
+                    <div class="user-avatar">DA</div>
                 </div>
             </div>
 
             <div class="viewport">
                 
-                <div id="view-dash" class="view-section active">
-                    <div class="grid-dash">
-                        <div class="cam-feed">
-                            <video id="vid" playsinline muted></video>
-                            <canvas id="can"></canvas>
-                            <div class="hud">
-                                <div>AI ENGINE: <span class="text-success" id="ai-status">OFFLINE</span></div>
-                                <div>EMOTION: <span id="db-emo">--</span></div>
-                                <div>ATTENTION: <span id="db-att">--</span></div>
-                                <div>FALL RISK: <span id="db-fall" class="text-success">LOW</span></div>
-                            </div>
-                            <div class="cam-dock">
-                                <button class="btn btn-primary" onclick="AI.start()">ACTIVATE AI</button>
-                                <button class="btn btn-outline" onclick="Gaze.toggle()">GAZE MODE</button>
-                                <button class="btn btn-outline" onclick="Voice.listen()">VOICE CMD</button>
-                            </div>
-                        </div>
+                <div id="view-dashboard" class="page-view active">
+                    <div class="dash-grid">
                         
-                        <div class="twin-feed">
-                            <canvas id="twin_can"></canvas>
-                            <div style="position:absolute; top:10px; right:10px; text-align:right;">
-                                <div class="text-success font-mono">ECG: 72</div>
-                                <div class="text-info font-mono">SpO2: 98%</div>
-                                <div class="text-warning font-mono">RR: 16</div>
+                        <div class="cam-widget card">
+                            <div class="cam-box" style="position:relative; width:100%; height:100%; background:black; display:flex; align-items:center; justify-content:center;">
+                                <video id="vid" playsinline muted></video>
+                                <canvas id="can"></canvas>
+                                
+                                <div class="hud-overlay">
+                                    <div class="hud-item"><span class="text-muted">AI CORE:</span> <span id="ai-stat" class="text-success">WAITING</span></div>
+                                    <div class="hud-item"><span class="text-muted">ACTION:</span> <span id="debug-cmd" class="text-warning">--</span></div>
+                                    <div class="hud-item"><span class="text-muted">PAIN:</span> <span id="debug-pain">NO</span></div>
+                                    <div class="hud-item border-t border-gray-700 mt-1 pt-1"><span class="text-muted">BLINK:</span> <span id="debug-blink">0</span></div>
+                                </div>
+
+                                <div class="mic-indicator" id="mic-ui">
+                                    <div class="mic-status-dot"></div> <span id="mic-text">VOICE OFF</span>
+                                </div>
+
+                                <div class="cam-dock">
+                                    <button class="btn btn-ghost btn-icon" onclick="PatientMgr.snap(1)"><i class="fas fa-camera"></i></button>
+                                    <button class="btn btn-primary" onclick="VisionKernel.start()">▶ START AI</button>
+                                    <button class="btn btn-outline" id="btn-gaze" onclick="GazeKernel.toggle()">👁️ HEAD TRACK</button>
+                                    <button class="btn btn-outline" onclick="VoiceKernel.listen()">🎙️ VOICE</button>
+                                    <button class="btn btn-ghost btn-icon" onclick="PatientMgr.snap(2)"><i class="fas fa-camera"></i></button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="aac-panel">
-                            <div style="padding:10px; font-weight:bold; color:var(--accent); border-bottom:var(--border);">AAC SPEECH</div>
-                            <div class="aac-grid">
-                                <div class="aac-btn" onclick="Voice.speak('I need water')"><i class="fas fa-glass-water fa-2x"></i><br>WATER</div>
-                                <div class="aac-btn" onclick="Voice.speak('I am in pain')"><i class="fas fa-face-grimace text-danger fa-2x"></i><br>PAIN</div>
-                                <div class="aac-btn" onclick="Voice.speak('Call my family')"><i class="fas fa-phone text-success fa-2x"></i><br>FAMILY</div>
-                                <div class="aac-btn" onclick="Voice.speak('Adjust bed')"><i class="fas fa-bed text-warning fa-2x"></i><br>BED</div>
+                        <div class="side-panel">
+                            <div class="twin-widget">
+                                <canvas id="twin_can"></canvas>
+                                <div class="twin-label">DIGITAL SKELETON</div>
+                                <div class="twin-vitals">
+                                    <div class="tv-row text-success">HR: <span id="twin-hr">--</span></div>
+                                    <div class="tv-row text-accent">SpO2: <span id="twin-spo2">--</span></div>
+                                    <div class="tv-row text-warning">RR: 18</div>
+                                </div>
+                            </div>
+                            <div class="card" style="flex:1;">
+                                <div class="card-header"><span class="font-bold text-accent">AAC Speech Board</span> <i class="fas fa-volume-up"></i></div>
+                                <div class="aac-grid">
+                                    <div class="aac-tile" onclick="VoiceKernel.speak('I need Water')"><i class="fas fa-glass-water text-accent"></i><span>Water</span></div>
+                                    <div class="aac-tile" onclick="VoiceKernel.speak('I am in Pain')"><i class="fas fa-face-grimace text-danger"></i><span>Pain</span></div>
+                                    <div class="aac-tile" onclick="VoiceKernel.speak('Call Family')"><i class="fas fa-phone text-success"></i><span>Family</span></div>
+                                    <div class="aac-tile" onclick="VoiceKernel.speak('Turn off Lights')"><i class="fas fa-lightbulb text-warning"></i><span>Lights</span></div>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="patients-wrapper">
+                            <div class="patient-card" id="card-p1">
+                                <div class="pc-header">
+                                    <div class="pc-profile">
+                                        <img id="img-p1" src="https://via.placeholder.com/60/334155/FFFFFF?text=Bed1" class="pc-img">
+                                        <div>
+                                            <h4 class="font-bold">Alex Smith</h4>
+                                            <div class="text-xs text-muted">Bed 1 • Cardiac</div>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-success" id="bdg-p1">STABLE</span>
+                                </div>
+                                <div class="ecg-container">
+                                    <canvas id="ecg-p1" class="ecg-canvas"></canvas>
+                                    <canvas id="spo2-p1" class="spo2-canvas"></canvas>
+                                </div>
+                                <div class="text-center font-bold text-xl mb-4" id="req-p1">--</div>
+                                <div class="pc-controls">
+                                    <div class="ctrl-btn" id="btn-light-p1"><i class="fas fa-lightbulb"></i></div>
+                                    <div class="ctrl-btn" id="btn-fan-p1"><i class="fas fa-fan"></i></div>
+                                    <div class="flex-1 bg-gray-700/30 rounded px-2 flex flex-col justify-center">
+                                        <div class="flex justify-between text-xs text-muted"><span>HEAD</span><span>FOOT</span></div>
+                                        <input type="range" class="form-range" onchange="VoiceKernel.speak('Adjusting Bed Angle')">
+                                    </div>
+                                    <button class="btn btn-outline btn-icon" onclick="PatientMgr.showQR(1)"><i class="fas fa-qrcode"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="patient-card" id="card-p2">
+                                <div class="pc-header">
+                                    <div class="pc-profile">
+                                        <img id="img-p2" src="https://via.placeholder.com/60/334155/FFFFFF?text=Bed2" class="pc-img">
+                                        <div>
+                                            <h4 class="font-bold">Sarah Doe</h4>
+                                            <div class="text-xs text-muted">Bed 2 • Ortho</div>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-success" id="bdg-p2">STABLE</span>
+                                </div>
+                                <div class="ecg-container">
+                                    <canvas id="ecg-p2" class="ecg-canvas"></canvas>
+                                    <canvas id="spo2-p2" class="spo2-canvas"></canvas>
+                                </div>
+                                <div class="text-center font-bold text-xl mb-4" id="req-p2">--</div>
+                                <div class="pc-controls">
+                                    <div class="ctrl-btn" id="btn-light-p2"><i class="fas fa-lightbulb"></i></div>
+                                    <div class="ctrl-btn" id="btn-fan-p2"><i class="fas fa-fan"></i></div>
+                                    <div class="flex-1 bg-gray-700/30 rounded px-2 flex flex-col justify-center">
+                                        <div class="flex justify-between text-xs text-muted"><span>HEAD</span><span>FOOT</span></div>
+                                        <input type="range" class="form-range" onchange="VoiceKernel.speak('Adjusting Bed Angle')">
+                                    </div>
+                                    <button class="btn btn-outline btn-icon" onclick="PatientMgr.showQR(2)"><i class="fas fa-qrcode"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+                </div>
 
-                    <div class="patient-grid">
-                        <div class="p-card" id="p1">
-                            <div class="p-head">
-                                <div style="display:flex; gap:10px;">
-                                    <img src="https://via.placeholder.com/50" style="border-radius:8px;">
-                                    <div><div style="font-weight:bold;">Alex Smith</div><small>Bed 1</small></div>
-                                </div>
-                                <span class="badge badge-ok" id="st-p1">STABLE</span>
-                            </div>
-                            <div class="ecg-zone">
-                                <canvas id="ecg-p1" class="ecg-line"></canvas>
-                                <canvas id="resp-p1" class="resp-line"></canvas>
-                                <canvas id="spo2-p1" class="spo2-line"></canvas>
-                            </div>
-                            <div style="display:flex; gap:10px; margin-top:5px;">
-                                <button class="btn btn-outline" style="flex:1;" onclick="IoT.toggleLight(1)"><i class="fas fa-lightbulb"></i> Light</button>
-                                <button class="btn btn-outline" style="flex:1;" onclick="IoT.toggleFan(1)"><i class="fas fa-fan"></i> Fan</button>
-                                <div style="flex:1; background:#000; border-radius:4px; padding:0 5px; display:flex; align-items:center;">
-                                    <small style="margin-right:5px;">DRIP</small>
-                                    <input type="range" style="width:100%;" onchange="Voice.speak('IV Rate Changed')">
-                                </div>
+                <div id="view-analytics" class="page-view">
+                    <h2 class="mb-4">Real-Time Performance</h2>
+                    <div class="analytics-grid">
+                        <div class="chart-wrap">
+                            <h4 class="mb-4">Request Distribution</h4>
+                            <div style="flex:1; position:relative;">
+                                <canvas id="chart-requests"></canvas>
                             </div>
                         </div>
-
-                        <div class="p-card" id="p2">
-                            <div class="p-head">
-                                <div style="display:flex; gap:10px;">
-                                    <img src="https://via.placeholder.com/50" style="border-radius:8px;">
-                                    <div><div style="font-weight:bold;">Sarah Doe</div><small>Bed 2</small></div>
-                                </div>
-                                <span class="badge badge-ok" id="st-p2">STABLE</span>
-                            </div>
-                            <div class="ecg-zone">
-                                <canvas id="ecg-p2" class="ecg-line"></canvas>
-                                <canvas id="resp-p2" class="resp-line"></canvas>
-                                <canvas id="spo2-p2" class="spo2-line"></canvas>
-                            </div>
-                            <div style="display:flex; gap:10px; margin-top:5px;">
-                                <button class="btn btn-outline" style="flex:1;" onclick="IoT.toggleLight(2)"><i class="fas fa-lightbulb"></i> Light</button>
-                                <button class="btn btn-outline" style="flex:1;" onclick="IoT.toggleFan(2)"><i class="fas fa-fan"></i> Fan</button>
-                                <button class="btn btn-danger" style="flex:1;" onclick="Sys.alert(2)">SOS</button>
+                        <div class="chart-wrap">
+                            <h4 class="mb-4">Response Time Metrics</h4>
+                            <div style="flex:1; position:relative;">
+                                <canvas id="chart-response"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="view-analytics" class="view-section">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; height:400px;">
-                        <div class="card p-4">
-                            <h3>Sepsis Risk Prediction</h3>
-                            <canvas id="chart-sepsis"></canvas>
+                <div id="view-chat" class="page-view">
+                    <div class="chat-layout">
+                        <div class="chat-sidebar">
+                            <div class="p-4 border-b border-gray-700 font-bold">Channels</div>
+                            <div class="chat-contact active" onclick="ChatKernel.load('Nurse Station')"><div class="user-avatar bg-pink-600">N</div> Nurse Station</div>
+                            <div class="chat-contact" onclick="ChatKernel.load('Lab Tech')"><div class="user-avatar bg-blue-600">L</div> Lab Tech</div>
+                            <div class="chat-contact" onclick="ChatKernel.load('Pharmacy')"><div class="user-avatar bg-green-600">P</div> Pharmacy</div>
                         </div>
-                        <div class="card p-4">
-                            <h3>Ward Occupancy</h3>
-                            <canvas id="chart-occ"></canvas>
+                        <div class="chat-body">
+                            <div class="card-header"><span id="chat-title">Nurse Station</span> <span class="badge badge-success">Active</span></div>
+                            <div class="msg-list" id="msg-list">
+                                </div>
+                            <div class="chat-input-area">
+                                <input type="text" id="chat-input" class="form-control" placeholder="Type a message..." onkeypress="if(event.key==='Enter') ChatKernel.send()">
+                                <button class="btn btn-primary" onclick="ChatKernel.send()"><i class="fas fa-paper-plane"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="view-whiteboard" class="view-section">
-                    <div class="card" style="height:100%;">
+                <div id="view-patients" class="page-view">
+                    <div class="card h-full">
                         <div class="card-header">
-                            <span>Digital Whiteboard</span>
-                            <button class="btn btn-outline" onclick="Whiteboard.clear()">Clear</button>
+                            <span class="card-title">Patient Registry</span>
+                            <button class="btn btn-sm btn-outline"><i class="fas fa-plus"></i> Admit New</button>
                         </div>
                         <div class="card-body p-0">
-                            <canvas id="wb-canvas"></canvas>
+                            <table class="w-full text-left" style="border-collapse: collapse;">
+                                <thead style="background:rgba(0,0,0,0.2); border-bottom:1px solid var(--border-color);">
+                                    <tr>
+                                        <th class="p-4">ID</th>
+                                        <th class="p-4">Name</th>
+                                        <th class="p-4">Condition</th>
+                                        <th class="p-4">Room</th>
+                                        <th class="p-4">Status</th>
+                                        <th class="p-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patient-table-body">
+                                    </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <div id="view-handover" class="view-section">
-                    <div class="card" style="max-width:600px; margin:0 auto;">
-                        <div class="card-header">Shift Handover Form</div>
-                        <div class="card-body">
-                            <div style="margin-bottom:15px;">
-                                <label>Outgoing Nurse</label>
-                                <input type="text" class="inp" value="Nurse Jackie">
-                            </div>
-                            <div style="margin-bottom:15px;">
-                                <label>Incoming Nurse</label>
-                                <input type="text" class="inp">
-                            </div>
-                            <div style="margin-bottom:15px;">
-                                <label>Critical Notes (Voice Dictation Supported)</label>
-                                <textarea class="inp" style="height:100px;" id="note-area"></textarea>
-                                <button class="btn btn-outline btn-sm" onclick="Voice.dictate()"><i class="fas fa-microphone"></i> Dictate</button>
-                            </div>
-                            <button class="btn btn-primary w-full">Submit Report</button>
+                <div id="view-logs" class="page-view">
+                    <div class="card h-full">
+                        <div class="card-header">
+                            <span class="card-title">System Audit Log</span>
+                            <button class="btn btn-sm btn-outline" onclick="DataKernel.clearLogs()">Clear Logs</button>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="w-full text-left" style="border-collapse: collapse;">
+                                <thead style="background:rgba(0,0,0,0.2); border-bottom:1px solid var(--border-color);">
+                                    <tr>
+                                        <th class="p-4">Timestamp</th>
+                                        <th class="p-4">Module</th>
+                                        <th class="p-4">Event</th>
+                                        <th class="p-4">Severity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="log-table-body">
+                                    </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <div id="view-patients" class="view-section"><h1 style="padding:20px;">Patient Roster Module Loading...</h1></div>
-                <div id="view-chat" class="view-section"><h1 style="padding:20px;">Staff Chat Module Loading...</h1></div>
-                <div id="view-logs" class="view-section"><h1 style="padding:20px;">Audit Logs Module Loading...</h1></div>
-                <div id="view-settings" class="view-section"><h1 style="padding:20px;">Settings Module Loading...</h1></div>
+                <div id="view-settings" class="page-view">
+                    <div class="dash-grid">
+                        <div class="card">
+                            <div class="card-header">General Preferences</div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Voice Feedback Volume</label>
+                                    <input type="range" class="form-range" min="0" max="1" step="0.1" value="1" onchange="VoiceKernel.volume = this.value">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Speech Rate</label>
+                                    <input type="range" class="form-range" min="0.5" max="2" step="0.1" value="1" onchange="VoiceKernel.rate = this.value">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Camera Resolution</label>
+                                    <select class="form-control">
+                                        <option>HD (1280x720)</option>
+                                        <option>Full HD (1920x1080)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">System Diagnostics</div>
+                            <div class="card-body">
+                                <div class="flex justify-between items-center mb-4 p-3 bg-black/20 rounded">
+                                    <span>AI Engine Integrity</span>
+                                    <span class="text-success font-bold">100% OK</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-4 p-3 bg-black/20 rounded">
+                                    <span>Database Connection</span>
+                                    <span class="text-success font-bold">LOCAL</span>
+                                </div>
+                                <button class="btn btn-danger w-full" onclick="localStorage.clear(); location.reload();">
+                                    <i class="fas fa-trash"></i> Factory Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
     </div>
 
-    <div id="toast-area" class="toast-area"></div>
+    <div id="toast-area" class="toast-container"></div>
 
     <script>
-        // --- 0. BOOTLOADER ---
-        window.onload = async () => {
-            const boot = document.getElementById('boot-screen');
-            const lines = [
-                "BIOS CHECK... OK", "LOADING KERNEL... OK", "MOUNTING FILESYSTEM... OK",
-                "STARTING AI ENGINE... OK", "CONNECTING TO HOSPITAL NET... OK", "SYSTEM READY."
-            ];
-            for(let i=0; i<lines.length; i++) {
-                const div = document.createElement('div');
-                div.className = 'boot-line';
-                div.innerText = `> ${lines[i]}`;
-                boot.appendChild(div);
-                await new Promise(r => setTimeout(r, 300));
+        // --- CONSTANTS ---
+        const VIDEO = document.getElementById('vid');
+        const CANVAS = document.getElementById('can');
+        const CTX = CANVAS.getContext('2d');
+        const TWIN_CTX = document.getElementById('twin_can').getContext('2d');
+        
+        /* MODULE 1: DATA KERNEL (DB & MOCK DATA)
+        */
+        const DataKernel = {
+            patients: [],
+            logs: [],
+            
+            init: () => {
+                if(!localStorage.getItem('titan_db')) {
+                    // Seed Data
+                    const seeds = [];
+                    const names = ["John Doe", "Jane Smith", "Robert Brown", "Emily White", "Michael Green", "Sarah Hall", "David Lee", "Lisa Wong"];
+                    const depts = ["Cardiac", "Ortho", "Neuro", "General"];
+                    for(let i=0; i<8; i++) {
+                        seeds.push({
+                            id: `P-10${i}`,
+                            name: names[i],
+                            cond: depts[i % 4],
+                            room: `10${i+1}`,
+                            status: Math.random() > 0.8 ? "Critical" : "Stable"
+                        });
+                    }
+                    localStorage.setItem('titan_db', JSON.stringify(seeds));
+                }
+                DataKernel.patients = JSON.parse(localStorage.getItem('titan_db'));
+                
+                if(!localStorage.getItem('titan_logs')) localStorage.setItem('titan_logs', JSON.stringify([]));
+                DataKernel.logs = JSON.parse(localStorage.getItem('titan_logs'));
+            },
+
+            log: (src, evt, type) => {
+                const entry = { time: new Date().toLocaleTimeString(), src, evt, type };
+                DataKernel.logs.unshift(entry);
+                if(DataKernel.logs.length > 100) DataKernel.logs.pop();
+                localStorage.setItem('titan_logs', JSON.stringify(DataKernel.logs));
+                Core.renderLogs();
+            },
+
+            clearLogs: () => {
+                localStorage.setItem('titan_logs', JSON.stringify([]));
+                DataKernel.logs = [];
+                Core.renderLogs();
+                Core.notify("System", "Logs Cleared", false);
             }
-            await new Promise(r => setTimeout(r, 500));
-            boot.style.display = 'none';
-            document.getElementById('auth-screen').style.display = 'flex';
         };
 
-        // --- 1. SYSTEM KERNEL ---
-        const Sys = {
+        /* MODULE 2: CORE KERNEL (STATE & ROUTER)
+        */
+        const Core = {
+            init: () => {
+                // Clock
+                setInterval(() => {
+                    document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+                }, 1000);
+                
+                DataKernel.init();
+                SimKernel.startECG(1); SimKernel.startECG(2);
+                SimKernel.startSpO2(1); SimKernel.startSpO2(2);
+                ChatKernel.init();
+                
+                // Render Tables
+                Core.renderPatients();
+                Core.renderLogs();
+            },
+
             login: () => {
-                const u = document.getElementById('login-u').value;
-                const p = document.getElementById('login-p').value;
-                if(u==='admin' && p==='admin123') {
-                    document.getElementById('auth-screen').style.display = 'none';
-                    document.getElementById('app-shell').style.display = 'flex';
-                    Voice.speak("Welcome to Vision Care Singularity OS.");
-                    App.init();
-                } else alert("Access Denied");
+                const u = document.getElementById('login-user').value;
+                const p = document.getElementById('login-pass').value;
+                if(u === 'admin' && p === 'admin123') {
+                    document.getElementById('auth-layer').style.display = 'none';
+                    document.getElementById('app-shell').classList.remove('hidden');
+                    setTimeout(() => document.getElementById('app-shell').classList.add('visible'), 50);
+                    VoiceKernel.speak("Vision Care Titan System Online. Welcome Doctor.");
+                    SimKernel.initCharts();
+                } else alert("Invalid Credentials");
             },
-            toggleTheme: () => document.body.classList.toggle('theme-high-contrast'),
+
             broadcast: () => {
-                Sys.notify("EMERGENCY BROADCAST", "Code Blue in Ward 104", true);
-                Voice.speak("Attention. Code Blue in Ward 104.");
+                Core.notify("EMERGENCY BROADCAST", "ALL STAFF REPORT TO STATION 1", true);
+                VoiceKernel.speak("Attention all staff. Emergency broadcast.");
             },
-            alert: (id) => {
-                document.getElementById(`p${id}`).classList.add('alert');
-                Sys.notify(`BED ${id} ALERT`, "Patient Triggered SOS", true);
-            },
+
             notify: (title, msg, isCrit) => {
                 const area = document.getElementById('toast-area');
                 const t = document.createElement('div');
-                t.className = `toast ${isCrit?'danger':''} show`;
-                t.innerHTML = `<i class="fas ${isCrit?'fa-circle-exclamation':'fa-info-circle'} fa-lg"></i><div><strong>${title}</strong><br><small>${msg}</small></div>`;
+                t.className = `toast ${isCrit ? 'danger' : ''}`;
+                t.innerHTML = `
+                    <div style="font-size:1.5rem">${isCrit ? '🚨' : '🔔'}</div>
+                    <div><div class="font-bold">${title}</div><small>${msg}</small></div>
+                `;
                 area.appendChild(t);
-                setTimeout(()=> t.remove(), 4000);
-            }
-        };
+                // Force reflow for anim
+                void t.offsetWidth;
+                t.classList.add('show');
+                
+                VoiceKernel.speak(msg);
+                
+                setTimeout(() => {
+                    t.classList.remove('show');
+                    setTimeout(() => t.remove(), 400);
+                }, 4000);
 
-        const App = {
-            init: () => {
-                setInterval(()=> document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
-                Vitals.init(1); Vitals.init(2);
-                Whiteboard.init();
-                Analytics.init();
+                // Log it
+                DataKernel.log("System", msg, isCrit ? "CRIT" : "INFO");
+            },
+
+            renderPatients: () => {
+                const tbody = document.getElementById('patient-table-body');
+                tbody.innerHTML = DataKernel.patients.map(p => `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                        <td class="p-4 font-mono text-accent">${p.id}</td>
+                        <td class="p-4 font-bold">${p.name}</td>
+                        <td class="p-4">${p.cond}</td>
+                        <td class="p-4">${p.room}</td>
+                        <td class="p-4"><span class="badge ${p.status==='Critical'?'badge-danger':'badge-success'}">${p.status}</span></td>
+                        <td class="p-4"><button class="btn btn-outline text-xs">View</button></td>
+                    </tr>
+                `).join('');
+            },
+
+            renderLogs: () => {
+                const tbody = document.getElementById('log-table-body');
+                tbody.innerHTML = DataKernel.logs.map(l => `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+                        <td class="p-4 font-mono text-accent">${l.time}</td>
+                        <td class="p-4 font-bold">${l.src}</td>
+                        <td class="p-4">${l.evt}</td>
+                        <td class="p-4"><span class="badge ${l.type==='CRIT'?'badge-danger':'badge-success'}">${l.type}</span></td>
+                    </tr>
+                `).join('');
             }
         };
 
         const Router = {
-            go: (id) => {
-                document.querySelectorAll('.view-section').forEach(e=>e.classList.remove('active'));
-                document.getElementById(`view-${id}`).classList.add('active');
-                document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+            nav: (view) => {
+                document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+                document.getElementById(`view-${view}`).classList.add('active');
+                
+                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
                 event.currentTarget.classList.add('active');
-                Voice.speak(id);
+                
+                VoiceKernel.speak(`Opening ${view}`);
             }
         };
 
-        // --- 2. AI KERNEL ---
-        const AI = {
-            video: document.getElementById('vid'),
-            canvas: document.getElementById('can'),
-            ctx: document.getElementById('can').getContext('2d'),
-            twinCtx: document.getElementById('twin_can').getContext('2d'),
-            
+        /* MODULE 3: VISION KERNEL
+        */
+        const VisionKernel = {
+            active: false,
+            lastAction: "",
+
             start: async () => {
-                document.getElementById('ai-status').innerText = "BOOTING...";
+                document.getElementById('ai-stat').innerText = "LOADING...";
                 const holistic = new Holistic({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`});
-                holistic.setOptions({modelComplexity: 1, smoothLandmarks: true});
-                holistic.onResults(AI.onResults);
-                
+                holistic.setOptions({ modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+                holistic.onResults(VisionKernel.process);
+
                 try {
-                    const stream = await navigator.mediaDevices.getUserMedia({video:{width:1280,height:720}});
-                    AI.video.srcObject = stream;
-                    AI.video.onloadedmetadata = () => {
-                        AI.video.play();
-                        document.getElementById('ai-status').innerText = "ONLINE";
-                        const cam = new Camera(AI.video, {onFrame: async()=>{await holistic.send({image:AI.video});}, width:1280, height:720});
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+                    VIDEO.srcObject = stream;
+                    VIDEO.onloadedmetadata = () => {
+                        VIDEO.play();
+                        document.getElementById('ai-stat').innerText = "ACTIVE";
+                        VisionKernel.active = true;
+                        const cam = new Camera(VIDEO, { onFrame: async () => { await holistic.send({image: VIDEO}); }, width: 1280, height: 720 });
                         cam.start();
                     };
-                } catch(e) { alert("Cam Error"); }
+                } catch(e) { alert("Camera Access Denied. Use Localhost."); }
             },
-            onResults: (results) => {
-                // Render Logic
-                const w = AI.canvas.width = AI.video.videoWidth;
-                const h = AI.canvas.height = AI.video.videoHeight;
-                const tC = document.getElementById('twin_can'); tC.width = w; tC.height = h;
 
-                AI.ctx.save();
-                AI.ctx.clearRect(0,0,w,h);
-                AI.ctx.drawImage(results.image, 0, 0, w, h);
-                drawConnectors(AI.ctx, results.poseLandmarks, POSE_CONNECTIONS, {color:'#00FF00', lineWidth:1});
-                AI.ctx.restore();
+            process: (results) => {
+                const w = CANVAS.width = VIDEO.videoWidth;
+                const h = CANVAS.height = VIDEO.videoHeight;
+                const tCan = document.getElementById('twin_can');
+                tCan.width = w; tCan.height = h;
 
-                AI.twinCtx.save();
-                AI.twinCtx.clearRect(0,0,w,h);
-                drawConnectors(AI.twinCtx, results.poseLandmarks, POSE_CONNECTIONS, {color:'#06b6d4', lineWidth:3});
-                AI.twinCtx.restore();
+                // Main Overlay
+                CTX.save();
+                CTX.clearRect(0, 0, w, h);
+                CTX.drawImage(results.image, 0, 0, w, h);
+                drawConnectors(CTX, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 2});
+                drawConnectors(CTX, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 2});
+                CTX.restore();
 
-                // Emotion & Gaze Logic (Simplified for Demo)
-                if(results.faceLandmarks) {
-                    const pain = Math.random() > 0.99; // Simulating AI detection
-                    document.getElementById('db-emo').innerText = pain ? "PAIN" : "NEUTRAL";
-                    if(pain) Sys.alert(1);
-                    
-                    if(Gaze.active) {
-                        const nose = results.poseLandmarks[0];
-                        Gaze.move(nose.x, nose.y);
-                    }
+                // Twin
+                TWIN_CTX.save();
+                TWIN_CTX.clearRect(0, 0, w, h);
+                drawConnectors(TWIN_CTX, results.poseLandmarks, POSE_CONNECTIONS, {color: '#06b6d4', lineWidth: 3});
+                drawLandmarks(TWIN_CTX, results.poseLandmarks, {color: '#fff', lineWidth: 1});
+                TWIN_CTX.restore();
+
+                // Logic
+                if(results.rightHandLandmarks) VisionKernel.gestures(results.rightHandLandmarks, 1);
+                else if(results.leftHandLandmarks) VisionKernel.gestures(results.leftHandLandmarks, 1);
+                
+                if(results.faceLandmarks) VisionKernel.faceLogic(results.faceLandmarks);
+            },
+
+            gestures: (lm, id) => {
+                let fingers = 0;
+                [8,12,16,20].forEach(t => { if(lm[t].y < lm[t-2].y) fingers++; });
+                if(Math.abs(lm[4].x - lm[5].x) > 0.05) fingers++;
+                
+                const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
+                let msg = "";
+
+                if(isPinch) msg = "FAN ON";
+                else if(fingers === 0) msg = "EMERGENCY";
+                else if(fingers === 1) msg = "MEDICINE";
+                else if(fingers === 2) msg = "WATER";
+                else if(fingers === 5) msg = "LIGHTS";
+
+                document.getElementById('debug-cmd').innerText = msg || "--";
+
+                if(msg && msg !== VisionKernel.lastAction) {
+                    VisionKernel.lastAction = msg;
+                    RoomMgr.trigger(id, msg);
+                    setTimeout(() => VisionKernel.lastAction = "", 2500);
                 }
+            },
+
+            faceLogic: (lm) => {
+                // Pain Check (Brow Furrow)
+                const brow = Math.hypot(lm[55].x - lm[285].x, lm[55].y - lm[285].y);
+                const isPain = brow < 0.04;
+                document.getElementById('debug-pain').innerText = isPain ? "YES" : "NO";
+                if(isPain && VisionKernel.lastAction !== "PAIN") {
+                    VisionKernel.lastAction = "PAIN";
+                    RoomMgr.trigger(1, "EMERGENCY");
+                }
+
+                // Gaze Tracking
+                if(GazeKernel.active) GazeKernel.move(lm[1].x, lm[1].y);
             }
         };
 
-        // --- 3. GAZE KERNEL ---
-        const Gaze = {
+        /* MODULE 4: GAZE KERNEL
+        */
+        const GazeKernel = {
             active: false,
             toggle: () => {
-                Gaze.active = !Gaze.active;
-                document.getElementById('gaze-cursor').style.display = Gaze.active ? 'block' : 'none';
+                GazeKernel.active = !GazeKernel.active;
+                const c = document.getElementById('gaze-cursor');
+                const b = document.getElementById('btn-gaze');
+                if(GazeKernel.active) { c.style.display='block'; b.classList.add('active'); }
+                else { c.style.display='none'; b.classList.remove('active'); }
             },
             move: (x, y) => {
                 const sx = (1-x) * window.innerWidth;
@@ -535,91 +932,175 @@
                 const c = document.getElementById('gaze-cursor');
                 c.style.left = sx + 'px';
                 c.style.top = sy + 'px';
+                
+                // Hover Detection
+                const el = document.elementFromPoint(sx, sy);
+                if(el && el.classList.contains('aac-tile')) {
+                    el.classList.add('gaze-hover');
+                    setTimeout(() => el.classList.remove('gaze-hover'), 500);
+                }
             }
         };
 
-        // --- 4. VOICE KERNEL ---
-        const Voice = {
-            speak: (txt) => {
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt));
-            },
+        /* MODULE 5: VOICE KERNEL
+        */
+        const VoiceKernel = {
+            rec: null,
+            isListening: false,
+            volume: 1, rate: 1,
+
             listen: () => {
                 const R = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if(!R) return alert("No Voice Support");
-                const r = new R(); r.lang = 'en-US'; r.start();
+                if(!R) return alert("Browser No Voice Support");
+                
+                const r = new R();
+                r.lang = 'en-US'; 
+                r.continuous = false;
+                
+                r.onstart = () => {
+                    document.getElementById('mic-ui').classList.add('listening');
+                    document.getElementById('mic-text').innerText = "LISTENING...";
+                };
+                
+                r.onend = () => {
+                    document.getElementById('mic-ui').classList.remove('listening');
+                    document.getElementById('mic-text').innerText = "VOICE OFF";
+                };
+
                 r.onresult = (e) => {
                     const t = e.results[0][0].transcript.toLowerCase();
-                    Sys.notify("Voice", t, false);
-                    if(t.includes('light')) IoT.toggleLight(1);
-                    if(t.includes('fan')) IoT.toggleFan(1);
-                    if(t.includes('analytics')) Router.go('analytics');
+                    Core.notify("Voice Cmd", t, false);
+                    if(t.includes('fan')) RoomMgr.trigger(1, "FAN ON");
+                    if(t.includes('light')) RoomMgr.trigger(1, "LIGHT ON");
+                    if(t.includes('pain') || t.includes('emergency')) RoomMgr.trigger(1, "EMERGENCY");
+                    if(t.includes('analytics')) Router.nav('analytics');
                 };
+                r.start();
             },
-            dictate: () => {
-                const R = window.SpeechRecognition || window.webkitSpeechRecognition;
-                const r = new R(); r.lang = 'en-US'; r.start();
-                r.onresult = (e) => {
-                    document.getElementById('note-area').value += e.results[0][0].transcript + " ";
-                };
+
+            speak: (txt) => {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(txt);
+                u.volume = VoiceKernel.volume; u.rate = VoiceKernel.rate;
+                window.speechSynthesis.speak(u);
             }
         };
 
-        // --- 5. IOT & VITALS KERNEL ---
-        const IoT = {
-            toggleLight: (id) => { Voice.speak(`Toggling Lights Bed ${id}`); },
-            toggleFan: (id) => { Voice.speak(`Toggling Fan Bed ${id}`); }
-        };
-
-        const Vitals = {
-            init: (id) => {
-                const ctxE = document.getElementById(`ecg-p${id}`).getContext('2d');
-                const ctxR = document.getElementById(`resp-p${id}`).getContext('2d');
-                const ctxS = document.getElementById(`spo2-p${id}`).getContext('2d');
-                
-                // ECG Loop
-                let x = 0; 
-                setInterval(() => {
-                    x+=2; if(x>300) x=0; // Reset
-                    // Draw simulated lines here (Simplified for brevity)
-                }, 16);
+        /* MODULE 6: ROOM & PATIENT LOGIC
+        */
+        const RoomMgr = {
+            trigger: (id, msg) => {
+                document.getElementById(`req-p${id}`).innerText = msg;
+                if(msg === "EMERGENCY") {
+                    document.getElementById(`card-p${id}`).classList.add('alert');
+                    document.getElementById(`bdg-p${id}`).className = "badge badge-crit";
+                    document.getElementById(`bdg-p${id}`).innerText = "CRITICAL";
+                    Core.notify(`BED ${id} ALERT`, "Patient in Distress!", true);
+                } else {
+                    Core.notify(`Bed ${id}`, `Request: ${msg}`, false);
+                }
             }
         };
 
-        // --- 6. WHITEBOARD KERNEL ---
-        const Whiteboard = {
-            init: () => {
-                const c = document.getElementById('wb-canvas');
-                const ctx = c.getContext('2d');
+        const PatientMgr = {
+            snap: (id) => {
+                const c = document.createElement('canvas');
+                c.width = 1280; c.height = 720;
+                c.getContext('2d').drawImage(VIDEO, 0, 0);
+                document.getElementById(`img-p${id}`).src = c.toDataURL('image/png');
+                VoiceKernel.speak(`Bed ${id} Registered`);
+            },
+            showQR: (id) => {
+                const modal = document.getElementById('qr-modal');
+                const target = document.getElementById('qr-target');
+                target.innerHTML = "";
+                new QRCode(target, { text: `https://visioncare.hospital/pt/${id}`, width: 150, height: 150 });
+                modal.style.display = "flex";
+            }
+        };
+
+        /* MODULE 7: SIMULATION KERNEL (ECG, SPO2, CHARTS)
+        */
+        const SimKernel = {
+            startECG: (id) => {
+                const c = document.getElementById(`ecg-p${id}`);
+                const cx = c.getContext('2d');
                 c.width = c.offsetWidth; c.height = c.offsetHeight;
-                let drawing = false;
-
-                c.addEventListener('mousedown', () => drawing = true);
-                c.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
-                c.addEventListener('mousemove', (e) => {
-                    if(!drawing) return;
-                    ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
-                    ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY);
-                });
+                let x = 0; cx.strokeStyle = '#10b981'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, c.height/2);
+                function loop() {
+                    x += 2;
+                    if(x > c.width) { x = 0; cx.clearRect(0,0,c.width,c.height); cx.beginPath(); cx.moveTo(0, c.height/2); }
+                    let y = c.height/2; if(Math.random() < 0.05) y -= 30;
+                    cx.lineTo(x, y); cx.stroke(); requestAnimationFrame(loop);
+                }
+                loop();
             },
-            clear: () => {
-                const c = document.getElementById('wb-canvas');
-                c.getContext('2d').clearRect(0,0,c.width,c.height);
+            startSpO2: (id) => {
+                const c = document.getElementById(`spo2-p${id}`);
+                const cx = c.getContext('2d');
+                c.width = c.offsetWidth; c.height = c.offsetHeight;
+                let x = 0; cx.strokeStyle = '#38bdf8'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, c.height/2);
+                function loop() {
+                    x += 1;
+                    if(x > c.width) { x = 0; cx.clearRect(0,0,c.width,c.height); cx.beginPath(); cx.moveTo(0, c.height/2); }
+                    let y = c.height/2 + Math.sin(x*0.1) * 10;
+                    cx.lineTo(x, y); cx.stroke(); requestAnimationFrame(loop);
+                }
+                loop();
+            },
+            initCharts: () => {
+                new Chart(document.getElementById('chart-requests'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Water', 'Meds', 'Pain', 'Fan', 'Light'],
+                        datasets: [{ data: [12, 8, 3, 15, 7], backgroundColor: ['#06b6d4', '#6366f1', '#ef4444', '#f59e0b', '#10b981'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+                new Chart(document.getElementById('chart-response'), {
+                    type: 'line',
+                    data: {
+                        labels: ['10:00', '10:15', '10:30', '10:45', '11:00', '11:15', '11:30'],
+                        datasets: [{ label: 'Avg Response Time (s)', data: [45, 30, 25, 40, 20, 15, 25], borderColor: '#6366f1', tension: 0.4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
             }
         };
 
-        // --- 7. ANALYTICS ---
-        const Analytics = {
+        /*
+           MODULE 8: CHAT KERNEL
+        */
+        const ChatKernel = {
             init: () => {
-                new Chart(document.getElementById('chart-sepsis'), {
-                    type: 'line', data: { labels: ['1h','2h','3h','4h'], datasets: [{label:'Risk Score', data:[10,12,45,20], borderColor:'red'}] }
-                });
-                new Chart(document.getElementById('chart-occ'), {
-                    type: 'bar', data: { labels: ['ICU','Gen','ER'], datasets: [{label:'Patients', data:[8, 45, 12], backgroundColor:'blue'}] }
-                });
+                document.getElementById('msg-list').innerHTML = `
+                    <div class="msg in">Dr. Admin, Bed 1 SpO2 is fluctuating.</div>
+                    <div class="msg out">I see it on the monitor. AI is tracking.</div>
+                    <div class="msg in">Understood.</div>
+                `;
+            },
+            load: (name) => {
+                document.getElementById('chat-title').innerText = name;
+                document.querySelectorAll('.chat-contact').forEach(e => e.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+            },
+            send: () => {
+                const i = document.getElementById('chat-input');
+                const list = document.getElementById('msg-list');
+                if(i.value.trim()) {
+                    list.innerHTML += `<div class="msg out">${i.value}</div>`;
+                    i.value = "";
+                    list.scrollTop = list.scrollHeight;
+                    setTimeout(() => {
+                        list.innerHTML += `<div class="msg in">Message Received.</div>`;
+                        list.scrollTop = list.scrollHeight;
+                    }, 1000);
+                }
             }
         };
 
+        // STARTUP
+        System.init();
     </script>
 </body>
 </html>
