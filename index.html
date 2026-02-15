@@ -103,6 +103,13 @@
         
         .view-section { display: none; height: 100%; flex-direction: column; }
         .view-section.active { display: flex; }
+        /* --- ADD THIS FOR NEW FEATURES --- */
+        .twinning-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .twin-box { background: #000; border: 1px solid #333; height: 100px; border-radius: 8px; position: relative; }
+        .face-tag { position: absolute; top: 5px; right: 5px; font-size: 0.5rem; background: var(--primary); padding: 2px 4px; border-radius: 3px; }
+        .report-table { width: 100%; font-size: 0.75rem; margin-top: 10px; border-collapse: collapse; }
+        .report-table td { padding: 5px; border-bottom: 1px solid #222; }
+        .risk-high { color: var(--danger); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -157,22 +164,38 @@
                             </div>
                         </div>
                         
-                        <div style="background:var(--bg-card); border-radius:12px; padding:15px; overflow-y:auto;">
-                            <h4 style="margin:0 0 10px 0; color:gray;">GESTURE MAP</h4>
-                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; padding:10px; background:#ffffff05; border-radius:8px;">
-                                <span style="font-size:1.5rem;">✊</span> <div><strong>Fist</strong><br><small>Emergency</small></div>
+                        <div style="background:var(--bg-card); border-radius:12px; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:15px;">
+                            
+                            <div>
+                                <h4 style="margin:0 0 10px 0; color:var(--accent); font-size:0.8rem;">FACE REGISTRY</h4>
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <img src="https://ui-avatars.com/api/?name=P1&background=6366f1&color=fff" style="width:35px; border-radius:50%; border:2px solid var(--success);">
+                                    <img src="https://ui-avatars.com/api/?name=P2&background=38bdf8&color=fff" style="width:35px; border-radius:50%; border:2px solid var(--success);">
+                                    <button onclick="System.registerFace()" style="flex:1; background:transparent; border:1px solid var(--primary); color:var(--primary); border-radius:5px; font-size:0.6rem; cursor:pointer; padding:5px;">SCAN</button>
+                                </div>
                             </div>
-                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; padding:10px; background:#ffffff05; border-radius:8px;">
-                                <span style="font-size:1.5rem;">✌️</span> <div><strong>Victory</strong><br><small>Water</small></div>
+
+                            <div>
+                                <h4 style="margin:0 0 10px 0; color:var(--accent); font-size:0.8rem;">BODY TWINNING</h4>
+                                <div class="twinning-grid">
+                                    <div class="twin-box"><canvas id="twin-1" style="width:100%; height:100%"></canvas><span class="face-tag">B-1</span></div>
+                                    <div class="twin-box"><canvas id="twin-2" style="width:100%; height:100%"></canvas><span class="face-tag">B-2</span></div>
+                                </div>
                             </div>
-                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; padding:10px; background:#ffffff05; border-radius:8px;">
-                                <span style="font-size:1.5rem;">✋</span> <div><strong>Palm</strong><br><small>Lights</small></div>
+
+                            <div>
+                                <h4 style="margin:0 0 5px 0; color:var(--danger); font-size:0.8rem;">CARDIAC PREDICTION</h4>
+                                <table class="report-table">
+                                    <tr><td>BED 1</td><td>Risk: <span id="risk-1">2.1%</span></td><td style="color:var(--success)">NORMAL</td></tr>
+                                    <tr><td>BED 2</td><td>Risk: <span id="risk-2" class="risk-high">82.4%</span></td><td class="risk-high">CRITICAL</td></tr>
+                                </table>
                             </div>
-                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; padding:10px; background:#ffffff05; border-radius:8px;">
-                                <span style="font-size:1.5rem;">👌</span> <div><strong>Pinch</strong><br><small>Fan</small></div>
+
+                            <div style="border-top:1px solid #333; padding-top:10px;">
+                                <h4 style="margin:0 0 5px 0; color:gray; font-size:0.7rem;">GESTURES</h4>
+                                <small style="font-size:0.6rem; opacity:0.7;">✊:Pain | ✌️:Water | ✋:Light | 👌:Fan</small>
                             </div>
                         </div>
-                    </div>
 
                     <div class="patient-deck" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
                         <div class="p-card" id="card-p1">
@@ -436,6 +459,43 @@
                 document.getElementById(`bdg-p${id}`).innerText = "STABLE";
                 document.getElementById(`req-p${id}`).innerText = "--";
             }
+        };
+        // --- FEATURE LOGIC INJECTION ---
+        
+        // 1. Face Scan Simulation
+        System.registerFace = () => {
+            System.notify("Analyzing Face Landmarks...", false);
+            document.getElementById('ai-stat').innerText = "SCANNING";
+            setTimeout(() => {
+                System.notify("Biometric ID Verified", false);
+                document.getElementById('ai-stat').innerText = "ACTIVE";
+            }, 2000);
+        };
+
+        // 2. Cardiac Risk Engine
+        setInterval(() => {
+            const r1 = (Math.random() * 5).toFixed(1);
+            const r2 = (75 + Math.random() * 15).toFixed(1);
+            document.getElementById('risk-1').innerText = r1 + "%";
+            document.getElementById('risk-2').innerText = r2 + "%";
+            if(r2 > 85) System.notify("CARDIAC ALERT: BED 2", true);
+        }, 8000);
+
+        // 3. Digital Twinning Renderer
+        const renderTwin = (lm, id) => {
+            const can = document.getElementById(`twin-${id}`);
+            const ctx = can.getContext('2d');
+            can.width = can.offsetWidth; can.height = can.offsetHeight;
+            ctx.clearRect(0,0,can.width,can.height);
+            drawConnectors(ctx, lm, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 1});
+        };
+
+        // 4. Hook into existing Vision Engine
+        const originalVisionProcess = Vision.process;
+        Vision.process = (results) => {
+            originalVisionProcess(results); // Run original code first
+            if(results.rightHandLandmarks) renderTwin(results.rightHandLandmarks, 1);
+            if(results.leftHandLandmarks) renderTwin(results.leftHandLandmarks, 2);
         };
 
         // --- 5. VISUALIZATIONS ---
