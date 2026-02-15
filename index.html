@@ -3,379 +3,495 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VisionCare Enterprise | Titan OS v9.0</title>
+    <title>VisionCare Enterprise | Central Command</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
     <style>
+        /* =========================================
+           UI FRAMEWORK (MediUI v9)
+           ========================================= */
         :root {
-            --c-bg: #020617; --c-side: #0f172a; --c-panel: #1e293b; --c-card: #334155;
-            --c-prim: #6366f1; --c-acc: #06b6d4; --c-success: #10b981; --c-warn: #f59e0b;
-            --c-dang: #ef4444; --c-txt: #f8fafc; --rad-lg: 16px;
+            --bg-deep: #050b14;
+            --bg-panel: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #6366f1;
+            --accent: #38bdf8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: 1px solid rgba(255,255,255,0.1);
+            --radius: 12px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: var(--c-bg); color: var(--c-txt); height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; outline: none; user-select: none; }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-deep); color: var(--text-main); margin: 0; height: 100vh; overflow: hidden; display: flex; }
+
+        /* LOADING OVERLAY */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 20000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        .spinner { width: 60px; height: 60px; border: 5px solid #333; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+
+        /* LAYOUT */
+        aside { width: 260px; background: var(--bg-panel); border-right: var(--border); padding: 20px; display: flex; flex-direction: column; z-index: 50; }
+        .brand { font-size: 1.5rem; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; color: white; }
+        .nav-item { padding: 12px; color: var(--text-muted); border-radius: 10px; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { background: rgba(99, 102, 241, 0.15); color: var(--primary); border-left: 3px solid var(--primary); }
+
+        main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; position: relative; }
+
+        /* DASHBOARD GRID */
+        .dash-grid { display: grid; grid-template-rows: 60% 40%; gap: 20px; height: 100%; }
+        .top-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; }
+
+        /* CAMERA WIDGET */
+        .cam-box { background: #000; border-radius: var(--radius); border: var(--border); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        video { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+        canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); z-index: 10; }
         
-        #app-shell { display: flex; height: 100vh; }
-        aside { width: 280px; background: var(--c-side); border-right: 1px solid rgba(255,255,255,0.1); padding: 24px; display: flex; flex-direction: column; z-index: 100; }
-        .nav-link { padding: 14px; border-radius: 12px; color: #94a3b8; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; font-weight: 500; }
-        .nav-link:hover { background: rgba(255,255,255,0.05); }
-        .nav-link.active { background: rgba(99, 102, 241, 0.2); color: var(--c-prim); border-left: 4px solid var(--c-prim); }
+        .hud { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--success); border: var(--border); pointer-events: none; z-index: 20; min-width: 180px; }
+        .hud-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        
+        .split-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.3); z-index: 15; border-left: 2px dashed rgba(0,0,0,0.5); }
+        .zone-label { position: absolute; top: 10px; font-weight: bold; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; z-index: 15; }
+        
+        /* PATIENT CARDS */
+        .patient-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 100%; }
+        .p-card { background: var(--bg-card); border-radius: var(--radius); border: var(--border); padding: 15px; display: flex; flex-direction: column; transition: 0.3s; position: relative; }
+        .p-card.danger { border-color: var(--danger); box-shadow: 0 0 40px rgba(239, 68, 68, 0.4); animation: flashRed 1s infinite; }
+        
+        .p-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .badge.ok { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge.crit { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .viewport { flex: 1; padding: 24px; overflow-y: auto; display: none; }
-        .viewport.active { display: block; }
+        /* SIMULATION WIDGETS */
+        .ecg-area { flex: 1; background: #000; border-radius: 8px; margin-bottom: 10px; position: relative; overflow: hidden; border: var(--border); }
+        .saline-area { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .saline-track { flex: 1; height: 8px; background: #000; border-radius: 4px; overflow: hidden; border: 1px solid #444; }
+        .saline-fill { height: 100%; background: var(--accent); width: 100%; transition: 1s linear; }
 
-        /* Dashboard Layout */
-        .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-        .cam-module { position: relative; background: #000; border-radius: var(--rad-lg); height: 500px; border: 2px solid #1e293b; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        video, #can { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+        /* CONTROLS */
+        .ctrl-row { display: flex; gap: 8px; }
+        .btn-sq { width: 40px; height: 40px; border-radius: 8px; background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .btn-sq.active { background: var(--warning); color: #000; border-color: var(--warning); }
+        .btn-sq.spin i { animation: spin 1s linear infinite; }
 
-        /* Patient Cards */
-        .p-cards-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
-        .p-card { background: var(--c-panel); border-radius: var(--rad-lg); padding: 24px; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; }
-        .p-card.emergency-crit { border-color: var(--c-dang); animation: flash-danger 0.8s infinite; }
-        @keyframes flash-danger { 0%, 100% { background: var(--c-panel); } 50% { background: #450a0a; } }
+        /* ANALYTICS VIEW */
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 100%; }
+        .chart-box { background: var(--bg-card); padding: 15px; border-radius: var(--radius); border: var(--border); }
 
-        /* Vitals & Controls */
-        .ecg-monitor { height: 100px; background: #000; border-radius: 12px; margin: 15px 0; border: 1px solid #334155; }
-        .hardware-controls { display: flex; gap: 20px; margin-top: 15px; }
-        .h-icon { font-size: 1.4rem; color: rgba(255,255,255,0.1); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .h-icon.active { color: var(--c-warn); text-shadow: 0 0 15px var(--c-warn); transform: scale(1.2); }
-        .h-icon.fan-spin.active { animation: spin-hardware 2s linear infinite; }
-        @keyframes spin-hardware { from { transform: rotate(0deg) scale(1.2); } to { transform: rotate(360deg) scale(1.2); } }
-
-        /* History Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: var(--c-panel); border-radius: 12px; overflow: hidden; }
-        th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        th { background: rgba(0,0,0,0.2); font-weight: 600; }
-
-        /* Toasts */
-        .toast { position: fixed; top: 24px; right: 24px; background: white; color: #020617; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999; transform: translateX(120%); transition: 0.4s; border-left: 6px solid var(--c-prim); }
+        /* TOAST */
+        .toast { position: fixed; top: 20px; right: 20px; background: white; color: #000; padding: 15px 25px; border-radius: 12px; z-index: 30000; transform: translateX(150%); transition: 0.4s; border-left: 5px solid var(--primary); font-weight: bold; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .toast.show { transform: translateX(0); }
-        .toast.dang { border-left-color: var(--c-dang); }
+        .toast.danger { border-left-color: var(--danger); background: #fee2e2; color: #991b1b; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes flashRed { 0% { border-color: var(--danger); } 50% { border-color: transparent; } 100% { border-color: var(--danger); } }
+        
+        .view-section { display: none; height: 100%; flex-direction: column; }
+        .view-section.active { display: flex; }
     </style>
 </head>
 <body>
 
-    <div id="toast-area"></div>
+    <div id="loader" style="display:none;">
+        <div class="spinner"></div>
+        <h3 style="color:white; margin-top:10px;">Initializing Neural Engine...</h3>
+        <p style="color:#666;">Please Wait</p>
+    </div>
 
-    <div id="app-shell">
-        <aside>
-            <div style="font-size:1.6rem; font-weight:800; color:var(--c-prim); margin-bottom:40px;"><i class="fas fa-eye"></i> VisionCare v9</div>
-            <nav style="flex:1">
-                <div class="nav-link active" onclick="Router.nav('dash')"><i class="fas fa-desktop"></i> Monitoring Hub</div>
-                <div class="nav-link" onclick="Router.nav('history')"><i class="fas fa-file-medical"></i> Medical History</div>
-                <div class="nav-link" onclick="Router.nav('analytics')"><i class="fas fa-chart-line"></i> Bio-Analytics</div>
-                <div class="nav-link" onclick="Router.nav('settings')"><i class="fas fa-sliders-h"></i> System Tuning</div>
-            </nav>
-            <div style="background:rgba(0,0,0,0.2); padding:15px; border-radius:12px; margin-bottom:20px;">
-                <div style="font-size:0.7rem; color:#94a3b8; margin-bottom:5px;">AI CORE TEMP</div>
-                <div style="height:4px; background:#1e293b; border-radius:2px;"><div style="width:40%; height:100%; background:var(--c-success);"></div></div>
-            </div>
-            <button class="nav-link" style="border:none; background:none; color:var(--c-dang)" onclick="location.reload()"><i class="fas fa-power-off"></i> System Shutdown</button>
-        </aside>
-
-        <div class="main-content">
-            <div style="height:80px; padding:0 32px; display:flex; align-items:center; justify-content:between; border-bottom:1px solid rgba(255,255,255,0.1)">
-                <div style="flex:1">
-                    <h2 id="view-title">ICU Command Centre</h2>
-                    <div id="clock" style="color:#94a3b8; font-size:0.9rem">00:00:00</div>
-                </div>
-                <div style="display:flex; align-items:center; gap:20px">
-                    <div style="text-align:right"><div style="font-weight:700">Dr. Yash</div><div style="font-size:0.7rem; color:var(--c-success)">HEAD OF ICU</div></div>
-                    <div style="width:44px; height:44px; background:var(--c-prim); border-radius:50%; display:grid; place-items:center; font-weight:800">YS</div>
-                </div>
-            </div>
-
-            <div class="viewport active" id="v-dash">
-                <div class="dash-grid">
-                    <div class="cam-module">
-                        <video id="vid" playsinline muted></video>
-                        <canvas id="can"></canvas>
-                        
-                        <div style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.8); padding:15px; border-radius:12px; font-family:'JetBrains Mono'; border:1px solid rgba(255,255,255,0.1)">
-                            <div style="color:var(--c-success)">● AI ENGINE: ACTIVE</div>
-                            <div style="margin:5px 0">ACTIVE GESTURE: <span id="st-gesture" style="color:var(--c-warn)">--</span></div>
-                            <div style="font-size:0.7rem; color:#64748b">BED BOUNDARY ENABLED</div>
-                        </div>
-
-                        <div style="position:absolute; bottom:24px; width:100%; display:flex; justify-content:center; gap:12px">
-                            <button class="nav-link active" style="padding:10px 25px" onclick="VisionKernel.start()">INITIALIZE AI</button>
-                            <button class="nav-link active" style="padding:10px 25px" onclick="VoiceKernel.listen()"><i class="fas fa-microphone"></i> DOCTOR VOICE</button>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-4">
-                        <div class="p-card" style="height:260px; background:#000; position:relative">
-                            <canvas id="twin_can" style="width:100%; height:100%"></canvas>
-                            <div style="position:absolute; top:10px; left:10px; font-size:0.6rem; color:var(--c-acc)">SKELETAL TWINNING ACTIVE</div>
-                        </div>
-                        <div class="p-card flex-1">
-                            <h3>Ward Intelligence</h3>
-                            <div style="margin-top:20px; display:flex; flex-direction:column; gap:15px">
-                                <div class="flex justify-between"><span>Active SOS Alerts</span><span id="sos-count" class="text-danger">0</span></div>
-                                <div class="flex justify-between"><span>Environmental Load</span><span class="text-warning">Nominal</span></div>
-                                <div class="flex justify-between"><span>Doctor Proximity</span><span class="text-success">Detected</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-cards-container">
-                    <div class="p-card" id="card-p1">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-4">
-                                <div style="width:52px; height:52px; background:var(--c-prim); border-radius:14px; display:grid; place-items:center; font-weight:800">AS</div>
-                                <div><strong id="name-p1">Alex Smith</strong><div style="font-size:0.75rem; color:#94a3b8">Bed 1 • Cardiac Unit</div></div>
-                            </div>
-                            <span id="status-p1" class="badge" style="background:rgba(16,185,129,0.2); color:var(--c-success)">STABLE</span>
-                        </div>
-                        <div class="ecg-monitor"><canvas id="ecg-1" style="width:100%; height:100%"></canvas></div>
-                        <div class="flex justify-between items-center">
-                            <div class="hardware-controls">
-                                <i class="fas fa-lightbulb h-icon" id="light-p1"></i>
-                                <i class="fas fa-fan h-icon fan-spin" id="fan-p1"></i>
-                            </div>
-                            <div id="req-p1" style="font-weight:800; font-size:1.1rem; color:var(--c-acc)">--</div>
-                        </div>
-                    </div>
-
-                    <div class="p-card" id="card-p2">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-4">
-                                <div style="width:52px; height:52px; background:var(--c-acc); border-radius:14px; display:grid; place-items:center; font-weight:800">SD</div>
-                                <div><strong id="name-p2">Sarah Doe</strong><div style="font-size:0.75rem; color:#94a3b8">Bed 2 • Ortho Dept</div></div>
-                            </div>
-                            <span id="status-p2" class="badge" style="background:rgba(16,185,129,0.2); color:var(--c-success)">STABLE</span>
-                        </div>
-                        <div class="ecg-monitor"><canvas id="ecg-2" style="width:100%; height:100%"></canvas></div>
-                        <div class="flex justify-between items-center">
-                            <div class="hardware-controls">
-                                <i class="fas fa-lightbulb h-icon" id="light-p2"></i>
-                                <i class="fas fa-fan h-icon fan-spin" id="fan-p2"></i>
-                            </div>
-                            <div id="req-p2" style="font-weight:800; font-size:1.1rem; color:var(--c-acc)">--</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="viewport" id="v-history">
-                <h2>Patient Medical Records</h2>
-                <table>
-                    <thead>
-                        <tr><th>ID</th><th>Name</th><th>Condition</th><th>Medication</th><th>Admission</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>#1001</td><td>Alex Smith</td><td>Atrial Fibrillation</td><td>Warfarin 5mg</td><td>10 Feb 2026</td></tr>
-                        <tr><td>#1002</td><td>Sarah Doe</td><td>Spinal Recovery</td><td>Morphine 2mg</td><td>12 Feb 2026</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="viewport" id="v-analytics">
-                <h2>Bio-Analytics Visualization</h2>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px">
-                    <div class="p-card"><canvas id="chart-trends"></canvas></div>
-                    <div class="p-card"><canvas id="chart-load"></canvas></div>
-                </div>
-            </div>
-
-            <div class="viewport" id="v-settings">
-                <h2>System Configuration</h2>
-                <div class="p-card" style="margin-top:24px; max-width:600px">
-                    <div style="margin-bottom:20px">
-                        <label>AI Gesture Cooldown (ms)</label>
-                        <input type="range" style="width:100%" min="1000" max="5000" value="3000">
-                    </div>
-                    <div style="margin-bottom:20px">
-                        <label>Voice Feedback Rate</label>
-                        <input type="range" style="width:100%" min="0.5" max="2" step="0.1" value="1">
-                    </div>
-                    <button class="nav-link active" onclick="localStorage.clear(); location.reload();">FACTORY RESET SYSTEM</button>
-                </div>
-            </div>
+    <div id="auth-layer" style="position:fixed; inset:0; background:#000; z-index:10000; display:flex; align-items:center; justify-content:center;">
+        <div style="width:400px; padding:40px; background:var(--bg-panel); border-radius:24px; text-align:center; border:1px solid #333;">
+            <h2 style="color:white; margin-bottom:5px;">VisionCare Ultimate</h2>
+            <p style="color:gray; margin-bottom:20px;">Voice & Vision Command Center</p>
+            <input type="text" id="u" value="admin" style="width:100%; padding:10px; margin-bottom:10px; background:#000; border:1px solid #333; color:white; text-align:center; border-radius:8px;">
+            <input type="password" id="p" value="admin123" style="width:100%; padding:10px; margin-bottom:20px; background:#000; border:1px solid #333; color:white; text-align:center; border-radius:8px;">
+            <button onclick="System.login()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">INITIALIZE SYSTEM</button>
         </div>
     </div>
 
+    <div id="app-shell" style="display:none; width:100%; height:100%;">
+        <aside>
+            <div class="brand"><i class="fas fa-eye text-primary"></i> VisionCare</div>
+            <div class="nav-item active" onclick="Router.go('dash')"><i class="fas fa-desktop"></i> Monitor</div>
+            <div class="nav-item" onclick="Router.go('analytics')"><i class="fas fa-chart-line"></i> Analytics</div>
+            <div class="nav-item" onclick="Router.go('logs')"><i class="fas fa-clipboard-list"></i> Logs</div>
+            
+            <div style="margin-top:auto">
+                <div style="font-size:0.7rem; color:gray; font-weight:bold; margin-bottom:10px;">VOICE STATUS</div>
+                <div id="mic-status" style="color:var(--danger); font-weight:bold;">OFFLINE</div>
+            </div>
+        </aside>
+
+        <main>
+            <div id="view-dash" class="view-section active">
+                <div class="dash-grid">
+                    <div class="top-row">
+                        <div class="cam-box">
+                            <video id="vid" playsinline muted></video>
+                            <canvas id="can"></canvas>
+                            
+                            <div class="split-line"></div>
+                            <div class="zone-label" style="left:10px; color:var(--accent);">BED 1 (Active)</div>
+                            <div class="zone-label" style="right:10px; color:var(--accent);">BED 2 (Active)</div>
+
+                            <div class="hud">
+                                <div class="hud-row"><span>AI CORE:</span> <span class="text-success" id="ai-stat">WAITING</span></div>
+                                <div class="hud-row"><span>FALL RISK:</span> <span id="debug-fall">SAFE</span></div>
+                                <div class="hud-row border-t border-gray-700 mt-1 pt-1">
+                                    <span>CMD:</span> <span id="debug-cmd" style="color:yellow">--</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background:var(--bg-card); border-radius:12px; padding:15px; overflow-y:auto;">
+                            <h4 style="margin:0 0 10px 0; color:gray;">GESTURE MAP</h4>
+                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; padding:10px; background:#ffffff05; border-radius:8px;">
+                                <span style="font-size:1.5rem;">✊</span> <div><strong>Fist</strong><br><small>Emergency</small></div>
+                            </div>
+                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; padding:10px; background:#ffffff05; border-radius:8px;">
+                                <span style="font-size:1.5rem;">✌️</span> <div><strong>Victory</strong><br><small>Water</small></div>
+                            </div>
+                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; padding:10px; background:#ffffff05; border-radius:8px;">
+                                <span style="font-size:1.5rem;">✋</span> <div><strong>Palm</strong><br><small>Lights</small></div>
+                            </div>
+                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; padding:10px; background:#ffffff05; border-radius:8px;">
+                                <span style="font-size:1.5rem;">👌</span> <div><strong>Pinch</strong><br><small>Fan</small></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="patient-deck" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                        <div class="p-card" id="card-p1">
+                            <div class="p-head">
+                                <div><h4>Alex Smith</h4><small style="color:gray;">Bed 1</small></div>
+                                <span class="badge ok" id="bdg-p1">STABLE</span>
+                            </div>
+                            <div class="ecg-area"><canvas id="ecg-p1"></canvas></div>
+                            <div class="saline-area">
+                                <i class="fas fa-prescription-bottle text-accent"></i>
+                                <div class="saline-track"><div class="saline-fill" id="sal-p1"></div></div>
+                                <small>85%</small>
+                            </div>
+                            <div id="req-p1" style="text-align:center; font-weight:bold; margin-bottom:10px;">--</div>
+                            <div class="ctrl-row">
+                                <div class="btn-sq" id="btn-light-p1"><i class="fas fa-lightbulb"></i></div>
+                                <div class="btn-sq" id="btn-fan-p1"><i class="fas fa-fan"></i></div>
+                            </div>
+                        </div>
+
+                        <div class="p-card" id="card-p2">
+                            <div class="p-head">
+                                <div><h4>Sarah Doe</h4><small style="color:gray;">Bed 2</small></div>
+                                <span class="badge ok" id="bdg-p2">STABLE</span>
+                            </div>
+                            <div class="ecg-area"><canvas id="ecg-p2"></canvas></div>
+                            <div class="saline-area">
+                                <i class="fas fa-prescription-bottle text-accent"></i>
+                                <div class="saline-track"><div class="saline-fill" id="sal-p2"></div></div>
+                                <small>40%</small>
+                            </div>
+                            <div id="req-p2" style="text-align:center; font-weight:bold; margin-bottom:10px;">--</div>
+                            <div class="ctrl-row">
+                                <div class="btn-sq" id="btn-light-p2"><i class="fas fa-lightbulb"></i></div>
+                                <div class="btn-sq" id="btn-fan-p2"><i class="fas fa-fan"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-analytics" class="view-section">
+                <h2>Live Analytics</h2>
+                <div class="chart-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:20px; height:60%;">
+                    <div class="chart-box" style="background:var(--bg-card); padding:20px; border-radius:12px;">
+                        <canvas id="chart-requests"></canvas>
+                    </div>
+                    <div class="chart-box" style="background:var(--bg-card); padding:20px; border-radius:12px;">
+                        <canvas id="chart-urgency"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-logs" class="view-section">
+                <div class="p-card" style="height:100%;">
+                    <h3>System Event Logs</h3>
+                    <div style="overflow-y:auto; flex:1;">
+                        <table style="width:100%; text-align:left; border-collapse:collapse;">
+                            <thead style="border-bottom:1px solid #333;">
+                                <tr><th style="padding:10px;">Time</th><th>Event</th><th>Type</th></tr>
+                            </thead>
+                            <tbody id="log-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="toast" class="toast">Alert</div>
+
     <script>
-        // --- CONSTANTS ---
+        // GLOBALS
         const VIDEO = document.getElementById('vid');
         const CANVAS = document.getElementById('can');
         const CTX = CANVAS.getContext('2d');
-        const TWIN_CTX = document.getElementById('twin_can').getContext('2d');
-        const BEEPER = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+        let lastAction1 = "", lastAction2 = "";
 
-        // --- 1. ROUTER ---
+        // --- 1. SYSTEM CORE ---
+        const System = {
+            login: () => {
+                const u = document.getElementById('u').value;
+                const p = document.getElementById('p').value;
+                if(u === 'admin' && p === 'admin123') {
+                    document.getElementById('auth-layer').style.display = 'none';
+                    document.getElementById('loader').style.display = 'flex'; // Show loader
+                    document.getElementById('app-shell').style.display = 'flex';
+                    Voice.speak("Vision Care Enterprise Online");
+                    setTimeout(Vision.start, 1000); // Start AI after UI loads
+                    ECG.start(1); ECG.start(2);
+                    Charts.init();
+                    Saline.start();
+                } else alert("Invalid");
+            },
+            notify: (msg, crit) => {
+                const t = document.getElementById('toast');
+                t.innerText = msg;
+                t.className = crit ? "toast show danger" : "toast show";
+                Voice.speak(msg);
+                setTimeout(() => t.classList.remove('show'), 4000);
+                Logs.add(msg, crit ? 'CRIT' : 'INFO');
+            }
+        };
+
         const Router = {
-            nav: (view) => {
-                document.querySelectorAll('.viewport').forEach(v => v.classList.remove('active'));
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                document.getElementById('v-' + view).classList.add('active');
+            go: (id) => {
+                document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
+                document.getElementById(`view-${id}`).classList.add('active');
+                document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
                 event.currentTarget.classList.add('active');
-                VoiceKernel.speak("Displaying " + view);
             }
         };
 
         // --- 2. VISION KERNEL ---
-        const VisionKernel = {
-            cooldown: false,
+        const Vision = {
             start: async () => {
                 const holistic = new Holistic({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`});
-                holistic.setOptions({ modelComplexity: 1, minDetectionConfidence: 0.6 });
-                holistic.onResults(VisionKernel.results);
+                holistic.setOptions({modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5});
+                holistic.onResults(Vision.process);
 
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                VIDEO.srcObject = stream;
-                VIDEO.onloadedmetadata = () => {
-                    VIDEO.play();
-                    new Camera(VIDEO, { onFrame: async () => { await holistic.send({image: VIDEO}); }, width: 640, height: 480 }).start();
-                    Core.notify("AI SYSTEM", "Vision Core and Skeletal Twinning Engaged", false);
-                };
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+                    VIDEO.srcObject = stream;
+                    VIDEO.onloadedmetadata = () => {
+                        VIDEO.play();
+                        document.getElementById('ai-stat').innerText = "ACTIVE";
+                        const cam = new Camera(VIDEO, { onFrame: async () => { await holistic.send({image: VIDEO}); }, width: 1280, height: 720 });
+                        cam.start();
+                        document.getElementById('loader').style.display = 'none'; // Hide loader
+                        Voice.init(); // Start Voice Listener
+                    };
+                } catch(e) { alert("Camera Error: Use Localhost"); }
             },
-            results: (results) => {
+            process: (results) => {
                 CANVAS.width = VIDEO.videoWidth; CANVAS.height = VIDEO.videoHeight;
-                CTX.clearRect(0,0,CANVAS.width,CANVAS.height);
+                const w = CANVAS.width; const h = CANVAS.height;
                 
-                // Drawing Split Boundary
-                CTX.strokeStyle = "rgba(255,255,255,0.1)";
-                CTX.setLineDash([10, 5]);
-                CTX.beginPath(); CTX.moveTo(CANVAS.width/2, 0); CTX.lineTo(CANVAS.width/2, CANVAS.height); CTX.stroke();
+                CTX.save();
+                CTX.clearRect(0, 0, w, h);
+                CTX.drawImage(results.image, 0, 0, w, h);
+                
+                // Draw Splitter
+                CTX.beginPath(); CTX.moveTo(w/2, 0); CTX.lineTo(w/2, h); 
+                CTX.strokeStyle = "rgba(255,255,255,0.5)"; CTX.lineWidth = 4; CTX.stroke();
 
-                // DUAL PATIENT GESTURE PROCESSING
-                [results.leftHandLandmarks, results.rightHandLandmarks].forEach(hand => {
-                    if(hand) {
-                        const bedId = hand[0].x > 0.5 ? 1 : 2; 
-                        const color = bedId === 1 ? '#6366f1' : '#06b6d4';
-                        drawConnectors(CTX, hand, HAND_CONNECTIONS, {color: color, lineWidth: 3});
-                        VisionKernel.analyze(hand, bedId);
-                    }
-                });
+                // Draw Landmarks
+                drawConnectors(CTX, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
+                drawConnectors(CTX, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
+                drawConnectors(CTX, results.poseLandmarks, POSE_CONNECTIONS, {color: '#ffffff50', lineWidth: 1});
+                
+                CTX.restore();
 
-                // SKELETAL TWINNING
-                TWIN_CTX.canvas.width = 300; TWIN_CTX.canvas.height = 300;
-                TWIN_CTX.clearRect(0,0,300,300);
-                if(results.poseLandmarks) {
-                    drawConnectors(TWIN_CTX, results.poseLandmarks, POSE_CONNECTIONS, {color: '#06b6d4', lineWidth: 2});
-                    drawLandmarks(TWIN_CTX, results.poseLandmarks, {color: '#ffffff', lineWidth: 1, radius: 2});
+                // LOGIC GATES
+                if(results.rightHandLandmarks) Vision.analyzeHand(results.rightHandLandmarks, 1); // Right Hand -> Bed 1 (Mirror)
+                if(results.leftHandLandmarks) Vision.analyzeHand(results.leftHandLandmarks, 2); // Left Hand -> Bed 2
+                
+                if(results.poseLandmarks) Vision.analyzeFall(results.poseLandmarks);
+            },
+            analyzeHand: (lm, bedId) => {
+                // Determine Bed based on X position to be sure (Left/Right side of screen)
+                const x = lm[0].x; 
+                const targetBed = x < 0.5 ? 1 : 2; 
+
+                // Count Fingers
+                let fingers = 0;
+                if(lm[8].y < lm[6].y) fingers++;
+                if(lm[12].y < lm[10].y) fingers++;
+                if(lm[16].y < lm[14].y) fingers++;
+                if(lm[20].y < lm[18].y) fingers++;
+                if(Math.abs(lm[4].x - lm[5].x) > 0.05) fingers++;
+
+                const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
+
+                let msg = "";
+                if(isPinch) msg = "FAN ON";
+                else if(fingers === 0) msg = "PAIN";
+                else if(fingers === 2) msg = "WATER";
+                else if(fingers === 5) msg = "LIGHT ON";
+
+                document.getElementById('debug-cmd').innerText = msg || "--";
+
+                // Trigger Action
+                if(msg && (targetBed === 1 ? msg !== lastAction1 : msg !== lastAction2)) {
+                    if(targetBed === 1) lastAction1 = msg; else lastAction2 = msg;
+                    Room.trigger(targetBed, msg);
+                    setTimeout(() => { if(targetBed===1) lastAction1=""; else lastAction2=""; }, 3000);
                 }
             },
-            analyze: (lm, id) => {
-                if(VisionKernel.cooldown) return;
-                let f = 0; [8,12,16,20].forEach(t => { if(lm[t].y < lm[t-2].y) f++; });
-                
-                let cmd = "";
-                if(f === 0) cmd = "EMERGENCY";
-                else if(f === 1) cmd = "WATER";
-                else if(f === 2) cmd = "FAN";
-                else if(f === 5) cmd = "LIGHTS";
-
-                if(cmd) {
-                    VisionKernel.cooldown = true;
-                    RoomMgr.trigger(id, cmd);
-                    document.getElementById('st-gesture').innerText = `B${id}: ${cmd}`;
-                    setTimeout(() => { VisionKernel.cooldown = false; }, 3000);
+            analyzeFall: (lm) => {
+                const noseY = lm[0].y; // Nose Vertical Pos
+                if(noseY > 0.85) { // If nose is at bottom 15% of screen
+                    if(lastAction1 !== "FALL") {
+                        lastAction1 = "FALL";
+                        document.getElementById('debug-fall').innerText = "ALERT!";
+                        document.getElementById('debug-fall').style.color = "red";
+                        System.notify("FALL DETECTED BED 1", true);
+                        setTimeout(() => lastAction1 = "", 5000);
+                    }
                 }
             }
         };
 
-        // --- 3. VOICE KERNEL (Doctor-AI Bridge) ---
-        const VoiceKernel = {
-            listen: () => {
-                const R = window.SpeechRecognition || window.webkitSpeechRecognition;
-                const r = new R();
-                r.onstart = () => Core.notify("VOICE MODE", "Listening for Doctor Commands", false);
-                r.onresult = (e) => {
-                    const t = e.results[0][0].transcript.toLowerCase();
-                    let bed = (t.includes('two') || t.includes('2')) ? 2 : 1;
-                    
-                    if(t.includes('fan')) RoomMgr.trigger(bed, "FAN");
-                    if(t.includes('light')) RoomMgr.trigger(bed, "LIGHTS");
-                    if(t.includes('reset') || t.includes('clear')) RoomMgr.trigger(bed, "CLEAR");
-                    if(t.includes('analytics')) Router.nav('analytics');
+        // --- 3. VOICE KERNEL (IMMORTAL) ---
+        const Voice = {
+            recognition: null,
+            init: () => {
+                const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if(!Speech) return;
+                
+                Voice.recognition = new Speech();
+                Voice.recognition.continuous = true;
+                Voice.recognition.lang = 'en-US';
+                
+                Voice.recognition.onstart = () => {
+                    document.getElementById('mic-status').innerText = "ONLINE";
+                    document.getElementById('mic-status').style.color = "#10b981";
                 };
-                r.start();
+                
+                Voice.recognition.onend = () => {
+                    Voice.recognition.start(); // Auto-restart
+                };
+
+                Voice.recognition.onresult = (e) => {
+                    const t = e.results[e.results.length - 1][0].transcript.toLowerCase();
+                    System.notify(`Voice: "${t}"`, false);
+                    
+                    if(t.includes('fan')) Room.trigger(1, "FAN ON");
+                    if(t.includes('light')) Room.trigger(1, "LIGHT ON");
+                    if(t.includes('analytics')) Router.go('analytics');
+                    if(t.includes('monitor')) Router.go('dashboard');
+                    if(t.includes('clear')) Room.clear(1);
+                };
+
+                Voice.recognition.start();
             },
             speak: (txt) => {
                 window.speechSynthesis.cancel();
-                const s = new SpeechSynthesisUtterance(txt);
-                s.rate = 1.1;
-                window.speechSynthesis.speak(s);
+                window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt));
             }
         };
 
-        // --- 4. ROOM MANAGER ---
-        const RoomMgr = {
-            trigger: (id, cmd) => {
-                const name = document.getElementById(`name-p${id}`).innerText;
-                document.getElementById(`req-p${id}`).innerText = cmd;
-                
-                if(cmd === "EMERGENCY") {
-                    document.getElementById(`card-p${id}`).classList.add('emergency-crit');
-                    document.getElementById(`status-p${id}`).innerText = "CRITICAL";
-                    document.getElementById(`status-p${id}`).style.background = "red";
-                    Core.notify("🚨 CRITICAL ALERT", `Patient ${name} is in distress!`, true);
-                    BEEPER.play();
-                    VoiceKernel.speak(`Emergency detected for ${name}. Assist immediately.`);
-                } else if (cmd === "FAN") {
-                    document.getElementById(`fan-p${id}`).classList.toggle('active');
-                    VoiceKernel.speak(`Activating fan for ${name}`);
-                } else if (cmd === "LIGHTS") {
-                    document.getElementById(`light-p${id}`).classList.toggle('active');
-                    VoiceKernel.speak(`Toggling lights for ${name}`);
-                } else if (cmd === "CLEAR") {
-                    document.getElementById(`card-p${id}`).classList.remove('emergency-crit');
-                    document.getElementById(`status-p${id}`).innerText = "STABLE";
-                    document.getElementById(`status-p${id}`).style.background = "rgba(16,185,129,0.2)";
-                    document.getElementById(`req-p${id}`).innerText = "--";
+        // --- 4. ROOM & LOGIC ---
+        const Room = {
+            trigger: (id, msg) => {
+                document.getElementById(`req-p${id}`).innerText = msg;
+                if(msg === "PAIN") {
+                    document.getElementById(`card-p${id}`).classList.add('danger');
+                    document.getElementById(`bdg-p${id}`).className = "badge crit";
+                    document.getElementById(`bdg-p${id}`).innerText = "CRITICAL";
+                    System.notify(`EMERGENCY BED ${id}`, true);
                 } else {
-                    VoiceKernel.speak(`${name} has requested ${cmd}`);
+                    if(msg.includes('FAN')) document.getElementById(`btn-fan-p${id}`).classList.add('active', 'spin');
+                    if(msg.includes('LIGHT')) document.getElementById(`btn-light-p${id}`).classList.add('active');
+                    System.notify(`Bed ${id}: ${msg}`, false);
                 }
+            },
+            clear: (id) => {
+                document.getElementById(`card-p${id}`).classList.remove('danger');
+                document.getElementById(`bdg-p${id}`).className = "badge ok";
+                document.getElementById(`bdg-p${id}`).innerText = "STABLE";
+                document.getElementById(`req-p${id}`).innerText = "--";
             }
         };
 
-        // --- 5. BIOMETRICS & ECG ---
-        const SimKernel = {
-            startECG: (id) => {
-                const c = document.getElementById(`ecg-${id}`);
-                const cx = c.getContext('2d');
-                let x = 0;
-                function loop() {
-                    if(x > c.width) { x = 0; cx.clearRect(0,0,c.width,c.height); }
-                    cx.strokeStyle = id === 1 ? "#10b981" : "#06b6d4";
-                    cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x, c.height/2);
+        // --- 5. VISUALIZATIONS ---
+        const ECG = {
+            start: (id) => {
+                const c = document.getElementById(`ecg-p${id}`); const ctx = c.getContext('2d');
+                c.width = c.offsetWidth; c.height = c.offsetHeight;
+                let x = 0; ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, c.height/2);
+                function draw() {
                     x += 2;
-                    let y = c.height/2 + (Math.random() > 0.96 ? -30 : 0);
-                    cx.lineTo(x, y); cx.stroke();
-                    requestAnimationFrame(loop);
+                    if(x > c.width) { x = 0; ctx.clearRect(0,0,c.width,c.height); ctx.beginPath(); ctx.moveTo(0,c.height/2); }
+                    let y = c.height/2; 
+                    // P-QRS-T Logic
+                    if(x%100 > 10 && x%100 < 20) y -= 5;
+                    else if(x%100 > 25 && x%100 < 35) y += 5;
+                    else if(x%100 > 35 && x%100 < 45) y -= 40; // R
+                    else if(x%100 > 45 && x%100 < 50) y += 15;
+                    else if(x%100 > 60 && x%100 < 70) y -= 8;
+                    ctx.lineTo(x, y); ctx.stroke(); requestAnimationFrame(draw);
                 }
-                loop();
+                draw();
             }
         };
 
-        const Core = {
-            notify: (title, msg, isCrit) => {
-                const t = document.createElement('div');
-                t.className = `toast ${isCrit ? 'dang' : ''}`;
-                t.innerHTML = `<strong>${title}</strong><br>${msg}`;
-                document.getElementById('toast-area').appendChild(t);
-                t.classList.add('show');
-                setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 5000);
+        const Saline = {
+            start: () => {
+                let lvl = 100;
+                setInterval(() => {
+                    lvl -= 1;
+                    if(lvl < 0) lvl = 100;
+                    document.getElementById('sal-p1').style.width = lvl + "%";
+                    document.getElementById('sal-p2').style.width = (lvl-10) + "%";
+                    if(lvl < 15) System.notify("Low Saline Bed 1", false);
+                }, 2000);
             }
         };
 
-        // Bootstrapping
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        SimKernel.startECG(1);
-        SimKernel.startECG(2);
+        const Logs = {
+            add: (msg, type) => {
+                const row = `<tr><td style="padding:10px; color:#aaa;">${new Date().toLocaleTimeString()}</td><td>${msg}</td><td>${type}</td></tr>`;
+                document.getElementById('log-body').innerHTML = row + document.getElementById('log-body').innerHTML;
+            }
+        };
+
+        const Charts = {
+            init: () => {
+                new Chart(document.getElementById('chart-requests'), {
+                    type: 'doughnut',
+                    data: { labels: ['Pain', 'Water', 'Fan'], datasets: [{ data: [2, 10, 5], backgroundColor: ['#ef4444', '#38bdf8', '#f59e0b'] }] }
+                });
+                new Chart(document.getElementById('chart-urgency'), {
+                    type: 'line',
+                    data: { labels: ['10am', '11am', '12pm'], datasets: [{ label: 'Avg Time (s)', data: [45, 30, 20], borderColor: '#6366f1' }] }
+                });
+            }
+        };
     </script>
 </body>
 </html>
