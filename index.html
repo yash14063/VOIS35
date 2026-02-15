@@ -15,9 +15,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
     <style>
-        /* =========================================
-           UI FRAMEWORK (MediUI v9)
-           ========================================= */
         :root {
             --bg-deep: #050b14;
             --bg-panel: #0f172a;
@@ -36,15 +33,9 @@
         * { box-sizing: border-box; outline: none; user-select: none; }
         body { font-family: 'Space Grotesk', sans-serif; background: var(--bg-deep); color: var(--text-main); margin: 0; height: 100vh; overflow: hidden; display: flex; }
 
-        /* LOADING OVERLAY */
-        #loader {
-            position: fixed; inset: 0; background: #000; z-index: 20000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease;
-        }
+        #loader { position: fixed; inset: 0; background: #000; z-index: 20000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease; }
         .spinner { width: 60px; height: 60px; border: 5px solid #333; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
 
-        /* LAYOUT */
         aside { width: 260px; background: var(--bg-panel); border-right: var(--border); padding: 20px; display: flex; flex-direction: column; z-index: 50; }
         .brand { font-size: 1.5rem; font-weight: bold; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; color: white; }
         .nav-item { padding: 12px; color: var(--text-muted); border-radius: 10px; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
@@ -52,11 +43,9 @@
 
         main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; position: relative; }
 
-        /* DASHBOARD GRID */
         .dash-grid { display: grid; grid-template-rows: 60% 40%; gap: 20px; height: 100%; }
-        .top-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; }
+        .top-row { display: grid; grid-template-columns: 2fr 1.2fr; gap: 20px; height: 100%; }
 
-        /* CAMERA WIDGET */
         .cam-box { background: #000; border-radius: var(--radius); border: var(--border); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         video { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
         canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); z-index: 10; }
@@ -67,63 +56,51 @@
         .split-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.3); z-index: 15; border-left: 2px dashed rgba(0,0,0,0.5); }
         .zone-label { position: absolute; top: 10px; font-weight: bold; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; z-index: 15; }
         
-        /* PATIENT CARDS */
-        .patient-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 100%; }
         .p-card { background: var(--bg-card); border-radius: var(--radius); border: var(--border); padding: 15px; display: flex; flex-direction: column; transition: 0.3s; position: relative; }
         .p-card.danger { border-color: var(--danger); box-shadow: 0 0 40px rgba(239, 68, 68, 0.4); animation: flashRed 1s infinite; }
         
-        .p-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
         .badge.ok { background: rgba(16, 185, 129, 0.2); color: var(--success); }
         .badge.crit { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
-        /* SIMULATION WIDGETS */
-        .ecg-area { flex: 1; background: #000; border-radius: 8px; margin-bottom: 10px; position: relative; overflow: hidden; border: var(--border); }
+        .ecg-area { flex: 1; background: #000; border-radius: 8px; margin-bottom: 10px; position: relative; overflow: hidden; border: var(--border); min-height: 80px; }
         .saline-area { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .saline-track { flex: 1; height: 8px; background: #000; border-radius: 4px; overflow: hidden; border: 1px solid #444; }
         .saline-fill { height: 100%; background: var(--accent); width: 100%; transition: 1s linear; }
 
-        /* CONTROLS */
-        .ctrl-row { display: flex; gap: 8px; }
         .btn-sq { width: 40px; height: 40px; border-radius: 8px; background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .btn-sq.active { background: var(--warning); color: #000; border-color: var(--warning); }
         .btn-sq.spin i { animation: spin 1s linear infinite; }
 
-        /* ANALYTICS VIEW */
-        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 100%; }
-        .chart-box { background: var(--bg-card); padding: 15px; border-radius: var(--radius); border: var(--border); }
+        /* NEW FEATURE STYLES */
+        .twinning-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .twin-box { background: #000; border: 1px solid #333; height: 100px; border-radius: 8px; position: relative; overflow: hidden; }
+        .face-tag { position: absolute; top: 5px; right: 5px; font-size: 0.5rem; background: var(--primary); padding: 2px 4px; border-radius: 3px; }
+        .report-table { width: 100%; font-size: 0.75rem; margin-top: 10px; border-collapse: collapse; }
+        .report-table td { padding: 5px; border-bottom: 1px solid #222; }
+        .risk-high { color: var(--danger); font-weight: bold; }
 
-        /* TOAST */
-        .toast { position: fixed; top: 20px; right: 20px; background: white; color: #000; padding: 15px 25px; border-radius: 12px; z-index: 30000; transform: translateX(150%); transition: 0.4s; border-left: 5px solid var(--primary); font-weight: bold; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .toast { position: fixed; top: 20px; right: 20px; background: white; color: #000; padding: 15px 25px; border-radius: 12px; z-index: 30000; transform: translateX(150%); transition: 0.4s; border-left: 5px solid var(--primary); font-weight: bold; }
         .toast.show { transform: translateX(0); }
         .toast.danger { border-left-color: var(--danger); background: #fee2e2; color: #991b1b; }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes flashRed { 0% { border-color: var(--danger); } 50% { border-color: transparent; } 100% { border-color: var(--danger); } }
-        
         .view-section { display: none; height: 100%; flex-direction: column; }
         .view-section.active { display: flex; }
-        /* --- ADD THIS FOR NEW FEATURES --- */
-        .twinning-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .twin-box { background: #000; border: 1px solid #333; height: 100px; border-radius: 8px; position: relative; }
-        .face-tag { position: absolute; top: 5px; right: 5px; font-size: 0.5rem; background: var(--primary); padding: 2px 4px; border-radius: 3px; }
-        .report-table { width: 100%; font-size: 0.75rem; margin-top: 10px; border-collapse: collapse; }
-        .report-table td { padding: 5px; border-bottom: 1px solid #222; }
-        .risk-high { color: var(--danger); font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="loader" style="display:none;">
         <div class="spinner"></div>
-        <h3 style="color:white; margin-top:10px;">Initializing Neural Engine...</h3>
-        <p style="color:#666;">Please Wait</p>
+        <h3 style="color:white;">Initializing Neural Engine...</h3>
     </div>
 
     <div id="auth-layer" style="position:fixed; inset:0; background:#000; z-index:10000; display:flex; align-items:center; justify-content:center;">
         <div style="width:400px; padding:40px; background:var(--bg-panel); border-radius:24px; text-align:center; border:1px solid #333;">
-            <h2 style="color:white; margin-bottom:5px;">VisionCare Ultimate</h2>
-            <p style="color:gray; margin-bottom:20px;">Voice & Vision Command Center</p>
+            <h2 style="color:white;">VisionCare Ultimate</h2>
+            <p style="color:gray;">Command Center Login</p>
             <input type="text" id="u" value="admin" style="width:100%; padding:10px; margin-bottom:10px; background:#000; border:1px solid #333; color:white; text-align:center; border-radius:8px;">
             <input type="password" id="p" value="admin123" style="width:100%; padding:10px; margin-bottom:20px; background:#000; border:1px solid #333; color:white; text-align:center; border-radius:8px;">
             <button onclick="System.login()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">INITIALIZE SYSTEM</button>
@@ -136,9 +113,8 @@
             <div class="nav-item active" onclick="Router.go('dash')"><i class="fas fa-desktop"></i> Monitor</div>
             <div class="nav-item" onclick="Router.go('analytics')"><i class="fas fa-chart-line"></i> Analytics</div>
             <div class="nav-item" onclick="Router.go('logs')"><i class="fas fa-clipboard-list"></i> Logs</div>
-            
             <div style="margin-top:auto">
-                <div style="font-size:0.7rem; color:gray; font-weight:bold; margin-bottom:10px;">VOICE STATUS</div>
+                <div style="font-size:0.7rem; color:gray; font-weight:bold;">VOICE STATUS</div>
                 <div id="mic-status" style="color:var(--danger); font-weight:bold;">OFFLINE</div>
             </div>
         </aside>
@@ -150,22 +126,16 @@
                         <div class="cam-box">
                             <video id="vid" playsinline muted></video>
                             <canvas id="can"></canvas>
-                            
                             <div class="split-line"></div>
-                            <div class="zone-label" style="left:10px; color:var(--accent);">BED 1 (Active)</div>
-                            <div class="zone-label" style="right:10px; color:var(--accent);">BED 2 (Active)</div>
-
+                            <div class="zone-label" style="left:10px; color:var(--accent);">BED 1</div>
+                            <div class="zone-label" style="right:10px; color:var(--accent);">BED 2</div>
                             <div class="hud">
-                                <div class="hud-row"><span>AI CORE:</span> <span class="text-success" id="ai-stat">WAITING</span></div>
-                                <div class="hud-row"><span>FALL RISK:</span> <span id="debug-fall">SAFE</span></div>
-                                <div class="hud-row border-t border-gray-700 mt-1 pt-1">
-                                    <span>CMD:</span> <span id="debug-cmd" style="color:yellow">--</span>
-                                </div>
+                                <div class="hud-row"><span>AI CORE:</span> <span id="ai-stat">WAITING</span></div>
+                                <div class="hud-row"><span>CMD:</span> <span id="debug-cmd" style="color:yellow">--</span></div>
                             </div>
                         </div>
                         
                         <div style="background:var(--bg-card); border-radius:12px; padding:15px; overflow-y:auto; display:flex; flex-direction:column; gap:15px;">
-                            
                             <div>
                                 <h4 style="margin:0 0 10px 0; color:var(--accent); font-size:0.8rem;">FACE REGISTRY</h4>
                                 <div style="display:flex; gap:10px; align-items:center;">
@@ -178,16 +148,16 @@
                             <div>
                                 <h4 style="margin:0 0 10px 0; color:var(--accent); font-size:0.8rem;">BODY TWINNING</h4>
                                 <div class="twinning-grid">
-                                    <div class="twin-box"><canvas id="twin-1" style="width:100%; height:100%"></canvas><span class="face-tag">B-1</span></div>
-                                    <div class="twin-box"><canvas id="twin-2" style="width:100%; height:100%"></canvas><span class="face-tag">B-2</span></div>
+                                    <div class="twin-box"><canvas id="twin-1"></canvas><span class="face-tag">B-1</span></div>
+                                    <div class="twin-box"><canvas id="twin-2"></canvas><span class="face-tag">B-2</span></div>
                                 </div>
                             </div>
 
                             <div>
                                 <h4 style="margin:0 0 5px 0; color:var(--danger); font-size:0.8rem;">CARDIAC PREDICTION</h4>
                                 <table class="report-table">
-                                    <tr><td>BED 1</td><td>Risk: <span id="risk-1">2.1%</span></td><td style="color:var(--success)">NORMAL</td></tr>
-                                    <tr><td>BED 2</td><td>Risk: <span id="risk-2" class="risk-high">82.4%</span></td><td class="risk-high">CRITICAL</td></tr>
+                                    <tr><td>BED 1</td><td>Risk: <span id="risk-1">2.1%</span></td><td style="color:var(--success)">LOW</td></tr>
+                                    <tr><td>BED 2</td><td>Risk: <span id="risk-2" class="risk-high">78.4%</span></td><td class="risk-high">HIGH</td></tr>
                                 </table>
                             </div>
 
@@ -196,42 +166,33 @@
                                 <small style="font-size:0.6rem; opacity:0.7;">✊:Pain | ✌️:Water | ✋:Light | 👌:Fan</small>
                             </div>
                         </div>
+                    </div>
 
-                    <div class="patient-deck" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
                         <div class="p-card" id="card-p1">
                             <div class="p-head">
-                                <div><h4>Alex Smith</h4><small style="color:gray;">Bed 1</small></div>
+                                <div><h4 style="margin:0">Alex Smith</h4><small style="color:gray;">Bed 1</small></div>
                                 <span class="badge ok" id="bdg-p1">STABLE</span>
                             </div>
                             <div class="ecg-area"><canvas id="ecg-p1"></canvas></div>
                             <div class="saline-area">
                                 <i class="fas fa-prescription-bottle text-accent"></i>
                                 <div class="saline-track"><div class="saline-fill" id="sal-p1"></div></div>
-                                <small>85%</small>
                             </div>
-                            <div id="req-p1" style="text-align:center; font-weight:bold; margin-bottom:10px;">--</div>
-                            <div class="ctrl-row">
-                                <div class="btn-sq" id="btn-light-p1"><i class="fas fa-lightbulb"></i></div>
-                                <div class="btn-sq" id="btn-fan-p1"><i class="fas fa-fan"></i></div>
-                            </div>
+                            <div id="req-p1" style="text-align:center; font-weight:bold;">--</div>
                         </div>
 
                         <div class="p-card" id="card-p2">
                             <div class="p-head">
-                                <div><h4>Sarah Doe</h4><small style="color:gray;">Bed 2</small></div>
+                                <div><h4 style="margin:0">Sarah Doe</h4><small style="color:gray;">Bed 2</small></div>
                                 <span class="badge ok" id="bdg-p2">STABLE</span>
                             </div>
                             <div class="ecg-area"><canvas id="ecg-p2"></canvas></div>
                             <div class="saline-area">
                                 <i class="fas fa-prescription-bottle text-accent"></i>
                                 <div class="saline-track"><div class="saline-fill" id="sal-p2"></div></div>
-                                <small>40%</small>
                             </div>
-                            <div id="req-p2" style="text-align:center; font-weight:bold; margin-bottom:10px;">--</div>
-                            <div class="ctrl-row">
-                                <div class="btn-sq" id="btn-light-p2"><i class="fas fa-lightbulb"></i></div>
-                                <div class="btn-sq" id="btn-fan-p2"><i class="fas fa-fan"></i></div>
-                            </div>
+                            <div id="req-p2" style="text-align:center; font-weight:bold;">--</div>
                         </div>
                     </div>
                 </div>
@@ -239,65 +200,61 @@
 
             <div id="view-analytics" class="view-section">
                 <h2>Live Analytics</h2>
-                <div class="chart-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:20px; height:60%;">
-                    <div class="chart-box" style="background:var(--bg-card); padding:20px; border-radius:12px;">
-                        <canvas id="chart-requests"></canvas>
-                    </div>
-                    <div class="chart-box" style="background:var(--bg-card); padding:20px; border-radius:12px;">
-                        <canvas id="chart-urgency"></canvas>
-                    </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; height:60%;">
+                    <div class="p-card"><canvas id="chart-requests"></canvas></div>
+                    <div class="p-card"><canvas id="chart-urgency"></canvas></div>
                 </div>
             </div>
 
             <div id="view-logs" class="view-section">
                 <div class="p-card" style="height:100%;">
                     <h3>System Event Logs</h3>
-                    <div style="overflow-y:auto; flex:1;">
-                        <table style="width:100%; text-align:left; border-collapse:collapse;">
-                            <thead style="border-bottom:1px solid #333;">
-                                <tr><th style="padding:10px;">Time</th><th>Event</th><th>Type</th></tr>
-                            </thead>
-                            <tbody id="log-body"></tbody>
-                        </table>
-                    </div>
+                    <table style="width:100%; text-align:left;">
+                        <tbody id="log-body"></tbody>
+                    </table>
                 </div>
             </div>
-
         </main>
     </div>
 
     <div id="toast" class="toast">Alert</div>
 
     <script>
-        // GLOBALS
         const VIDEO = document.getElementById('vid');
         const CANVAS = document.getElementById('can');
         const CTX = CANVAS.getContext('2d');
         let lastAction1 = "", lastAction2 = "";
 
-        // --- 1. SYSTEM CORE ---
         const System = {
             login: () => {
                 const u = document.getElementById('u').value;
                 const p = document.getElementById('p').value;
                 if(u === 'admin' && p === 'admin123') {
                     document.getElementById('auth-layer').style.display = 'none';
-                    document.getElementById('loader').style.display = 'flex'; // Show loader
+                    document.getElementById('loader').style.display = 'flex';
                     document.getElementById('app-shell').style.display = 'flex';
-                    Voice.speak("Vision Care Enterprise Online");
-                    setTimeout(Vision.start, 1000); // Start AI after UI loads
+                    Vision.start();
                     ECG.start(1); ECG.start(2);
                     Charts.init();
                     Saline.start();
-                } else alert("Invalid");
+                    CardiacAI.init();
+                } else alert("Access Denied");
             },
             notify: (msg, crit) => {
                 const t = document.getElementById('toast');
                 t.innerText = msg;
                 t.className = crit ? "toast show danger" : "toast show";
-                Voice.speak(msg);
-                setTimeout(() => t.classList.remove('show'), 4000);
+                window.speechSynthesis.speak(new SpeechSynthesisUtterance(msg));
+                setTimeout(() => t.classList.remove('show'), 3000);
                 Logs.add(msg, crit ? 'CRIT' : 'INFO');
+            },
+            registerFace: () => {
+                System.notify("Facial Scanning Active...", false);
+                document.getElementById('ai-stat').innerText = "SCANNING";
+                setTimeout(() => {
+                    System.notify("Face Linked to Bed 1 Profile", false);
+                    document.getElementById('ai-stat').innerText = "ACTIVE";
+                }, 2000);
             }
         };
 
@@ -305,18 +262,14 @@
             go: (id) => {
                 document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
                 document.getElementById(`view-${id}`).classList.add('active');
-                document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-                event.currentTarget.classList.add('active');
             }
         };
 
-        // --- 2. VISION KERNEL ---
         const Vision = {
             start: async () => {
                 const holistic = new Holistic({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`});
                 holistic.setOptions({modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5});
                 holistic.onResults(Vision.process);
-
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
                     VIDEO.srcObject = stream;
@@ -325,198 +278,79 @@
                         document.getElementById('ai-stat').innerText = "ACTIVE";
                         const cam = new Camera(VIDEO, { onFrame: async () => { await holistic.send({image: VIDEO}); }, width: 1280, height: 720 });
                         cam.start();
-                        document.getElementById('loader').style.display = 'none'; // Hide loader
-                        Voice.init(); // Start Voice Listener
+                        document.getElementById('loader').style.display = 'none';
                     };
-                } catch(e) { alert("Camera Error: Use Localhost"); }
+                } catch(e) { console.error(e); }
             },
             process: (results) => {
                 CANVAS.width = VIDEO.videoWidth; CANVAS.height = VIDEO.videoHeight;
-                const w = CANVAS.width; const h = CANVAS.height;
-                
                 CTX.save();
-                CTX.clearRect(0, 0, w, h);
-                CTX.drawImage(results.image, 0, 0, w, h);
-                
-                // Draw Splitter
-                CTX.beginPath(); CTX.moveTo(w/2, 0); CTX.lineTo(w/2, h); 
-                CTX.strokeStyle = "rgba(255,255,255,0.5)"; CTX.lineWidth = 4; CTX.stroke();
-
-                // Draw Landmarks
-                drawConnectors(CTX, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
-                drawConnectors(CTX, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
-                drawConnectors(CTX, results.poseLandmarks, POSE_CONNECTIONS, {color: '#ffffff50', lineWidth: 1});
-                
+                CTX.clearRect(0, 0, CANVAS.width, CANVAS.height);
+                CTX.drawImage(results.image, 0, 0, CANVAS.width, CANVAS.height);
+                drawConnectors(CTX, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 2});
+                drawConnectors(CTX, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 2});
                 CTX.restore();
 
-                // LOGIC GATES
-                if(results.rightHandLandmarks) Vision.analyzeHand(results.rightHandLandmarks, 1); // Right Hand -> Bed 1 (Mirror)
-                if(results.leftHandLandmarks) Vision.analyzeHand(results.leftHandLandmarks, 2); // Left Hand -> Bed 2
-                
-                if(results.poseLandmarks) Vision.analyzeFall(results.poseLandmarks);
+                if(results.rightHandLandmarks) {
+                    Vision.analyzeHand(results.rightHandLandmarks, 1);
+                    TwinDraw(results.rightHandLandmarks, 1);
+                }
+                if(results.leftHandLandmarks) {
+                    Vision.analyzeHand(results.leftHandLandmarks, 2);
+                    TwinDraw(results.leftHandLandmarks, 2);
+                }
             },
             analyzeHand: (lm, bedId) => {
-                // Determine Bed based on X position to be sure (Left/Right side of screen)
-                const x = lm[0].x; 
-                const targetBed = x < 0.5 ? 1 : 2; 
-
-                // Count Fingers
                 let fingers = 0;
                 if(lm[8].y < lm[6].y) fingers++;
                 if(lm[12].y < lm[10].y) fingers++;
-                if(lm[16].y < lm[14].y) fingers++;
-                if(lm[20].y < lm[18].y) fingers++;
-                if(Math.abs(lm[4].x - lm[5].x) > 0.05) fingers++;
-
-                const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
-
-                let msg = "";
-                if(isPinch) msg = "FAN ON";
-                else if(fingers === 0) msg = "PAIN";
-                else if(fingers === 2) msg = "WATER";
-                else if(fingers === 5) msg = "LIGHT ON";
-
-                document.getElementById('debug-cmd').innerText = msg || "--";
-
-                // Trigger Action
-                if(msg && (targetBed === 1 ? msg !== lastAction1 : msg !== lastAction2)) {
-                    if(targetBed === 1) lastAction1 = msg; else lastAction2 = msg;
-                    Room.trigger(targetBed, msg);
-                    setTimeout(() => { if(targetBed===1) lastAction1=""; else lastAction2=""; }, 3000);
-                }
-            },
-            analyzeFall: (lm) => {
-                const noseY = lm[0].y; // Nose Vertical Pos
-                if(noseY > 0.85) { // If nose is at bottom 15% of screen
-                    if(lastAction1 !== "FALL") {
-                        lastAction1 = "FALL";
-                        document.getElementById('debug-fall').innerText = "ALERT!";
-                        document.getElementById('debug-fall').style.color = "red";
-                        System.notify("FALL DETECTED BED 1", true);
-                        setTimeout(() => lastAction1 = "", 5000);
-                    }
+                const msg = fingers === 0 ? "PAIN" : fingers === 2 ? "WATER" : fingers === 5 ? "LIGHT" : "";
+                if(msg && (bedId === 1 ? msg !== lastAction1 : msg !== lastAction2)) {
+                    if(bedId === 1) lastAction1 = msg; else lastAction2 = msg;
+                    System.notify(`Bed ${bedId}: ${msg}`, msg === "PAIN");
+                    document.getElementById(`req-p${bedId}`).innerText = msg;
+                    setTimeout(() => { if(bedId === 1) lastAction1 = ""; else lastAction2 = ""; }, 3000);
                 }
             }
         };
 
-        // --- 3. VOICE KERNEL (IMMORTAL) ---
-        const Voice = {
-            recognition: null,
-            init: () => {
-                const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if(!Speech) return;
-                
-                Voice.recognition = new Speech();
-                Voice.recognition.continuous = true;
-                Voice.recognition.lang = 'en-US';
-                
-                Voice.recognition.onstart = () => {
-                    document.getElementById('mic-status').innerText = "ONLINE";
-                    document.getElementById('mic-status').style.color = "#10b981";
-                };
-                
-                Voice.recognition.onend = () => {
-                    Voice.recognition.start(); // Auto-restart
-                };
-
-                Voice.recognition.onresult = (e) => {
-                    const t = e.results[e.results.length - 1][0].transcript.toLowerCase();
-                    System.notify(`Voice: "${t}"`, false);
-                    
-                    if(t.includes('fan')) Room.trigger(1, "FAN ON");
-                    if(t.includes('light')) Room.trigger(1, "LIGHT ON");
-                    if(t.includes('analytics')) Router.go('analytics');
-                    if(t.includes('monitor')) Router.go('dashboard');
-                    if(t.includes('clear')) Room.clear(1);
-                };
-
-                Voice.recognition.start();
-            },
-            speak: (txt) => {
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(new SpeechSynthesisUtterance(txt));
-            }
-        };
-
-        // --- 4. ROOM & LOGIC ---
-        const Room = {
-            trigger: (id, msg) => {
-                document.getElementById(`req-p${id}`).innerText = msg;
-                if(msg === "PAIN") {
-                    document.getElementById(`card-p${id}`).classList.add('danger');
-                    document.getElementById(`bdg-p${id}`).className = "badge crit";
-                    document.getElementById(`bdg-p${id}`).innerText = "CRITICAL";
-                    System.notify(`EMERGENCY BED ${id}`, true);
-                } else {
-                    if(msg.includes('FAN')) document.getElementById(`btn-fan-p${id}`).classList.add('active', 'spin');
-                    if(msg.includes('LIGHT')) document.getElementById(`btn-light-p${id}`).classList.add('active');
-                    System.notify(`Bed ${id}: ${msg}`, false);
-                }
-            },
-            clear: (id) => {
-                document.getElementById(`card-p${id}`).classList.remove('danger');
-                document.getElementById(`bdg-p${id}`).className = "badge ok";
-                document.getElementById(`bdg-p${id}`).innerText = "STABLE";
-                document.getElementById(`req-p${id}`).innerText = "--";
-            }
-        };
-        // --- FEATURE LOGIC INJECTION ---
-        
-        // 1. Face Scan Simulation
-        System.registerFace = () => {
-            System.notify("Analyzing Face Landmarks...", false);
-            document.getElementById('ai-stat').innerText = "SCANNING";
-            setTimeout(() => {
-                System.notify("Biometric ID Verified", false);
-                document.getElementById('ai-stat').innerText = "ACTIVE";
-            }, 2000);
-        };
-
-        // 2. Cardiac Risk Engine
-        setInterval(() => {
-            const r1 = (Math.random() * 5).toFixed(1);
-            const r2 = (75 + Math.random() * 15).toFixed(1);
-            document.getElementById('risk-1').innerText = r1 + "%";
-            document.getElementById('risk-2').innerText = r2 + "%";
-            if(r2 > 85) System.notify("CARDIAC ALERT: BED 2", true);
-        }, 8000);
-
-        // 3. Digital Twinning Renderer
-        const renderTwin = (lm, id) => {
-            const can = document.getElementById(`twin-${id}`);
-            const ctx = can.getContext('2d');
-            can.width = can.offsetWidth; can.height = can.offsetHeight;
-            ctx.clearRect(0,0,can.width,can.height);
+        const TwinDraw = (lm, id) => {
+            const c = document.getElementById(`twin-${id}`);
+            const ctx = c.getContext('2d');
+            c.width = c.offsetWidth; c.height = c.offsetHeight;
+            ctx.clearRect(0,0,c.width,c.height);
             drawConnectors(ctx, lm, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 1});
         };
 
-        // 4. Hook into existing Vision Engine
-        const originalVisionProcess = Vision.process;
-        Vision.process = (results) => {
-            originalVisionProcess(results); // Run original code first
-            if(results.rightHandLandmarks) renderTwin(results.rightHandLandmarks, 1);
-            if(results.leftHandLandmarks) renderTwin(results.leftHandLandmarks, 2);
-        };
-
-        // --- 5. VISUALIZATIONS ---
         const ECG = {
             start: (id) => {
-                const c = document.getElementById(`ecg-p${id}`); const ctx = c.getContext('2d');
-                c.width = c.offsetWidth; c.height = c.offsetHeight;
-                let x = 0; ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, c.height/2);
+                const c = document.getElementById(`ecg-p${id}`);
+                const ctx = c.getContext('2d');
+                function resize() { c.width = c.offsetWidth; c.height = c.offsetHeight; }
+                window.addEventListener('resize', resize); resize();
+                let x = 0;
                 function draw() {
                     x += 2;
-                    if(x > c.width) { x = 0; ctx.clearRect(0,0,c.width,c.height); ctx.beginPath(); ctx.moveTo(0,c.height/2); }
-                    let y = c.height/2; 
-                    // P-QRS-T Logic
-                    if(x%100 > 10 && x%100 < 20) y -= 5;
-                    else if(x%100 > 25 && x%100 < 35) y += 5;
-                    else if(x%100 > 35 && x%100 < 45) y -= 40; // R
-                    else if(x%100 > 45 && x%100 < 50) y += 15;
-                    else if(x%100 > 60 && x%100 < 70) y -= 8;
-                    ctx.lineTo(x, y); ctx.stroke(); requestAnimationFrame(draw);
+                    if(x > c.width) { x = 0; ctx.clearRect(0,0,c.width,c.height); }
+                    let y = c.height/2;
+                    let p = x % 100;
+                    if(p > 30 && p < 40) y -= 30; // R Wave
+                    else if(p > 40 && p < 45) y += 10;
+                    ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2;
+                    ctx.lineTo(x, y); ctx.stroke();
+                    requestAnimationFrame(draw);
                 }
                 draw();
+            }
+        };
+
+        const CardiacAI = {
+            init: () => {
+                setInterval(() => {
+                    const r2 = (70 + Math.random() * 20).toFixed(1);
+                    document.getElementById('risk-2').innerText = r2 + "%";
+                    if(r2 > 85) System.notify("CARDIAC ALERT BED 2", true);
+                }, 10000);
             }
         };
 
@@ -524,32 +358,19 @@
             start: () => {
                 let lvl = 100;
                 setInterval(() => {
-                    lvl -= 1;
-                    if(lvl < 0) lvl = 100;
+                    lvl -= 0.5; if(lvl < 0) lvl = 100;
                     document.getElementById('sal-p1').style.width = lvl + "%";
-                    document.getElementById('sal-p2').style.width = (lvl-10) + "%";
-                    if(lvl < 15) System.notify("Low Saline Bed 1", false);
+                    document.getElementById('sal-p2').style.width = (lvl*0.8) + "%";
                 }, 2000);
             }
         };
 
-        const Logs = {
-            add: (msg, type) => {
-                const row = `<tr><td style="padding:10px; color:#aaa;">${new Date().toLocaleTimeString()}</td><td>${msg}</td><td>${type}</td></tr>`;
-                document.getElementById('log-body').innerHTML = row + document.getElementById('log-body').innerHTML;
-            }
-        };
+        const Logs = { add: (m, t) => { document.getElementById('log-body').innerHTML = `<tr><td>${new Date().toLocaleTimeString()}</td><td>${m}</td><td>${t}</td></tr>` + document.getElementById('log-body').innerHTML; } };
 
         const Charts = {
             init: () => {
-                new Chart(document.getElementById('chart-requests'), {
-                    type: 'doughnut',
-                    data: { labels: ['Pain', 'Water', 'Fan'], datasets: [{ data: [2, 10, 5], backgroundColor: ['#ef4444', '#38bdf8', '#f59e0b'] }] }
-                });
-                new Chart(document.getElementById('chart-urgency'), {
-                    type: 'line',
-                    data: { labels: ['10am', '11am', '12pm'], datasets: [{ label: 'Avg Time (s)', data: [45, 30, 20], borderColor: '#6366f1' }] }
-                });
+                new Chart(document.getElementById('chart-requests'), { type: 'doughnut', data: { labels: ['Pain', 'Water'], datasets: [{ data: [5, 12], backgroundColor: ['#ef4444', '#38bdf8'] }] } });
+                new Chart(document.getElementById('chart-urgency'), { type: 'line', data: { labels: ['1pm', '2pm', '3pm'], datasets: [{ label: 'Risk', data: [10, 25, 15], borderColor: '#6366f1' }] } });
             }
         };
     </script>
