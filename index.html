@@ -90,8 +90,14 @@
 
         /* Side Panel */
         .side-stack { grid-column: 2 / 3; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 20px; }
-        .twin-box { flex: 1; background: #000; border-radius: var(--radius-lg); border: 1px solid var(--c-accent); position: relative; overflow: hidden; }
-        .twin-label { position: absolute; top: 10px; left: 10px; color: var(--c-accent); font-weight: bold; font-size: 0.75rem; background: rgba(0,0,0,0.7); padding: 4px; }
+        .twin-box { flex: 1; background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%); border-radius: var(--radius-lg); border: 1px solid var(--c-accent); position: relative; overflow: hidden; }
+        .twin-label { position: absolute; top: 10px; left: 10px; color: var(--c-accent); font-weight: bold; font-size: 0.75rem; background: rgba(0,0,0,0.7); padding: 4px; z-index: 10; }
+        
+        /* Enhanced Digital Twin Panel */
+        .twin-stats { position: absolute; bottom: 10px; left: 10px; right: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; z-index: 10; }
+        .twin-stat { background: rgba(0,0,0,0.8); padding: 8px; border-radius: 6px; border: 1px solid rgba(6,182,212,0.3); text-align: center; }
+        .twin-stat-label { font-size: 0.6rem; color: var(--c-text-muted); text-transform: uppercase; }
+        .twin-stat-value { font-size: 0.85rem; color: var(--c-accent); font-weight: bold; font-family: 'JetBrains Mono'; }
         
         .legend-card { flex: 1; background: var(--c-bg-card); border-radius: var(--radius-lg); border: var(--border); display: flex; flex-direction: column; overflow: hidden; }
         .g-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(255,255,255,0.03); margin: 8px; border-radius: 8px; border: 1px solid transparent; transition: 0.2s; }
@@ -211,6 +217,20 @@
                             <div class="twin-box">
                                 <canvas id="twin_can" style="width:100%; height:100%;"></canvas>
                                 <div class="twin-label">DIGITAL TWIN</div>
+                                <div class="twin-stats">
+                                    <div class="twin-stat">
+                                        <div class="twin-stat-label">Height</div>
+                                        <div class="twin-stat-value" id="twin-height">--</div>
+                                    </div>
+                                    <div class="twin-stat">
+                                        <div class="twin-stat-label">Pose Score</div>
+                                        <div class="twin-stat-value" id="twin-score">--</div>
+                                    </div>
+                                    <div class="twin-stat">
+                                        <div class="twin-stat-label">Activity</div>
+                                        <div class="twin-stat-value" id="twin-activity">--</div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="legend-card">
                                 <div style="padding:15px; font-weight:bold; color:var(--c-text-muted);">GESTURE MAP</div>
@@ -370,7 +390,40 @@
             }
         };
 
-        // --- 2. VISION KERNEL (DUAL THREAD) ---
+        // --- 2. ENHANCED DIGITAL TWIN & VISION KERNEL ---
+        const Twin = {
+            lastPose: null,
+            updateStats: (pose) => {
+                if(!pose) return;
+                // Calculate body height from pose landmarks (nose to ankle)
+                const nose = pose[0];
+                const leftAnkle = pose[27];
+                const rightAnkle = pose[28];
+                
+                if(nose && leftAnkle) {
+                    const heightPx = Math.abs(nose.y - leftAnkle.y) * VIDEO.videoHeight;
+                    const heightCm = Math.round(heightPx / 10 * 1.8);
+                    document.getElementById('twin-height').innerText = heightCm + ' cm';
+                }
+                
+                // Calculate pose detection confidence score
+                const visible = pose.filter(p => p && p.x > 0 && p.x < 1 && p.y > 0 && p.y < 1).length;
+                const score = Math.round((visible / 33) * 100);
+                document.getElementById('twin-score').innerText = score + '%';
+                
+                // Determine activity level based on movement
+                let activity = 'Still';
+                if(Twin.lastPose) {
+                    const moved = Math.abs(pose[10].y - Twin.lastPose[10].y) + Math.abs(pose[11].y - Twin.lastPose[11].y);
+                    if(moved > 0.08) activity = 'Active';
+                    else if(moved > 0.04) activity = 'Moving';
+                    else if(moved > 0.02) activity = 'Restless';
+                }
+                document.getElementById('twin-activity').innerText = activity;
+                Twin.lastPose = [...pose];
+            }
+        };
+
         const Vision = {
             start: async () => {
                 document.getElementById('ai-stat').innerText = "LOADING...";
@@ -385,27 +438,48 @@
                 } catch(e) { alert("Camera Access Denied"); }
             },
             process: (results) => {
-                // Draw
+                // Draw main camera view
                 CANVAS.width = VIDEO.videoWidth; CANVAS.height = VIDEO.videoHeight;
                 const w = CANVAS.width; const h = CANVAS.height;
                 CTX.clearRect(0,0,w,h); CTX.drawImage(results.image, 0, 0, w, h);
-                // Splitter
+                
+                // Center splitter line
                 CTX.beginPath(); CTX.moveTo(w/2,0); CTX.lineTo(w/2,h); CTX.strokeStyle="rgba(255,255,255,0.5)"; CTX.lineWidth=3; CTX.stroke();
                 
-                // Hands
+                // Enhanced Hands with landmarks
                 if(results.leftHandLandmarks) {
-                    drawConnectors(CTX, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1'});
+                    drawConnectors(CTX, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
+                    drawLandmarks(CTX, results.leftHandLandmarks, {color: '#818cf8', lineWidth: 2, radius: 3});
                     Vision.logic(results.leftHandLandmarks);
                 }
                 if(results.rightHandLandmarks) {
-                    drawConnectors(CTX, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1'});
+                    drawConnectors(CTX, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 3});
+                    drawLandmarks(CTX, results.rightHandLandmarks, {color: '#818cf8', lineWidth: 2, radius: 3});
                     Vision.logic(results.rightHandLandmarks);
                 }
 
-                // Twin
+                // Enhanced Digital Twin with glow effects
                 const tCan = document.getElementById('twin_can'); tCan.width=w; tCan.height=h;
                 TWIN_CTX.clearRect(0,0,w,h);
-                drawConnectors(TWIN_CTX, results.poseLandmarks, POSE_CONNECTIONS, {color:'#06b6d4', lineWidth:4});
+                
+                if(results.poseLandmarks) {
+                    // Draw glow effect for body
+                    TWIN_CTX.shadowColor = '#22d3ee';
+                    TWIN_CTX.shadowBlur = 20;
+                    drawConnectors(TWIN_CTX, results.poseLandmarks, POSE_CONNECTIONS, {color:'#06b6d4', lineWidth: 6});
+                    TWIN_CTX.shadowBlur = 0;
+                    
+                    // Draw body joints with highlight
+                    drawLandmarks(TWIN_CTX, results.poseLandmarks, {
+                        color: '#22d3ee',
+                        lineWidth: 2,
+                        radius: 5,
+                        fillColor: '#0891b2'
+                    });
+                    
+                    // Update twin stats
+                    Twin.updateStats(results.poseLandmarks);
+                }
             },
             logic: (lm) => {
                 const x = lm[0].x; // Wrist X
@@ -440,7 +514,21 @@
 
         // --- 3. ROOM & ECG ---
         const RoomMgr = {
+            lastNotify: { 1: { msg: "", time: 0 }, 2: { msg: "", time: 0 } },
             trigger: (id, msg) => {
+                const now = Date.now();
+                const cooldown = 3000; // 3 seconds cooldown between same notifications
+                
+                // Check if same message was shown within cooldown period
+                if(RoomMgr.lastNotify[id].msg === msg && (now - RoomMgr.lastNotify[id].time) < cooldown) {
+                    // Skip notification if within cooldown
+                    document.getElementById(`req-p${id}`).innerText = msg;
+                    return;
+                }
+                
+                // Update last notification info
+                RoomMgr.lastNotify[id] = { msg: msg, time: now };
+                
                 document.getElementById(`req-p${id}`).innerText = msg;
                 if(msg === "PAIN") {
                     document.getElementById(`card-p${id}`).classList.add('alert');
@@ -549,11 +637,49 @@
             init: () => {
                 new Chart(document.getElementById('chart-requests'), {
                     type: 'doughnut',
-                    data: { labels: ['Pain', 'Meds', 'Water', 'Fan'], datasets: [{ data: [5, 12, 15, 8], backgroundColor: ['#ef4444', '#6366f1', '#06b6d4', '#f59e0b'] }] }
+                    data: { 
+                        labels: ['Pain', 'Meds', 'Water', 'Fan'], 
+                        datasets: [{ 
+                            data: [5, 12, 15, 8], 
+                            backgroundColor: ['#ef4444', '#6366f1', '#06b6d4', '#f59e0b'],
+                            borderWidth: 0
+                        }] 
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: '#f8fafc', padding: 20 } },
+                            title: { display: true, text: 'Patient Requests', color: '#f8fafc', font: { size: 16 } }
+                        }
+                    }
                 });
                 new Chart(document.getElementById('chart-urgency'), {
                     type: 'line',
-                    data: { labels: ['10AM', '11AM', '12PM', '1PM'], datasets: [{ label: 'Avg Response (s)', data: [45, 30, 20, 25], borderColor: '#6366f1' }] }
+                    data: { 
+                        labels: ['10AM', '11AM', '12PM', '1PM'], 
+                        datasets: [{ 
+                            label: 'Avg Response (s)', 
+                            data: [45, 30, 20, 25], 
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#6366f1'
+                        }] 
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                            x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#f8fafc' } },
+                            title: { display: true, text: 'Response Time Trends', color: '#f8fafc', font: { size: 16 } }
+                        }
+                    }
                 });
             }
         };
