@@ -3,761 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VisionCare Smart ICU System">
-    <title>VisionCare Enterprise | Titan OS v10</title>
+    <title>VisionCare Enterprise | Titan OS</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
-        /* =======================================================================
-           1.0 GLOBAL STYLESHEET (MEDI-UI PRO FRAMEWORK)
-           ======================================================================= */
-
-        /* -----------------------------------------------------------------------
-           1.1 CSS VARIABLES & THEME CONFIGURATION
-           ----------------------------------------------------------------------- */
+        /* ==========================================================================
+           MODULE 1: MEDI-UI PRO FRAMEWORK
+           ========================================================================== */
         :root {
-            /* Application Backgrounds */
-            --color-bg-root:       #020617; /* Deepest Navy */
-            --color-bg-sidebar:    #0f172a; /* Slate 900 */
-            --color-bg-panel:      #1e293b; /* Slate 800 */
-            --color-bg-card:       #334155; /* Slate 700 */
-            --color-bg-input:      #1e293b; 
-            
-            /* Brand Identity Colors */
-            --color-primary:       #6366f1; /* Indigo 500 */
-            --color-primary-hover: #4f46e5; /* Indigo 600 */
-            --color-primary-dim:   rgba(99, 102, 241, 0.15);
-            
-            /* Semantic Colors */
-            --color-accent:        #06b6d4; /* Cyan 500 */
-            --color-success:       #10b981; /* Emerald 500 */
-            --color-warning:       #f59e0b; /* Amber 500 */
-            --color-danger:        #ef4444; /* Red 500 */
-            --color-info:          #3b82f6; /* Blue 500 */
-            
-            /* Typography Colors */
-            --color-text-main:     #f8fafc; /* Slate 50 */
-            --color-text-muted:    #94a3b8; /* Slate 400 */
-            --color-text-dark:     #0f172a;
-            
-            /* Structural Variables */
-            --border-color:        rgba(255, 255, 255, 0.08);
-            --border-width:        1px;
-            --border-radius-sm:    6px;
-            --border-radius-md:    12px;
-            --border-radius-lg:    20px;
-            
-            /* Layout Dimensions */
-            --sidebar-width:       280px;
-            --header-height:       70px;
-            
-            /* Gaze System */
-            --cursor-x: 50%;
-            --cursor-y: 50%;
+            --c-bg-app: #020617;
+            --c-bg-sidebar: #0f172a;
+            --c-bg-panel: #1e293b;
+            --c-bg-card: #334155;
+            --c-primary: #6366f1;
+            --c-primary-hover: #4f46e5;
+            --c-accent: #06b6d4;
+            --c-success: #10b981;
+            --c-warning: #f59e0b;
+            --c-danger: #ef4444;
+            --c-text-main: #f8fafc;
+            --c-text-muted: #94a3b8;
+            --border: 1px solid rgba(255,255,255,0.08);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --header-h: 70px;
+            --sidebar-w: 280px;
         }
 
-        /* -----------------------------------------------------------------------
-           1.2 HIGH CONTRAST ACCESSIBILITY THEME
-           ----------------------------------------------------------------------- */
-        body.theme-high-contrast {
-            --color-bg-root:       #000000;
-            --color-bg-sidebar:    #000000;
-            --color-bg-panel:      #000000;
-            --color-bg-card:       #121212;
-            --color-bg-input:      #222222;
-            
-            --color-primary:       #FFFF00; /* Yellow for visibility */
-            --color-primary-hover: #FFD700;
-            --color-primary-dim:   rgba(255, 255, 0, 0.2);
-            
-            --color-accent:        #00FFFF; /* Cyan */
-            --color-success:       #00FF00; /* Green */
-            --color-danger:        #FF0000; /* Red */
-            
-            --color-text-main:     #FFFFFF;
-            --color-text-muted:    #E0E0E0;
-            
-            --border-color:        #FFFFFF;
-            --border-width:        2px;
+        body.hc-mode {
+            --c-bg-app: #000; --c-bg-sidebar: #000; --c-bg-panel: #000;
+            --c-primary: #ff0; --c-accent: #0ff; --c-text-main: #fff;
+            --border: 2px solid #fff;
         }
 
-        /* -----------------------------------------------------------------------
-           1.3 GLOBAL RESET & BASE STYLES
-           ----------------------------------------------------------------------- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body { font-family: 'Inter', sans-serif; background: var(--c-bg-app); color: var(--c-text-main); height: 100vh; display: flex; overflow: hidden; }
 
-        html {
-            font-size: 14px;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        /* SCROLLBARS */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--color-bg-root);
-            color: var(--color-text-main);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-        }
+        /* AUTH SCREEN */
+        #auth-layer { position: fixed; inset: 0; z-index: 9999; background: radial-gradient(circle at center, #1e293b 0%, #020617 100%); display: flex; align-items: center; justify-content: center; }
+        .auth-box { width: 400px; padding: 40px; background: rgba(30,41,59,0.9); border: var(--border); border-radius: 24px; text-align: center; backdrop-filter: blur(10px); }
+        .form-control { width: 100%; padding: 12px; margin: 10px 0; background: #020617; border: var(--border); color: white; border-radius: 12px; text-align: center; }
+        .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--c-primary), var(--c-accent)); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 15px; }
 
-        /* -----------------------------------------------------------------------
-           1.4 UTILITY CLASSES & HELPERS
-           ----------------------------------------------------------------------- */
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .flex-grow { flex-grow: 1; }
-        .w-full { width: 100%; }
-        .h-full { height: 100%; }
-        .relative { position: relative; }
-        .absolute { position: absolute; }
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .font-bold { font-weight: 700; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        .uppercase { text-transform: uppercase; }
-        .pointer { cursor: pointer; }
-        .overflow-hidden { overflow: hidden; }
-        .overflow-y-auto { overflow-y: auto; }
+        /* LAYOUT */
+        aside { width: var(--sidebar-w); background: var(--c-bg-sidebar); border-right: var(--border); display: flex; flex-direction: column; padding: 24px; z-index: 50; }
+        .brand { font-size: 1.4rem; font-weight: 800; color: var(--c-text-main); margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
+        .nav-item { padding: 12px 16px; margin-bottom: 5px; border-radius: var(--radius-md); color: var(--c-text-muted); cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { background: rgba(99, 102, 241, 0.15); color: var(--c-primary); border-left: 3px solid var(--c-primary); }
 
-        /* Spacing Utilities */
-        .m-0 { margin: 0; }
-        .mt-2 { margin-top: 0.5rem; }
-        .mt-4 { margin-top: 1rem; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .p-0 { padding: 0; }
-        .p-2 { padding: 0.5rem; }
-        .p-4 { padding: 1rem; }
-        .p-6 { padding: 1.5rem; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-4 { gap: 1rem; }
-
-        /* Text Color Utilities */
-        .text-primary { color: var(--color-primary); }
-        .text-accent { color: var(--color-accent); }
-        .text-success { color: var(--color-success); }
-        .text-danger { color: var(--color-danger); }
-        .text-warning { color: var(--color-warning); }
-        .text-muted { color: var(--color-text-muted); }
-
-        /* -----------------------------------------------------------------------
-           1.5 COMPONENT: BUTTONS
-           ----------------------------------------------------------------------- */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.25rem;
-            border-radius: var(--border-radius-md);
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.2s ease-in-out;
-            user-select: none;
-        }
-
-        .btn:active { transform: scale(0.98); }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
-            color: #ffffff;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .btn-primary:hover {
-            box-shadow: 0 0 15px var(--color-primary-dim);
-            transform: translateY(-1px);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border-color: var(--border-color);
-            color: var(--color-text-main);
-        }
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--color-text-muted);
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--color-danger);
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .btn-icon {
-            width: 40px;
-            height: 40px;
-            padding: 0;
-            border-radius: 50%;
-        }
-
-        /* -----------------------------------------------------------------------
-           1.6 COMPONENT: CARDS & CONTAINERS
-           ----------------------------------------------------------------------- */
-        .card {
-            background-color: var(--color-bg-panel);
-            border: var(--border-width) solid var(--border-color);
-            border-radius: var(--border-radius-lg);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            transition: border-color 0.3s ease;
-        }
-        .card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .card-header {
-            padding: 1.25rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--color-text-main);
-        }
-
-        .card-body {
-            padding: 1.25rem;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        /* -----------------------------------------------------------------------
-           1.7 COMPONENT: FORM INPUTS
-           ----------------------------------------------------------------------- */
-        .form-control {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            background-color: var(--color-bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius-md);
-            color: var(--color-text-main);
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-        .form-control:focus {
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px var(--color-primary-dim);
-        }
-
-        /* -----------------------------------------------------------------------
-           1.8 ANIMATIONS & KEYFRAMES
-           ----------------------------------------------------------------------- */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-
-        /* -----------------------------------------------------------------------
-           1.9 SPECIAL: GAZE TRACKING CURSOR
-           ----------------------------------------------------------------------- */
-        #gaze-cursor {
-            position: fixed;
-            top: var(--cursor-y);
-            left: var(--cursor-x);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: rgba(239, 68, 68, 0.6); /* Red transparent */
-            border: 2px solid white;
-            z-index: 99999;
-            pointer-events: none; /* Allows clicking through */
-            transform: translate(-50%, -50%);
-            display: none; /* Hidden by default */
-            box-shadow: 0 0 15px var(--color-danger);
-            transition: top 0.05s linear, left 0.05s linear; /* Smooth movement */
-        }
-        #gaze-cursor.active {
-            display: block;
-        }
-        #gaze-cursor.clicking {
-            background-color: var(--color-success);
-            transform: translate(-50%, -50%) scale(0.8);
-        }
-
-        /* =======================================================================
-           2.0 LAYOUT & NAVIGATION STYLES
-           ======================================================================= */
+        main { flex: 1; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        header { height: var(--header-h); border-bottom: var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.95); }
         
-        /* 2.1 AUTHENTICATION OVERLAY */
-        #auth-view {
-            position: fixed;
-            inset: 0;
-            z-index: 10000;
-            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-panel {
-            width: 450px;
-            padding: 3rem;
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
+        .viewport { flex: 1; padding: 24px; overflow-y: auto; }
+        .page-view { display: none; height: 100%; flex-direction: column; gap: 24px; animation: fadeIn 0.4s ease; }
+        .page-view.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 2.2 APP SIDEBAR */
-        aside {
-            width: var(--sidebar-width);
-            background-color: var(--color-bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem;
-            z-index: 50;
-        }
-        .brand-logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--color-text-main);
-            margin-bottom: 2.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            letter-spacing: -0.5px;
-        }
-        .brand-logo i { color: var(--color-primary); }
-
-        .nav-item {
-            padding: 0.85rem 1rem;
-            margin-bottom: 0.25rem;
-            border-radius: var(--border-radius-md);
-            color: var(--color-text-muted);
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.2s;
-        }
-        .nav-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--color-text-main);
-        }
-        .nav-item.active {
-            background-color: var(--color-primary-dim);
-            color: var(--color-primary);
-            border-left: 3px solid var(--color-primary);
-        }
-
-        /* 2.3 MAIN CONTENT AREA */
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Header */
-        header {
-            height: var(--header-height);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: rgba(2, 6, 23, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 40;
-        }
-
-        /* Viewport */
-        .viewport {
-            flex: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
-            position: relative;
-        }
-        .view-page {
-            display: none;
-            height: 100%;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .view-page.active {
-            display: flex;
-        }
-
-        /* =======================================================================
-           3.0 DASHBOARD WIDGETS
-           ======================================================================= */
+        /* DASHBOARD COMPONENTS */
+        .dash-grid { display: grid; grid-template-columns: 2.5fr 1fr; grid-template-rows: 55% 45%; gap: 24px; height: 100%; }
         
-        /* 3.1 GRID SYSTEM */
-        .grid-dashboard {
-            display: grid;
-            grid-template-columns: 2.5fr 1fr;
-            grid-template-rows: 55% 45%;
-            gap: 1.5rem;
-            height: 100%;
-        }
+        /* Camera */
+        .cam-widget { grid-column: 1 / 2; grid-row: 1 / 2; background: #000; border-radius: var(--radius-lg); border: 2px solid var(--border); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        video { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
+        canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); z-index: 10; }
+        
+        .hud-overlay { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: var(--border); font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--c-success); z-index: 20; min-width: 200px; pointer-events: none; }
+        .hud-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        
+        .cam-controls { position: absolute; bottom: 20px; z-index: 30; display: flex; gap: 12px; background: rgba(15, 23, 42, 0.9); padding: 8px; border-radius: 40px; border: var(--border); }
+        .btn-icon { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: 0.2s; font-weight: bold; font-size: 0.85rem; }
+        .btn-icon:hover { background: var(--c-primary); border-color: var(--c-primary); }
 
-        /* 3.2 CAMERA FEED WIDGET */
-        .widget-camera {
-            grid-column: 1 / 2;
-            grid-row: 1 / 2;
-            background-color: #000;
-            border-radius: var(--border-radius-lg);
-            border: 2px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        video#vid_feed { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
-        canvas#cv_canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); z-index: 10; }
+        /* Side Panel */
+        .side-stack { grid-column: 2 / 3; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 20px; }
+        .twin-box { flex: 1; background: #000; border-radius: var(--radius-lg); border: 1px solid var(--c-accent); position: relative; overflow: hidden; }
+        .twin-label { position: absolute; top: 10px; left: 10px; color: var(--c-accent); font-weight: bold; font-size: 0.75rem; background: rgba(0,0,0,0.7); padding: 4px; }
+        
+        .legend-card { flex: 1; background: var(--c-bg-card); border-radius: var(--radius-lg); border: var(--border); display: flex; flex-direction: column; overflow: hidden; }
+        .g-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: rgba(255,255,255,0.03); margin: 8px; border-radius: 8px; border: 1px solid transparent; transition: 0.2s; }
+        .g-item.active { border-color: var(--c-accent); background: rgba(6, 182, 212, 0.15); transform: translateX(5px); }
 
-        /* 3.3 HEAD UP DISPLAY (HUD) */
-        .hud-container {
-            position: absolute;
-            top: 1.5rem;
-            left: 1.5rem;
-            z-index: 20;
-            background-color: rgba(0, 0, 0, 0.85);
-            border: 1px solid var(--border-color);
-            padding: 1rem;
-            border-radius: var(--border-radius-md);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--color-success);
-            min-width: 200px;
-            pointer-events: none;
-        }
-        .hud-line { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
-        .hud-label { color: var(--color-text-muted); }
+        /* Patient Grid */
+        .patient-row { grid-column: 1 / 3; grid-row: 2 / 3; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .p-card { background: var(--c-bg-card); border-radius: var(--radius-lg); border: var(--border); padding: 20px; display: flex; flex-direction: column; position: relative; transition: 0.3s; }
+        .p-card.alert { border-color: var(--c-danger); box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
+        
+        .p-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .p-profile { display: flex; gap: 12px; align-items: center; }
+        .p-img { width: 56px; height: 56px; border-radius: 12px; background: #334155; object-fit: cover; }
+        
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+        .badge-ok { background: rgba(16, 185, 129, 0.15); color: var(--c-success); }
+        .badge-crit { background: rgba(239, 68, 68, 0.15); color: var(--c-danger); animation: pulse 1s infinite; }
 
-        /* 3.4 CAMERA CONTROLS DOCK */
-        .cam-dock {
-            position: absolute;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 30;
-            display: flex;
-            gap: 1rem;
-            background-color: rgba(15, 23, 42, 0.95);
-            padding: 0.75rem 1.25rem;
-            border-radius: 50px;
-            border: 1px solid var(--border-color);
-        }
+        .ecg-container { flex: 1; background: #000; border-radius: 8px; border: var(--border); position: relative; overflow: hidden; margin-bottom: 12px; display: flex; flex-direction: column; }
+        .ecg-canvas { width: 100%; height: 100%; }
+        
+        .pc-controls { display: flex; gap: 10px; align-items: center; }
+        .ctrl-btn { width: 40px; height: 40px; border-radius: 10px; background: var(--c-bg-sidebar); border: var(--border); color: var(--c-text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .ctrl-btn.active { background: var(--c-warning); color: #000; border-color: var(--c-warning); }
+        .ctrl-btn.spin i { animation: spin 1s linear infinite; }
 
-        /* 3.5 DIGITAL TWIN & LEGEND */
-        .side-stack {
-            grid-column: 2 / 3;
-            grid-row: 1 / 3;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        .widget-twin {
-            flex: 1;
-            background-color: #000;
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--color-accent);
-            position: relative;
-            overflow: hidden;
-        }
-        .widget-legend {
-            flex: 1;
-            background-color: var(--color-bg-card);
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+        /* Analytics & Chat */
+        .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; height: 100%; }
+        .chart-wrap { background: var(--c-bg-card); border-radius: var(--radius-lg); border: var(--border); padding: 20px; }
+        
+        .chat-layout { display: flex; height: 100%; gap: 24px; }
+        .chat-sidebar { width: 260px; background: var(--c-bg-card); border-radius: var(--radius-lg); border: var(--border); padding: 10px; }
+        .chat-main { flex: 1; background: var(--c-bg-card); border-radius: var(--radius-lg); border: var(--border); display: flex; flex-direction: column; }
+        .msg-list { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 10px 16px; border-radius: 12px; max-width: 70%; font-size: 0.9rem; }
+        .msg.in { background: var(--c-bg-input); align-self: flex-start; }
+        .msg.out { background: var(--c-primary); color: white; align-self: flex-end; }
 
-        /* 3.6 PATIENT MONITORING DECK */
-        .patient-deck {
-            grid-column: 1 / 2;
-            grid-row: 2 / 3;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-        .patient-card {
-            background-color: var(--color-bg-card);
-            border-radius: var(--border-radius-lg);
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        .patient-card.status-danger {
-            border-color: var(--color-danger);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.25);
-        }
-
-        /* ECG Visualizer */
-        .ecg-wrapper {
-            flex: 1;
-            background-color: #000;
-            border-radius: var(--border-radius-sm);
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 1rem;
-            display: flex;
-            flex-direction: column;
-        }
-        .ecg-canvas { width: 100%; height: 70%; }
-        .spo2-canvas { width: 100%; height: 30%; border-top: 1px solid #333; }
-
-        /* =======================================================================
-           4.0 TOAST NOTIFICATIONS
-           ======================================================================= */
-        .toast-wrapper {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            z-index: 12000;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            pointer-events: none;
-        }
-        .toast {
-            width: 340px;
-            padding: 1rem;
-            background-color: #ffffff;
-            color: #000000;
-            border-radius: var(--border-radius-md);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            transform: translateX(150%);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-left: 5px solid var(--color-primary);
-            pointer-events: auto;
-        }
+        /* Toast */
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 11000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { width: 320px; padding: 16px; background: white; color: #000; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; align-items: flex-start; gap: 12px; transform: translateX(120%); transition: 0.4s; border-left: 5px solid var(--c-primary); pointer-events: auto; }
         .toast.show { transform: translateX(0); }
-        .toast.danger { border-left-color: var(--color-danger); background-color: #fef2f2; color: #991b1b; }
+        .toast.danger { border-left-color: var(--c-danger); background: #fee2e2; }
 
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="gaze-cursor"></div>
-
-    <div id="auth-view">
-        <div class="login-panel">
-            <div style="font-size: 4rem; color: var(--color-primary); margin-bottom: 1.5rem;">
-                <i class="fas fa-user-md"></i>
-            </div>
-            <h1 class="font-bold text-xl mb-2">VisionCare Titan OS</h1>
-            <p class="text-muted mb-4">Enterprise Medical Command Center</p>
-            
-            <div class="form-group">
-                <input type="text" id="login-id" class="form-control text-center" placeholder="Operator ID (admin)" value="admin">
-            </div>
-            <div class="form-group">
-                <input type="password" id="login-key" class="form-control text-center" placeholder="Access Key (admin123)" value="admin123">
-            </div>
-            <button class="btn btn-primary w-full mt-4" onclick="AppKernel.login()">
-                <i class="fas fa-power-off"></i> INITIALIZE SYSTEM
-            </button>
-            <div class="mt-4 text-xs text-muted">v8.0.0 | HIPAA Compliant Secure Build</div>
+    <div id="auth-layer">
+        <div class="auth-box">
+            <i class="fas fa-heart-pulse" style="font-size: 4rem; color: var(--c-primary); margin-bottom: 20px;"></i>
+            <h2 style="color:white; margin-bottom:10px;">VisionCare Titan OS</h2>
+            <p style="color:var(--c-text-muted); margin-bottom: 30px;">Medical Command Center</p>
+            <input type="text" id="auth-user" class="form-control" placeholder="admin" value="admin">
+            <input type="password" id="auth-pass" class="form-control" placeholder="admin123" value="admin123">
+            <button class="btn-primary" onclick="Sys.login()">INITIALIZE SYSTEM</button>
         </div>
     </div>
 
-    <div id="app-shell" class="hidden h-full w-full flex">
-        
+    <div id="app-shell" style="display:none; width:100%; height:100%; display:flex;">
         <aside>
-            <div class="brand-logo">
-                <i class="fas fa-eye"></i> VisionCare
-            </div>
-            <ul class="nav-menu">
-                <li class="nav-item active" onclick="Router.navigate('dashboard')">
-                    <i class="fas fa-desktop"></i> Monitor
-                </li>
-                <li class="nav-item" onclick="Router.navigate('analytics')">
-                    <i class="fas fa-chart-pie"></i> Analytics
-                </li>
-                <li class="nav-item" onclick="Router.navigate('chat')">
-                    <i class="fas fa-comments"></i> Staff Chat
-                </li>
-                <li class="nav-item" onclick="Router.navigate('logs')">
-                    <i class="fas fa-clipboard-list"></i> Audit Logs
-                </li>
-                <li class="nav-item" onclick="Router.navigate('settings')">
-                    <i class="fas fa-cogs"></i> System
-                </li>
-            </ul>
-            <div class="sidebar-footer">
-                <div class="footer-label">ACCESSIBILITY</div>
-                <li class="nav-item" onclick="document.body.classList.toggle('theme-high-contrast')">
-                    <i class="fas fa-adjust"></i> High Contrast
-                </li>
-                <li class="nav-item text-danger" onclick="window.location.reload()">
-                    <i class="fas fa-sign-out-alt"></i> Shutdown
-                </li>
+            <div class="brand"><i class="fas fa-eye text-primary"></i> VisionCare</div>
+            <div class="nav-item active" onclick="Router.go('dashboard')"><i class="fas fa-desktop"></i> Monitor</div>
+            <div class="nav-item" onclick="Router.go('analytics')"><i class="fas fa-chart-line"></i> Analytics</div>
+            <div class="nav-item" onclick="Router.go('chat')"><i class="fas fa-comments"></i> Chat</div>
+            <div class="nav-item" onclick="Router.go('logs')"><i class="fas fa-clipboard-list"></i> Logs</div>
+            <div class="nav-item" onclick="Router.go('settings')"><i class="fas fa-cog"></i> Settings</div>
+            <div style="margin-top:auto">
+                <div class="nav-item text-danger" onclick="location.reload()"><i class="fas fa-power-off"></i> Reboot</div>
             </div>
         </aside>
 
-        <div class="main-wrapper">
+        <main>
             <header>
-                <div class="flex flex-col">
-                    <h2 class="font-bold text-lg">ICU Ward 104 - Cardiac Unit</h2>
-                    <span class="text-xs text-muted" id="sys-clock">00:00:00 UTC</span>
+                <div>
+                    <h2 class="font-bold text-lg">ICU Ward 104</h2>
+                    <div class="text-sm text-muted" id="clock">00:00:00 AM</div>
                 </div>
-                <div class="flex items-center gap-4">
+                <div style="display:flex; align-items:center; gap:15px;">
                     <span class="badge badge-success">● ONLINE</span>
-                    <div class="text-right">
-                        <div class="font-bold text-sm">Dr. Administrator</div>
-                        <div class="text-xs text-muted">Chief of Surgery</div>
+                    <div style="text-align:right;">
+                        <div class="font-bold">Dr. Admin</div>
+                        <div class="text-xs text-muted">Chief Medical Officer</div>
                     </div>
-                    <div style="width:40px; height:40px; background:var(--color-primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">DA</div>
                 </div>
             </header>
 
             <div class="viewport">
                 
-                <div id="view-dashboard" class="view-page active">
-                    <div class="grid-dashboard">
+                <div id="view-dashboard" class="page-view active">
+                    <div class="dash-grid">
                         
-                        <div class="widget-camera">
-                            <video id="vid_feed" playsinline muted></video>
-                            <canvas id="cv_canvas"></canvas>
+                        <div class="cam-widget">
+                            <video id="vid" playsinline muted></video>
+                            <canvas id="can"></canvas>
                             
-                            <div class="hud-container">
-                                <div class="hud-line"><span class="hud-label">AI ENGINE:</span> <span class="text-success" id="hud-ai">STANDBY</span></div>
-                                <div class="hud-line"><span class="hud-label">HANDS (L/R):</span> <span class="text-info" id="hud-hands">0 / 0</span></div>
-                                <div class="hud-line"><span class="hud-label">ACTION:</span> <span class="text-warning" id="hud-cmd">--</span></div>
-                                <div class="hud-line" style="margin-top:8px; border-top:1px solid #333; padding-top:4px;">
-                                    <span class="hud-label">FALL RISK:</span> <span id="hud-fall">SAFE</span>
+                            <div class="hud-overlay">
+                                <div class="hud-item"><span>AI Status:</span> <span class="text-success" id="ai-stat">WAITING</span></div>
+                                <div class="hud-item"><span>Bed 1 (L):</span> <span id="debug-b1">--</span></div>
+                                <div class="hud-item"><span>Bed 2 (R):</span> <span id="debug-b2">--</span></div>
+                                <div class="hud-item" style="border-top:1px solid #333; margin-top:5px; padding-top:5px;">
+                                    <span>CMD:</span> <span id="debug-cmd" class="text-warning">--</span>
                                 </div>
                             </div>
 
-                            <div class="cam-dock">
-                                <button class="btn btn-primary" onclick="VisionKernel.start()">
-                                    <i class="fas fa-play"></i> START AI
-                                </button>
-                                <button class="btn btn-outline" onclick="GazeKernel.toggle()">
-                                    <i class="fas fa-eye"></i> GAZE
-                                </button>
-                                <button class="btn btn-outline" onclick="VoiceKernel.toggle()">
-                                    <i class="fas fa-microphone"></i> VOICE
-                                </button>
+                            <div class="cam-controls">
+                                <button class="btn-icon" onclick="Patient.snap(1)">📸 Bed 1</button>
+                                <button class="btn-icon" style="background:var(--c-primary)" onclick="Vision.start()">▶ START AI</button>
+                                <button class="btn-icon" onclick="Voice.toggle()">🎙️ Voice</button>
+                                <button class="btn-icon" onclick="Patient.snap(2)">📸 Bed 2</button>
                             </div>
                         </div>
 
                         <div class="side-stack">
-                            <div class="widget-twin">
-                                <canvas id="twin_canvas"></canvas>
-                                <div class="absolute top-2 left-2 text-xs font-bold text-accent bg-black/50 px-2 py-1 rounded">DIGITAL TWIN</div>
+                            <div class="twin-box">
+                                <canvas id="twin_can" style="width:100%; height:100%;"></canvas>
+                                <div class="twin-label">DIGITAL TWIN</div>
                             </div>
-                            <div class="widget-legend">
-                                <div class="card-header font-bold text-xs uppercase text-muted">Gesture Map</div>
-                                <div class="card-body p-2">
-                                    <div class="flex items-center gap-4 p-2 bg-white/5 rounded mb-2">
-                                        <i class="fas fa-hand-rock text-xl w-8 text-center"></i>
-                                        <div><div class="font-bold">Fist (0)</div><div class="text-xs text-muted">Emergency</div></div>
-                                    </div>
-                                    <div class="flex items-center gap-4 p-2 bg-white/5 rounded mb-2">
-                                        <i class="fas fa-hand-peace text-xl w-8 text-center"></i>
-                                        <div><div class="font-bold">V-Sign (2)</div><div class="text-xs text-muted">Water Request</div></div>
-                                    </div>
-                                    <div class="flex items-center gap-4 p-2 bg-white/5 rounded mb-2">
-                                        <i class="fas fa-hand-paper text-xl w-8 text-center"></i>
-                                        <div><div class="font-bold">Palm (5)</div><div class="text-xs text-muted">Toggle Lights</div></div>
-                                    </div>
-                                </div>
+                            <div class="legend-card">
+                                <div style="padding:15px; font-weight:bold; color:var(--c-text-muted);">GESTURE MAP</div>
+                                <div class="g-item" id="g-pain"><span class="g-icon">✊</span> <div><strong>Fist</strong><br><small>Emergency</small></div></div>
+                                <div class="g-item" id="g-water"><span class="g-icon">✌️</span> <div><strong>V-Sign</strong><br><small>Water</small></div></div>
+                                <div class="g-item" id="g-fan"><span class="g-icon">👌</span> <div><strong>Pinch</strong><br><small>Fan On</small></div></div>
                             </div>
                         </div>
 
-                        <div class="patient-deck">
-                            <div class="patient-card" id="card-p1">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div class="flex gap-3">
-                                        <div style="width:50px; height:50px; background:#334155; border-radius:12px;"></div>
-                                        <div>
-                                            <h3 class="font-bold">Alex Smith</h3>
-                                            <div class="text-xs text-muted">Bed 1 • Cardiac</div>
-                                        </div>
+                        <div class="patient-row">
+                            <div class="p-card" id="card-p1">
+                                <div class="p-header">
+                                    <div class="p-profile">
+                                        <img id="img-p1" src="https://via.placeholder.com/60" class="p-img">
+                                        <div><h4>Alex Smith</h4><div class="text-xs text-muted">Bed 1 • Cardiac</div></div>
                                     </div>
-                                    <span class="badge badge-success" id="status-p1">STABLE</span>
+                                    <span class="badge badge-success" id="bdg-p1">STABLE</span>
                                 </div>
-                                <div class="ecg-wrapper">
-                                    <canvas id="ecg-p1" class="ecg-canvas"></canvas>
-                                    <canvas id="spo2-p1" class="spo2-canvas"></canvas>
-                                </div>
+                                <div class="ecg-container"><canvas id="ecg-p1"></canvas></div>
                                 <div class="text-center font-bold text-xl mb-4" id="req-p1">--</div>
-                                <div class="flex gap-2">
-                                    <button class="btn btn-outline flex-grow" id="btn-light-p1"><i class="fas fa-lightbulb"></i></button>
-                                    <button class="btn btn-outline flex-grow" id="btn-fan-p1"><i class="fas fa-fan"></i></button>
+                                <div class="pc-controls">
+                                    <div class="ctrl-btn" id="btn-light-p1"><i class="fas fa-lightbulb"></i></div>
+                                    <div class="ctrl-btn" id="btn-fan-p1"><i class="fas fa-fan"></i></div>
+                                    <div style="flex:1;"></div>
+                                    <button class="btn-icon" style="border:1px solid #555" onclick="alert('Generate QR')"><i class="fas fa-qrcode"></i></button>
                                 </div>
                             </div>
 
-                            <div class="patient-card" id="card-p2">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div class="flex gap-3">
-                                        <div style="width:50px; height:50px; background:#334155; border-radius:12px;"></div>
-                                        <div>
-                                            <h3 class="font-bold">Sarah Doe</h3>
-                                            <div class="text-xs text-muted">Bed 2 • Ortho</div>
-                                        </div>
+                            <div class="p-card" id="card-p2">
+                                <div class="p-header">
+                                    <div class="p-profile">
+                                        <img id="img-p2" src="https://via.placeholder.com/60" class="p-img">
+                                        <div><h4>Sarah Doe</h4><div class="text-xs text-muted">Bed 2 • Ortho</div></div>
                                     </div>
-                                    <span class="badge badge-success" id="status-p2">STABLE</span>
+                                    <span class="badge badge-success" id="bdg-p2">STABLE</span>
                                 </div>
-                                <div class="ecg-wrapper">
-                                    <canvas id="ecg-p2" class="ecg-canvas"></canvas>
-                                    <canvas id="spo2-p2" class="spo2-canvas"></canvas>
-                                </div>
+                                <div class="ecg-container"><canvas id="ecg-p2"></canvas></div>
                                 <div class="text-center font-bold text-xl mb-4" id="req-p2">--</div>
-                                <div class="flex gap-2">
-                                    <button class="btn btn-outline flex-grow" id="btn-light-p2"><i class="fas fa-lightbulb"></i></button>
-                                    <button class="btn btn-outline flex-grow" id="btn-fan-p2"><i class="fas fa-fan"></i></button>
+                                <div class="pc-controls">
+                                    <div class="ctrl-btn" id="btn-light-p2"><i class="fas fa-lightbulb"></i></div>
+                                    <div class="ctrl-btn" id="btn-fan-p2"><i class="fas fa-fan"></i></div>
+                                    <div style="flex:1;"></div>
+                                    <button class="btn-icon" style="border:1px solid #555" onclick="alert('Generate QR')"><i class="fas fa-qrcode"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -765,332 +261,220 @@
                     </div>
                 </div>
 
-                <div id="view-logs" class="view-page">
-                    <div class="card h-full">
-                        <div class="card-header">
-                            <span class="card-title">System Audit Trail</span>
-                            <button class="btn btn-danger btn-sm" onclick="DataKernel.clear()">Purge Logs</button>
+                <div id="view-analytics" class="page-view">
+                    <h2 class="mb-4">Real-Time Analytics</h2>
+                    <div class="analytics-grid">
+                        <div class="chart-wrap">
+                            <canvas id="chart-requests"></canvas>
                         </div>
+                        <div class="chart-wrap">
+                            <canvas id="chart-urgency"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-chat" class="page-view">
+                    <div class="chat-layout">
+                        <div class="chat-sidebar">
+                            <div class="p-4 font-bold border-b border-gray-700">Active Staff</div>
+                            <div style="padding:15px; cursor:pointer; background:rgba(255,255,255,0.05); margin-top:10px;">Nurse Station</div>
+                            <div style="padding:15px; cursor:pointer;">Pharmacy</div>
+                        </div>
+                        <div class="chat-main">
+                            <div class="msg-list" id="msg-list">
+                                <div class="msg in">Dr. Admin, check Bed 1 ECG.</div>
+                                <div class="msg out">Copy. AI is tracking.</div>
+                            </div>
+                            <div class="chat-input-area">
+                                <input type="text" id="chat-input" class="form-control" placeholder="Type message..." style="margin:0;">
+                                <button class="btn-primary" style="margin:0;" onclick="Chat.send()"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-logs" class="page-view">
+                    <div class="card h-full">
+                        <div class="card-header"><span class="card-title">Event Logs</span> <button class="btn-outline btn" onclick="DB.clear()">Clear</button></div>
                         <div class="card-body p-0">
-                            <table style="width:100%; border-collapse: collapse;">
-                                <thead style="text-align: left; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color);">
-                                    <tr>
-                                        <th class="p-4">Timestamp</th>
-                                        <th class="p-4">Module</th>
-                                        <th class="p-4">Event</th>
-                                        <th class="p-4">Severity</th>
-                                    </tr>
+                            <table style="width:100%; border-collapse:collapse;">
+                                <thead style="background:rgba(0,0,0,0.2); border-bottom:1px solid #333; text-align:left;">
+                                    <tr><th style="padding:15px;">Time</th><th>Source</th><th>Event</th><th>Type</th></tr>
                                 </thead>
-                                <tbody id="log-body">
-                                    </tbody>
+                                <tbody id="log-body"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <div id="view-settings" class="view-page">
-                    <div class="grid-dashboard">
-                        <div class="card">
-                            <div class="card-header">Voice Configuration</div>
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label class="form-label">Voice Volume</label>
-                                    <input type="range" class="form-range" min="0" max="1" step="0.1" onchange="VoiceKernel.volume=this.value">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Speech Rate</label>
-                                    <input type="range" class="form-range" min="0.5" max="2" step="0.1" onchange="VoiceKernel.rate=this.value">
-                                </div>
+                <div id="view-settings" class="page-view">
+                    <div class="card">
+                        <div class="card-header">System Settings</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Voice Volume</label>
+                                <input type="range" class="form-range" onchange="Voice.vol=this.value" min="0" max="1" step="0.1">
                             </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-header">System Diagnostics</div>
-                            <div class="card-body">
-                                <div class="flex justify-between items-center mb-4 p-3 bg-white/5 rounded">
-                                    <span>Database Integrity</span>
-                                    <span class="text-success font-bold">OPTIMAL</span>
-                                </div>
-                                <div class="flex justify-between items-center mb-4 p-3 bg-white/5 rounded">
-                                    <span>AI Engine Latency</span>
-                                    <span class="text-warning font-bold">~32ms</span>
-                                </div>
+                            <div class="form-group">
+                                <label>Theme</label>
+                                <button class="btn-primary" onclick="document.body.classList.toggle('hc-mode')">Toggle High Contrast</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
             </div>
-        </div>
+        </main>
     </div>
 
-    <div id="toast-area" class="toast-wrapper"></div>
+    <div id="toast-area" class="toast-container"></div>
 
     <script>
-        // --- 1. CORE UTILITIES ---
-        const $ = (id) => document.getElementById(id);
+        // CONSTANTS
+        const VIDEO = document.getElementById('vid');
+        const CANVAS = document.getElementById('can');
+        const CTX = CANVAS.getContext('2d');
+        const TWIN_CTX = document.getElementById('twin_can').getContext('2d');
         
-        /**
-         * MODULE: DataKernel
-         * Handles LocalStorage Persistence and Logging
-         */
-        class DataManager {
-            constructor() {
-                this.logs = JSON.parse(localStorage.getItem('vc_logs')) || [];
-            }
+        let lastAction1 = "";
+        let lastAction2 = "";
 
-            log(source, event, type = 'INFO') {
-                const entry = {
-                    time: new Date().toLocaleTimeString(),
-                    source,
-                    event,
-                    type
-                };
-                this.logs.unshift(entry);
-                if (this.logs.length > 100) this.logs.pop();
-                localStorage.setItem('vc_logs', JSON.stringify(this.logs));
-                this.renderLogs();
-            }
-
-            renderLogs() {
-                const tbody = $('log-body');
-                if (!tbody) return;
-                tbody.innerHTML = this.logs.map(l => `
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
-                        <td class="p-4 font-mono text-accent">${l.time}</td>
-                        <td class="p-4 font-bold">${l.source}</td>
-                        <td class="p-4">${l.event}</td>
-                        <td class="p-4"><span class="badge ${l.type === 'CRIT' ? 'badge-danger' : 'badge-success'}">${l.type}</span></td>
-                    </tr>
-                `).join('');
-            }
-
-            clear() {
-                this.logs = [];
-                localStorage.removeItem('vc_logs');
-                this.renderLogs();
-                AppKernel.notify("System", "Logs Purged", false);
-            }
-        }
-
-        /**
-         * MODULE: AppKernel
-         * Main Application Controller
-         */
-        const AppKernel = {
-            data: new DataManager(),
-            
-            init: () => {
-                setInterval(() => $('sys-clock').innerText = new Date().toLocaleTimeString(), 1000);
-                AppKernel.data.renderLogs();
-                BioKernel.startECG(1);
-                BioKernel.startECG(2);
-            },
-
+        // --- 1. SYSTEM KERNEL ---
+        const Sys = {
             login: () => {
-                const u = $('login-id').value;
-                const p = $('login-key').value;
-                if(u === 'admin' && p === 'admin123') {
-                    $('auth-view').style.display = 'none';
-                    $('app-shell').classList.remove('hidden');
-                    setTimeout(() => $('app-shell').style.opacity = 1, 100);
-                    VoiceKernel.speak("Vision Care Enterprise Online.");
-                } else {
-                    alert("Access Denied");
-                }
+                document.getElementById('auth-layer').style.display='none';
+                document.getElementById('app-shell').style.display='flex';
+                Voice.speak("Vision Care Titan System Online");
+                DB.init();
+                ECG.init(1); ECG.init(2);
+                Charts.init();
             },
-
-            notify: (title, msg, isCritical) => {
-                const area = $('toast-area');
+            notify: (title, msg, isCrit) => {
+                const area = document.getElementById('toast-area');
                 const t = document.createElement('div');
-                t.className = `toast ${isCritical ? 'danger' : ''}`;
-                t.innerHTML = `
-                    <div style="font-size:1.5rem">${isCritical ? '🚨' : '🔔'}</div>
-                    <div><div class="font-bold">${title}</div><small>${msg}</small></div>
-                `;
+                t.className = `toast ${isCrit ? 'danger' : ''}`;
+                t.innerHTML = `<div style="font-size:1.5rem">${isCrit?'🚨':'🔔'}</div><div><strong>${title}</strong><br><small>${msg}</small></div>`;
                 area.appendChild(t);
-                // Force Reflow
-                void t.offsetWidth; 
-                t.classList.add('show');
-                
-                VoiceKernel.speak(msg);
-                
-                setTimeout(() => {
-                    t.classList.remove('show');
-                    setTimeout(() => t.remove(), 400);
-                }, 4000);
-
-                AppKernel.data.log("System", msg, isCritical ? 'CRIT' : 'INFO');
+                setTimeout(()=>t.classList.add('show'), 10);
+                setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(), 400); }, 4000);
+                Voice.speak(msg);
+                DB.log(title, msg, isCrit?'CRIT':'INFO');
             }
         };
 
         const Router = {
-            navigate: (viewId) => {
-                document.querySelectorAll('.view-page').forEach(el => el.classList.remove('active'));
-                $(`view-${viewId}`).classList.add('active');
-                
-                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                event.currentTarget.classList.add('active');
-                
-                VoiceKernel.speak(`Opening ${viewId}`);
+            go: (view) => {
+                document.querySelectorAll('.page-view').forEach(e => e.classList.remove('active'));
+                document.getElementById(`view-${view}`).classList.add('active');
+                Voice.speak(`Opening ${view}`);
             }
         };
 
-        /**
-         * MODULE: VisionKernel
-         * Handles MediaPipe Holistic AI
-         */
-        const VisionKernel = {
-            video: $('vid_feed'),
-            canvas: $('cv_canvas'),
-            ctx: $('cv_canvas').getContext('2d'),
-            twinCtx: $('twin_canvas').getContext('2d'),
-            lastAction1: "",
-            lastAction2: "",
-
+        // --- 2. VISION KERNEL (DUAL THREAD) ---
+        const Vision = {
             start: async () => {
-                $('ai-stat').innerText = "LOADING...";
+                document.getElementById('ai-stat').innerText = "LOADING...";
                 const holistic = new Holistic({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`});
-                
-                holistic.setOptions({
-                    modelComplexity: 1,
-                    smoothLandmarks: true,
-                    minDetectionConfidence: 0.5,
-                    minTrackingConfidence: 0.5
-                });
-                
-                holistic.onResults(VisionKernel.process);
+                holistic.setOptions({maxNumHands: 2, minDetectionConfidence: 0.5});
+                holistic.onResults(Vision.process);
 
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
-                    VisionKernel.video.srcObject = stream;
-                    VisionKernel.video.onloadedmetadata = () => {
-                        VisionKernel.video.play();
-                        $('ai-stat').innerText = "ACTIVE";
-                        const cam = new Camera(VisionKernel.video, {
-                            onFrame: async () => { await holistic.send({image: VisionKernel.video}); },
-                            width: 1280, height: 720
-                        });
-                        cam.start();
-                    };
+                    VIDEO.srcObject = stream;
+                    VIDEO.onloadedmetadata = () => { VIDEO.play(); document.getElementById('ai-stat').innerText = "ACTIVE"; const cam = new Camera(VIDEO, { onFrame: async () => { await holistic.send({image: VIDEO}); }, width: 1280, height: 720 }); cam.start(); };
                 } catch(e) { alert("Camera Access Denied"); }
             },
-
             process: (results) => {
-                const w = VisionKernel.canvas.width = VisionKernel.video.videoWidth;
-                const h = VisionKernel.canvas.height = VisionKernel.video.videoHeight;
-                $('twin_canvas').width = w; $('twin_canvas').height = h;
-
-                // Main Overlay
-                const ctx = VisionKernel.ctx;
-                ctx.save();
-                ctx.clearRect(0, 0, w, h);
-                ctx.drawImage(results.image, 0, 0, w, h);
-                // Bed Splitter
-                ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); 
-                ctx.strokeStyle="rgba(255,255,255,0.3)"; ctx.lineWidth=4; ctx.stroke();
+                // Draw
+                CANVAS.width = VIDEO.videoWidth; CANVAS.height = VIDEO.videoHeight;
+                const w = CANVAS.width; const h = CANVAS.height;
+                CTX.clearRect(0,0,w,h); CTX.drawImage(results.image, 0, 0, w, h);
+                // Splitter
+                CTX.beginPath(); CTX.moveTo(w/2,0); CTX.lineTo(w/2,h); CTX.strokeStyle="rgba(255,255,255,0.5)"; CTX.lineWidth=3; CTX.stroke();
                 
+                // Hands
                 if(results.leftHandLandmarks) {
-                    drawConnectors(ctx, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1'});
-                    VisionKernel.logic(results.leftHandLandmarks);
+                    drawConnectors(CTX, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1'});
+                    Vision.logic(results.leftHandLandmarks);
                 }
                 if(results.rightHandLandmarks) {
-                    drawConnectors(ctx, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1'});
-                    VisionKernel.logic(results.rightHandLandmarks);
+                    drawConnectors(CTX, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1'});
+                    Vision.logic(results.rightHandLandmarks);
                 }
-                ctx.restore();
 
-                // Twin Overlay
-                const tCtx = VisionKernel.twinCtx;
-                tCtx.save(); tCtx.clearRect(0,0,w,h);
-                drawConnectors(tCtx, results.poseLandmarks, POSE_CONNECTIONS, {color: '#06b6d4', lineWidth: 4});
-                tCtx.restore();
+                // Twin
+                const tCan = document.getElementById('twin_can'); tCan.width=w; tCan.height=h;
+                TWIN_CTX.clearRect(0,0,w,h);
+                drawConnectors(TWIN_CTX, results.poseLandmarks, POSE_CONNECTIONS, {color:'#06b6d4', lineWidth:4});
             },
-
             logic: (lm) => {
-                const x = lm[0].x; 
-                const bedId = x < 0.5 ? 1 : 2;
+                const x = lm[0].x; // Wrist X
+                const bedId = x < 0.5 ? 1 : 2; // Left = Bed 1, Right = Bed 2
                 
-                let f = 0;
-                // Count Fingers (Tip Y < PIP Y)
-                if(lm[8].y < lm[6].y) f++;
-                if(lm[12].y < lm[10].y) f++;
-                if(lm[16].y < lm[14].y) f++;
-                if(lm[20].y < lm[18].y) f++;
-                if(Math.abs(lm[4].x - lm[5].x) > 0.05) f++;
+                let fingers = 0;
+                if(lm[8].y < lm[6].y) fingers++;
+                if(lm[12].y < lm[10].y) fingers++;
+                if(lm[16].y < lm[14].y) fingers++;
+                if(lm[20].y < lm[18].y) fingers++;
+                if(Math.abs(lm[4].x - lm[5].x) > 0.05) fingers++;
 
-                const pinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
+                const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
 
-                // Update Debug HUD
-                if(bedId === 1) $('hud-hands').innerText = `${f} / ${$('hud-hands').innerText.split('/')[1]}`;
-                else $('hud-hands').innerText = `${$('hud-hands').innerText.split('/')[0]} / ${f}`;
+                document.getElementById(`debug-b${bedId}`).innerText = fingers;
 
                 let msg = "";
-                if(pinch) msg = "FAN ON";
-                else if(f === 0) msg = "PAIN";
-                else if(f === 2) msg = "WATER";
-                else if(f === 5) msg = "LIGHTS";
+                if(isPinch) msg = "FAN ON";
+                else if(fingers === 0) msg = "PAIN";
+                else if(fingers === 2) msg = "WATER";
+                else if(fingers === 5) msg = "LIGHT ON";
 
-                $('hud-cmd').innerText = msg || "--";
-
-                // Independent Debouncing
-                if(bedId === 1 && msg && msg !== VisionKernel.lastAction1) {
-                    VisionKernel.lastAction1 = msg;
-                    RoomKernel.handle(1, msg);
-                    setTimeout(() => VisionKernel.lastAction1 = "", 2000);
+                // Debounce Logic per Bed
+                if(bedId === 1 && msg && msg !== lastAction1) {
+                    lastAction1 = msg; RoomMgr.trigger(1, msg); setTimeout(()=>lastAction1="", 2000);
                 }
-                if(bedId === 2 && msg && msg !== VisionKernel.lastAction2) {
-                    VisionKernel.lastAction2 = msg;
-                    RoomKernel.handle(2, msg);
-                    setTimeout(() => VisionKernel.lastAction2 = "", 2000);
+                if(bedId === 2 && msg && msg !== lastAction2) {
+                    lastAction2 = msg; RoomMgr.trigger(2, msg); setTimeout(()=>lastAction2="", 2000);
                 }
             }
         };
 
-        /**
-         * MODULE: RoomKernel
-         * IoT Device Control
-         */
-        const RoomKernel = {
-            handle: (id, msg) => {
-                $(`req-p${id}`).innerText = msg;
+        // --- 3. ROOM & ECG ---
+        const RoomMgr = {
+            trigger: (id, msg) => {
+                document.getElementById(`req-p${id}`).innerText = msg;
                 if(msg === "PAIN") {
-                    $(`card-p${id}`).classList.add('status-danger');
-                    $(`bdg-p${id}`).className = "badge badge-crit";
-                    $(`bdg-p${id}`).innerText = "CRITICAL";
-                    AppKernel.notify(`BED ${id}`, "EMERGENCY: PAIN DETECTED", true);
+                    document.getElementById(`card-p${id}`).classList.add('alert');
+                    document.getElementById(`bdg-p${id}`).className = "badge badge-crit";
+                    document.getElementById(`bdg-p${id}`).innerText = "CRITICAL";
+                    Sys.notify(`BED ${id}`, "EMERGENCY: PAIN DETECTED", true);
                 } else {
-                    if(msg.includes("FAN")) $(`btn-fan-p${id}`).classList.add('active', 'spin');
-                    if(msg.includes("LIGHT")) $(`btn-light-p${id}`).classList.add('active');
-                    AppKernel.notify(`Bed ${id}`, `Request: ${msg}`, false);
+                    if(msg.includes("FAN")) document.getElementById(`btn-fan-p${id}`).classList.add('active', 'spin');
+                    if(msg.includes("LIGHT")) document.getElementById(`btn-light-p${id}`).classList.add('active');
+                    Sys.notify(`Bed ${id}`, `Request: ${msg}`, false);
                 }
             }
         };
 
-        /**
-         * MODULE: BioKernel
-         * Physics Simulation for ECG
-         */
-        const BioKernel = {
-            startECG: (id) => {
-                const c = $(`ecg-p${id}`);
-                const ctx = c.getContext('2d');
+        const ECG = {
+            init: (id) => {
+                const c = document.getElementById(`ecg-p${id}`); const ctx = c.getContext('2d');
                 c.width = c.offsetWidth; c.height = c.offsetHeight;
-                let x = 0;
-                ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, c.height/2);
-
-                function draw() {
+                let x = 0; ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, c.height/2);
+                
+                // P-QRS-T Simulation
+                const draw = () => {
                     x += 2;
                     if(x > c.width) { x = 0; ctx.clearRect(0,0,c.width,c.height); ctx.beginPath(); ctx.moveTo(0,c.height/2); }
                     
                     let y = c.height/2;
-                    // P-QRS-T Wave Simulation
-                    if (x % 150 > 10 && x % 150 < 30) y -= 5; // P
-                    else if (x % 150 > 30 && x % 150 < 40) y += 5; // Q
-                    else if (x % 150 > 40 && x % 150 < 50) y -= 40; // R
-                    else if (x % 150 > 50 && x % 150 < 60) y += 10; // S
-                    else if (x % 150 > 80 && x % 150 < 100) y -= 8; // T
+                    // Heartbeat Logic
+                    if(x % 100 > 10 && x % 100 < 15) y -= 5; // P
+                    else if(x % 100 > 20 && x % 100 < 25) y += 5; // Q
+                    else if(x % 100 > 25 && x % 100 < 35) y -= 40; // R (Spike)
+                    else if(x % 100 > 35 && x % 100 < 40) y += 15; // S
+                    else if(x % 100 > 50 && x % 100 < 65) y -= 8; // T
                     
-                    // Noise
+                    // Jitter
                     y += (Math.random() - 0.5) * 2;
 
                     ctx.lineTo(x, y); ctx.stroke();
@@ -1100,42 +484,82 @@
             }
         };
 
-        /**
-         * MODULE: VoiceKernel
-         */
-        const VoiceKernel = {
-            volume: 1,
-            rate: 1,
-            listening: false,
-            
-            speak: (text) => {
-                window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(text);
-                u.volume = VoiceKernel.volume;
-                u.rate = VoiceKernel.rate;
-                window.speechSynthesis.speak(u);
-            },
-
+        // --- 4. VOICE & CHAT ---
+        const Voice = {
+            vol: 1,
+            speak: (txt) => { const u = new SpeechSynthesisUtterance(txt); u.volume = Voice.vol; window.speechSynthesis.speak(u); },
             toggle: () => {
-                if(!window.webkitSpeechRecognition) return alert("Browser does not support Voice");
-                
-                const rec = new webkitSpeechRecognition();
-                rec.lang = 'en-US';
-                rec.start();
-                
-                rec.onstart = () => VoiceKernel.speak("Listening");
-                rec.onresult = (e) => {
+                const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const r = new R(); r.lang = 'en-US'; r.start();
+                r.onresult = (e) => {
                     const t = e.results[0][0].transcript.toLowerCase();
-                    AppKernel.notify("Voice", t, false);
-                    if(t.includes("fan")) RoomKernel.handle(1, "FAN ON");
-                    if(t.includes("light")) RoomKernel.handle(1, "LIGHT ON");
-                };
+                    Sys.notify("Voice", t, false);
+                    if(t.includes("analytics")) Router.go('analytics');
+                    if(t.includes("dashboard")) Router.go('dashboard');
+                    if(t.includes("logs")) Router.go('logs');
+                }
             }
         };
 
-        // STARTUP
-        AppKernel.init();
+        const Chat = {
+            send: () => {
+                const i = document.getElementById('chat-input');
+                const list = document.getElementById('msg-list');
+                if(i.value) {
+                    list.innerHTML += `<div class="msg out">${i.value}</div>`;
+                    i.value="";
+                    setTimeout(()=> list.innerHTML += `<div class="msg in">Acknowledged.</div>`, 1000);
+                }
+            }
+        };
 
+        const Patient = {
+            snap: (id) => {
+                const c = document.createElement('canvas'); c.width=1280; c.height=720;
+                c.getContext('2d').drawImage(VIDEO,0,0);
+                document.getElementById(`img-p${id}`).src = c.toDataURL('image/png');
+                Voice.speak(`Bed ${id} Registered`);
+            }
+        };
+
+        const DB = {
+            init: () => {
+                if(!localStorage.getItem('vc_logs')) localStorage.setItem('vc_logs', JSON.stringify([]));
+                DB.render();
+            },
+            log: (src, evt, type) => {
+                const l = JSON.parse(localStorage.getItem('vc_logs'));
+                l.unshift({time: new Date().toLocaleTimeString(), src, evt, type});
+                localStorage.setItem('vc_logs', JSON.stringify(l));
+                DB.render();
+            },
+            render: () => {
+                const l = JSON.parse(localStorage.getItem('vc_logs'));
+                document.getElementById('log-body').innerHTML = l.map(x => `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
+                        <td style="padding:10px; color:var(--c-accent)">${x.time}</td>
+                        <td>${x.src}</td><td>${x.evt}</td>
+                        <td><span class="badge ${x.type==='CRIT'?'badge-crit':'badge-ok'}">${x.type}</span></td>
+                    </tr>`).join('');
+            },
+            clear: () => { localStorage.setItem('vc_logs', JSON.stringify([])); DB.render(); }
+        };
+
+        const Charts = {
+            init: () => {
+                new Chart(document.getElementById('chart-requests'), {
+                    type: 'doughnut',
+                    data: { labels: ['Pain', 'Meds', 'Water', 'Fan'], datasets: [{ data: [5, 12, 15, 8], backgroundColor: ['#ef4444', '#6366f1', '#06b6d4', '#f59e0b'] }] }
+                });
+                new Chart(document.getElementById('chart-urgency'), {
+                    type: 'line',
+                    data: { labels: ['10AM', '11AM', '12PM', '1PM'], datasets: [{ label: 'Avg Response (s)', data: [45, 30, 20, 25], borderColor: '#6366f1' }] }
+                });
+            }
+        };
+
+        // START CLOCK
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
     </script>
 </body>
 </html>
