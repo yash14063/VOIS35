@@ -824,97 +824,96 @@
             }
         };
 
-        /* MODULE 3: VISION KERNEL
-        */
-        const VisionKernel = {
-            active: false,
-            lastAction: "",
+        /* UPDATED VISION KERNEL */
+const VisionKernel = {
+    active: false,
+    lastAction: "",
+    // Track who we have already welcomed/identified
+    identifiedPatients: new Set(), 
 
-            start: async () => {
-                document.getElementById('ai-stat').innerText = "LOADING...";
-                const holistic = new Holistic({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`});
-                holistic.setOptions({ modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-                holistic.onResults(VisionKernel.process);
+    start: async () => {
+        // ... (Keep existing Holistic init code)
+    },
 
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
-                    VIDEO.srcObject = stream;
-                    VIDEO.onloadedmetadata = () => {
-                        VIDEO.play();
-                        document.getElementById('ai-stat').innerText = "ACTIVE";
-                        VisionKernel.active = true;
-                        const cam = new Camera(VIDEO, { onFrame: async () => { await holistic.send({image: VIDEO}); }, width: 1280, height: 720 });
-                        cam.start();
-                    };
-                } catch(e) { alert("Camera Access Denied. Use Localhost."); }
-            },
+    process: (results) => {
+        const w = CANVAS.width = VIDEO.videoWidth;
+        const h = CANVAS.height = VIDEO.videoHeight;
 
-            process: (results) => {
-                const w = CANVAS.width = VIDEO.videoWidth;
-                const h = CANVAS.height = VIDEO.videoHeight;
-                const tCan = document.getElementById('twin_can');
-                tCan.width = w; tCan.height = h;
+        // ... (Keep existing Canvas drawing code)
 
-                // Main Overlay
-                CTX.save();
-                CTX.clearRect(0, 0, w, h);
-                CTX.drawImage(results.image, 0, 0, w, h);
-                drawConnectors(CTX, results.leftHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 2});
-                drawConnectors(CTX, results.rightHandLandmarks, HAND_CONNECTIONS, {color: '#6366f1', lineWidth: 2});
-                CTX.restore();
+        // 1. Identify Patient via Face
+        if (results.faceLandmarks) {
+            VisionKernel.identifyByFace(results.faceLandmarks);
+        }
 
-                // Twin
-                TWIN_CTX.save();
-                TWIN_CTX.clearRect(0, 0, w, h);
-                drawConnectors(TWIN_CTX, results.poseLandmarks, POSE_CONNECTIONS, {color: '#06b6d4', lineWidth: 3});
-                drawLandmarks(TWIN_CTX, results.poseLandmarks, {color: '#fff', lineWidth: 1});
-                TWIN_CTX.restore();
+        // 2. Process Gestures
+        if (results.rightHandLandmarks) VisionKernel.gestures(results.rightHandLandmarks, 1);
+        // ...
+    },
 
-                // Logic
-                if(results.rightHandLandmarks) VisionKernel.gestures(results.rightHandLandmarks, 1);
-                else if(results.leftHandLandmarks) VisionKernel.gestures(results.leftHandLandmarks, 1);
-                
-                if(results.faceLandmarks) VisionKernel.faceLogic(results.faceLandmarks);
-            },
+    identifyByFace: (lm) => {
+        // Logic: Map face position/characteristics to a specific Patient ID
+        // In a real app, this would use a face-descriptor embedding.
+        // For this prototype, we use the horizontal position (X) to differentiate beds.
+        
+        let patientID = lm[1].x < 0.5 ? 2 : 1; // Left side of cam = Bed 2, Right = Bed 1
+        let patientName = patientID === 1 ? "Alex Smith" : "Sarah Doe";
 
-            gestures: (lm, id) => {
-                let fingers = 0;
-                [8,12,16,20].forEach(t => { if(lm[t].y < lm[t-2].y) fingers++; });
-                if(Math.abs(lm[4].x - lm[5].x) > 0.05) fingers++;
-                
-                const isPinch = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y) < 0.05;
-                let msg = "";
+        if (!VisionKernel.identifiedPatients.has(patientID)) {
+            VisionKernel.identifiedPatients.add(patientID);
+            
+            // Single-time Notification
+            Core.notify("FACE RECOGNIZED", `Patient ${patientName} identified at Bed ${patientID}`, false);
+            DataKernel.log("VisionAI", `Identity confirmed: ${patientName}`, "INFO");
+            
+            // Visual feedback on the specific patient card
+            document.getElementById(`card-p${patientID}`).style.borderColor = "var(--c-primary)";
+            VoiceKernel.speak(`Identity confirmed for ${patientName}`);
+        }
+    },
 
-                if(isPinch) msg = "FAN ON";
-                else if(fingers === 0) msg = "EMERGENCY";
-                else if(fingers === 1) msg = "MEDICINE";
-                else if(fingers === 2) msg = "WATER";
-                else if(fingers === 5) msg = "LIGHTS";
+    gestures: (lm, id) => {
+        // ... (Keep your existing gesture logic)
+    }
+};
 
-                document.getElementById('debug-cmd').innerText = msg || "--";
-
-                if(msg && msg !== VisionKernel.lastAction) {
-                    VisionKernel.lastAction = msg;
-                    RoomMgr.trigger(id, msg);
-                    setTimeout(() => VisionKernel.lastAction = "", 2500);
+/* UPDATED SIMULATION KERNEL FOR GLOBAL ECG */
+// Add this inside SimKernel.initCharts or as a separate call
+const SimKernel = {
+    // ... existing startECG ...
+    
+    startGlobalMonitor: () => {
+        [1, 2].forEach(id => {
+            const c = document.getElementById(`ecg-global-${id}`);
+            const cx = c.getContext('2d');
+            c.width = c.offsetWidth; c.height = 100;
+            let x = 0;
+            
+            function draw() {
+                x += 3;
+                if (x > c.width) {
+                    x = 0;
+                    cx.clearRect(0, 0, c.width, c.height);
                 }
-            },
+                cx.strokeStyle = '#10b981';
+                cx.lineWidth = 1.5;
+                cx.beginPath();
+                cx.moveTo(x - 3, c.height / 2 + (Math.random() * 10 - 5));
+                
+                // Simulate QRS Complex
+                let y = c.height / 2;
+                if (x % 100 < 5) y -= 40; 
+                else if (x % 100 < 10) y += 10;
 
-            faceLogic: (lm) => {
-                // Pain Check (Brow Furrow)
-                const brow = Math.hypot(lm[55].x - lm[285].x, lm[55].y - lm[285].y);
-                const isPain = brow < 0.04;
-                document.getElementById('debug-pain').innerText = isPain ? "YES" : "NO";
-                if(isPain && VisionKernel.lastAction !== "PAIN") {
-                    VisionKernel.lastAction = "PAIN";
-                    RoomMgr.trigger(1, "EMERGENCY");
-                }
-
-                // Gaze Tracking
-                if(GazeKernel.active) GazeKernel.move(lm[1].x, lm[1].y);
+                cx.lineTo(x, y);
+                cx.stroke();
+                requestAnimationFrame(draw);
             }
-        };
-
+            draw();
+        });
+    }
+};
+        
         /* MODULE 4: GAZE KERNEL
         */
         const GazeKernel = {
