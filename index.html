@@ -359,6 +359,37 @@
         let lastAction1 = "";
         let lastAction2 = "";
 
+        // SERIAL COMMUNICATION
+
+
+let serialPort;
+let serialWriter;
+
+async function connectESP() {
+    try {
+        serialPort = await navigator.serial.requestPort();
+        await serialPort.open({ baudRate: 115200 });
+
+        const encoder = new TextEncoderStream();
+        encoder.readable.pipeTo(serialPort.writable);
+        serialWriter = encoder.writable.getWriter();
+
+        Sys.notify("ESP32", "Hardware Connected", false);
+    } catch (err) {
+        console.log("Serial Error:", err);
+        alert("Serial connection failed");
+    }
+}
+
+async function sendSerialCommand(cmd) {
+    if (!serialWriter) {
+        console.log("ESP not connected");
+        return;
+    }
+    await serialWriter.write(cmd + "\n");
+    console.log("Sent:", cmd);
+}
+
         // --- 1. SYSTEM KERNEL ---
         const Sys = {
             login: () => {
@@ -390,6 +421,7 @@
             }
         };
 
+        
         // --- 2. ENHANCED DIGITAL TWIN & VISION KERNEL ---
         const Twin = {
             lastPose: null,
