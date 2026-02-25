@@ -78,9 +78,8 @@
         
         /* Camera */
         .cam-widget { grid-column: 1 / 2; grid-row: 1 / 2; background: #000; border-radius: var(--radius-lg); border: 2px solid var(--border); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        video { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); }
-        canvas { position: absolute; width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); z-index: 10; }
-        
+       .cam-widget video,
+        .cam-widget canvas {transform: scaleX(-1);}
         .hud-overlay { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 8px; border: var(--border); font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--c-success); z-index: 20; min-width: 200px; pointer-events: none; }
         .hud-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
         
@@ -206,11 +205,15 @@
                             </div>
 
                             <div class="cam-controls">
-                                <button class="btn-icon" onclick="Patient.snap(1)">📸 Bed 1</button>
-                                <button class="btn-icon" style="background:var(--c-primary)" onclick="Vision.start()">▶ START AI</button>
-                                <button class="btn-icon" onclick="Voice.toggle()">🎙️ Voice</button>
-                                <button class="btn-icon" onclick="Patient.snap(2)">📸 Bed 2</button>
-                            </div>
+
+                            <button class="btn-icon" onclick="connectESP()">🔌 CONNECT ESP</button>
+
+                            <button class="btn-icon" onclick="Patient.snap(1)">📸 Bed 1</button>
+                            <button class="btn-icon" style="background:var(--c-primary)" onclick="Vision.start()">▶ START AI</button>
+                            <button class="btn-icon" onclick="Voice.toggle()">🎙️ Voice</button>
+                            <button class="btn-icon" onclick="Patient.snap(2)">📸 Bed 2</button>
+
+                        </div>
                         </div>
 
                         <div class="side-stack">
@@ -350,6 +353,43 @@
     <div id="toast-area" class="toast-container"></div>
 
     <script>
+
+        // ===============================
+        // SERIAL COMMUNICATION
+        // ===============================
+
+        let port;
+        let writer;
+
+        async function connectESP() {
+            try {
+                port = await navigator.serial.requestPort();
+                await port.open({ baudRate: 115200 });
+
+                const encoder = new TextEncoderStream();
+                encoder.readable.pipeTo(port.writable);
+                writer = encoder.writable.getWriter();
+
+                alert("ESP32 Connected ✅");
+                console.log("ESP Connected");
+
+            } catch (err) {
+                alert("Connection Failed ❌");
+                console.log(err);
+            }
+         }
+         async function sendToESP(message) {
+             if (!writer) {
+                 console.log("ESP not connected");
+                 return;
+             }
+             await writer.write(message + "\n");
+             console.log("Sent:", message);
+         }
+         
+
+
+        
         // CONSTANTS
         const VIDEO = document.getElementById('vid');
         const CANVAS = document.getElementById('can');
@@ -359,37 +399,8 @@
         let lastAction1 = "";
         let lastAction2 = "";
 
-        // SERIAL COMMUNICATION
-
-
-let serialPort;
-let serialWriter;
-
-async function connectESP() {
-    try {
-        serialPort = await navigator.serial.requestPort();
-        await serialPort.open({ baudRate: 115200 });
-
-        const encoder = new TextEncoderStream();
-        encoder.readable.pipeTo(serialPort.writable);
-        serialWriter = encoder.writable.getWriter();
-
-        Sys.notify("ESP32", "Hardware Connected", false);
-    } catch (err) {
-        console.log("Serial Error:", err);
-        alert("Serial connection failed");
-    }
-}
-
-async function sendSerialCommand(cmd) {
-    if (!serialWriter) {
-        console.log("ESP not connected");
-        return;
-    }
-    await serialWriter.write(cmd + "\n");
-    console.log("Sent:", cmd);
-}
-
+        
+       
         // --- 1. SYSTEM KERNEL ---
         const Sys = {
             login: () => {
@@ -548,6 +559,13 @@ async function sendSerialCommand(cmd) {
         const RoomMgr = {
             lastNotify: { 1: { msg: "", time: 0 }, 2: { msg: "", time: 0 } },
             trigger: (id, msg) => {
+
+                // SEND COMMAND TO ESP32
+                if(msg === "PAIN") sendToESP("PAIN");
+                if(msg === "LIGHT ON") sendToESP("LIGHT_ON");
+                if(msg === "FAN ON") sendToESP("FAN_ON");
+                if(msg === "WATER") sendToESP("WATER");
+                
                 const now = Date.now();
                 const cooldown = 3000; // 3 seconds cooldown between same notifications
                 
