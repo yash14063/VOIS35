@@ -155,9 +155,11 @@
             <i class="fas fa-heart-pulse" style="font-size: 4rem; color: var(--c-primary); margin-bottom: 20px;"></i>
             <h2 style="color:white; margin-bottom:10px;">VisionCare Titan OS</h2>
             <p style="color:var(--c-text-muted); margin-bottom: 30px;">Medical Command Center</p>
-            <input type="text" id="auth-user" class="form-control" placeholder="admin" value="admin">
-            <input type="password" id="auth-pass" class="form-control" placeholder="admin123" value="admin123">
-            <button class="btn-primary" onclick="Sys.login()">INITIALIZE SYSTEM</button>
+            <input type="text" id="phone" class="form-control" placeholder="+919767127989">
+<input type="text" id="otp" class="form-control" placeholder="Enter OTP">
+
+<button class="btn-primary" onclick="sendOTP()">SEND OTP</button>
+<button class="btn-primary" onclick="verifyOTP()">VERIFY & LOGIN</button>
         </div>
     </div>
 
@@ -356,6 +358,55 @@
     <div id="toast-area" class="toast-container"></div>
 
     <script>
+
+        const API = ""; // Vercel same domain
+
+const ALLOWED = "+919876543210"; // 🔒 your number
+
+async function sendOTP() {
+
+    const phone = document.getElementById('phone').value;
+
+    if (phone !== ALLOWED) {
+        alert("Unauthorized Number ❌");
+        return;
+    }
+
+    const res = await fetch("/api/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        alert("OTP Sent ✅");
+    } else {
+        alert("Error ❌");
+        console.log(data);
+    }
+}
+
+async function verifyOTP() {
+
+    const phone = document.getElementById('phone').value;
+    const code = document.getElementById('otp').value;
+
+    const res = await fetch("/api/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, code })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        Sys.login(); // 🔥 YOUR SYSTEM STARTS HERE
+    } else {
+        alert("Invalid OTP ❌");
+    }
+}
 
         // ===============================
 // ESP32 BLE COMMUNICATION (VERCEL + ESP32 FRIENDLY)
