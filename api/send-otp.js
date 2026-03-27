@@ -3,7 +3,7 @@ import twilio from "twilio";
 const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH);
 const serviceSid = process.env.TWILIO_SERVICE;
 
-const allowedNumber = "+919876543210";
+const allowedNumber = "+919767127989";
 
 export default async function handler(req, res) {
 
